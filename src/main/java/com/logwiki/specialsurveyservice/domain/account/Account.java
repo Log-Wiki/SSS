@@ -1,6 +1,7 @@
 package com.logwiki.specialsurveyservice.domain.account;
 
 import com.logwiki.specialsurveyservice.domain.accountauthority.AccountAuthority;
+import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
 import com.logwiki.specialsurveyservice.utils.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -14,7 +15,9 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,4 +55,39 @@ public class Account extends BaseEntity {
 
   @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
   private List<AccountAuthority> authorities = new ArrayList<>();
+
+  @Builder
+  public Account(String email, String password,
+      Sex sex, String name,
+      String phoneNumber, LocalDateTime birthday,
+      List<Authority> authorities) {
+      this.email = email;
+      this.password = password;
+      this.sex = sex;
+      this.name = name;
+      this.phoneNumber = phoneNumber;
+      this.birthday = birthday;
+      this.authorities = authorities.stream()
+          .map(authority -> new AccountAuthority(this, authority))
+          .collect(Collectors.toList());
+  }
+
+    public static Account create(String email, String password,
+        Sex sex, String name,
+        String phoneNumber, LocalDateTime birthday,
+        List<Authority> authorities) {
+        return Account.builder()
+            .email(email)
+            .password(password)
+            .sex(sex)
+            .name(name)
+            .phoneNumber(phoneNumber)
+            .birthday(birthday)
+            .authorities(authorities)
+            .build();
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

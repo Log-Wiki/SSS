@@ -27,4 +27,9 @@ public class AccountAuthority extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Authority authority;
+
+  public AccountAuthority(Account account, Authority authority) {
+    this.account = account;
+    this.authority = authority;
+  }
 }
