@@ -23,33 +23,33 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Account extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String email;
+  private String email;
 
-    private String password;
+  private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
+  @Enumerated(EnumType.STRING)
+  private Sex sex;
 
-    private String name;
+  private String name;
 
-    private String phoneNumber;
+  private String phoneNumber;
 
-    private int responseSurveyCount;
+  private int responseSurveyCount;
 
-    private int createSurveyCount;
+  private int createSurveyCount;
 
-    private int winningGiveawayCount;
+  private int winningGiveawayCount;
 
-    private int point;
+  private int point;
 
-    private LocalDateTime birthday;
+  private LocalDateTime birthday;
 
-    private String refreshToken;
+  private String refreshToken;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<AccountAuthority> authorities = new ArrayList<>();
+  @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+  private List<AccountAuthority> authorities = new ArrayList<>();
 }
