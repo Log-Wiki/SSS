@@ -7,7 +7,7 @@ import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,7 @@ class AccountRepositoryTest extends IntegrationTestSupport {
         .sex(Sex.MALE)
         .name("최연재")
         .phoneNumber("010-1234-5678")
-        .birthday(LocalDateTime.of(1997, Month.JUNE, 24, 0, 0))
+        .birthday(LocalDate.of(1997, Month.JUNE, 24))
         .authorities(authorities)
         .build();
 

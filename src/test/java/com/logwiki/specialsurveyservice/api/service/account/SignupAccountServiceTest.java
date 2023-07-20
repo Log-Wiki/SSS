@@ -11,7 +11,7 @@ import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
 import com.logwiki.specialsurveyservice.exception.DuplicatedAccountException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +45,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
     Sex sex = Sex.MALE;
     String name = "최연재";
     String phoneNumber = "010-1234-5678";
-    LocalDateTime birthday = LocalDateTime.of(1997, Month.JUNE, 24, 0, 0);
+    LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
     AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
         .email(email)
         .password(password)
@@ -78,7 +78,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
           Sex sex1 = Sex.MALE;
           String name1 = "최연재";
           String phoneNumber1 = "010-1234-5678";
-          LocalDateTime birthday1 = LocalDateTime.of(1997, Month.JUNE, 24, 0, 0);
+          LocalDate birthday1 = LocalDate.of(1997, Month.JUNE, 24);
 
           AccountCreateServiceRequest accountCreateServiceRequest1 = AccountCreateServiceRequest.builder()
               .email(email)
@@ -106,7 +106,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
           Sex sex2 = Sex.FEMALE;
           String name2 = "홍길동";
           String phoneNumber2 = "010-5678-1234";
-          LocalDateTime birthday2 = LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0);
+          LocalDate birthday2 = LocalDate.of(1990, Month.JANUARY, 1);
 
           AccountCreateServiceRequest accountCreateServiceRequest2 = AccountCreateServiceRequest.builder()
               .email(sameEmail)

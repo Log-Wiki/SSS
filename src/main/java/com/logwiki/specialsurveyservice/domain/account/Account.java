@@ -12,7 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public class Account extends BaseEntity {
 
   private int point;
 
-  private LocalDateTime birthday;
+  private LocalDate birthday;
 
   private String refreshToken;
 
@@ -59,7 +59,7 @@ public class Account extends BaseEntity {
   @Builder
   public Account(String email, String password,
       Sex sex, String name,
-      String phoneNumber, LocalDateTime birthday,
+      String phoneNumber, LocalDate birthday,
       List<Authority> authorities) {
       this.email = email;
       this.password = password;
@@ -74,7 +74,7 @@ public class Account extends BaseEntity {
 
     public static Account create(String email, String password,
         Sex sex, String name,
-        String phoneNumber, LocalDateTime birthday,
+        String phoneNumber, LocalDate birthday,
         List<Authority> authorities) {
         return Account.builder()
             .email(email)

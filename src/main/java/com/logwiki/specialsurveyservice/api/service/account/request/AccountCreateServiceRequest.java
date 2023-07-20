@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.account.request;
 
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +20,10 @@ public class AccountCreateServiceRequest {
 
   private String phoneNumber;
 
-  private LocalDateTime birthday;
+  private LocalDate birthday;
 
   @Builder
-  private AccountCreateServiceRequest(String email, String password, Sex sex, String name, String phoneNumber, LocalDateTime birthday) {
+  private AccountCreateServiceRequest(String email, String password, Sex sex, String name, String phoneNumber, LocalDate birthday) {
     this.email = email;
     this.password = password;
     this.sex = sex;

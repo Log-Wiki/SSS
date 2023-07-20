@@ -2,7 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.account.response;
 
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,10 +13,10 @@ public class AccountResponse {
   private Sex sex;
   private String name;
   private String phoneNumber;
-  private LocalDateTime birthday;
+  private LocalDate birthday;
 
   @Builder
-  private AccountResponse(String email, Sex sex, String name, String phoneNumber, LocalDateTime birthday) {
+  private AccountResponse(String email, Sex sex, String name, String phoneNumber, LocalDate birthday) {
     this.email = email;
     this.sex = sex;
     this.name = name;
