@@ -1,6 +1,7 @@
-package com.logwiki.specialsurveyservice.exception;
+package com.logwiki.specialsurveyservice.config;
 
-import com.logwiki.specialsurveyservice.config.ValidationException;
+import com.logwiki.specialsurveyservice.exception.BaseException;
+import com.logwiki.specialsurveyservice.exception.ValidationException;
 import com.logwiki.specialsurveyservice.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.utils.Apiutils;
 import org.springframework.validation.FieldError;

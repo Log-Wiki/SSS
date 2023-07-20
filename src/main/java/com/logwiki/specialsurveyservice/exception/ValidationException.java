@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.config;
+package com.logwiki.specialsurveyservice.exception;
 
 import java.util.List;
 import lombok.Getter;
