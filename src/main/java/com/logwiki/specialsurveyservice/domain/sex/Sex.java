@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.sex;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,4 +15,9 @@ public enum Sex {
   FEMALE("여자");
 
   private final String text;
+
+  @JsonCreator
+  public static Sex from(String s) {
+    return Sex.valueOf(s);
+  }
 }

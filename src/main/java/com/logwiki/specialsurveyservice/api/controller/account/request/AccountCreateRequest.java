@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.controller.account.request;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.sex.Sex;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -23,17 +24,17 @@ public class AccountCreateRequest {
   @Size(min = 3, max = 30, message = "패스워드의 길이는 3이상 30이하 입니다.")
   private String password;
 
-  @NotEmpty(message = "성별은 필수입니다.")
+  @NotNull(message = "성별은 필수입니다.")
   private Sex sex;
 
   @NotEmpty(message = "이름은 필수입니다.")
   private String name;
 
   @NotEmpty(message = "휴대폰 번호는 필수입니다.")
-  @Pattern(regexp = "[0-9]{10,11}", message = "10~11자리의 숫자만 입력가능합니다")
+  @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$", message = "10~11자리의 숫자만 입력가능합니다")
   private String phoneNumber;
 
-  @NotEmpty(message = "생년월일은 필수입니다.")
+  @NotNull(message = "생년월일은 필수입니다.")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private LocalDate birthday;
 
