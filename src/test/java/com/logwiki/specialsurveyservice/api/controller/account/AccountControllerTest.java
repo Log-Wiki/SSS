@@ -65,6 +65,237 @@ class AccountControllerTest extends ControllerTestSupport {
     ;
   }
 
+  @DisplayName("회원가입을 할 때 이메일은 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutEmail() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest(null, "1234", Sex.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("이메일은 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 이메일은 이메일의 형식을 따라야한다.")
+  @WithMockUser
+  @Test
+  void signupWithWrongEmailFormat() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("emailNotFollowEmailFormat", "1234", Sex.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("이메일 형식에 맞지 않습니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 패스워드는 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutPassword() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", null, Sex.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("패스워드는 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 패스워드의 길이는 3이상 이다.")
+  @WithMockUser
+  @Test
+  void signupWithPasswordNotInRange1() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "12", Sex.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("패스워드의 길이는 3이상 30이하 입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 패스워드의 길이는 30이하다.")
+  @WithMockUser
+  @Test
+  void signupWithPasswordNotInRange2() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "0123456789012345678901234567891", Sex.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("패스워드의 길이는 3이상 30이하 입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 성별은 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutSex() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "1234", null, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("성별은 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 이름은 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutName() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "1234", Sex.MALE, null, "010-3499-4698", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("이름은 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 휴대폰 번호는 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutPhoneNumber() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "1234", Sex.MALE, "최연재", null, LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("휴대폰 번호는 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 휴대폰 번호는 10~11자리의 숫자만 입력 가능하다.")
+  @WithMockUser
+  @Test
+  void signupWithPhoneNumberNotInRange() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "1234", Sex.MALE, "최연재", "010-1234-56789", LocalDate.of(1997, 6, 24));
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("휴대폰 번호는 10~11자리의 숫자만 입력가능합니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+  @DisplayName("회원가입을 할 때 생년월일은 필수값이다.")
+  @WithMockUser
+  @Test
+  void signupWithoutBirthday() throws Exception {
+    // given
+    AccountCreateRequest request =
+        createAccountCreateRequest("duswo0624@naver.com", "1234", Sex.MALE, "최연재", "010-1234-5678", null);
+
+    // when // then
+    mockMvc.perform(
+            post("/api/signup")
+                .content(objectMapper.writeValueAsString(request))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(csrf())
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value("false"))
+        .andExpect(jsonPath("$.apiError.message").value("생년월일은 필수입니다."))
+        .andExpect(jsonPath("$.apiError.status").value(1000))
+    ;
+  }
+
+
   private AccountCreateRequest createAccountCreateRequest(String email, String password, Sex sex, String name, String phoneNumber, LocalDate birthday) {
     return AccountCreateRequest.builder()
         .email(email)
