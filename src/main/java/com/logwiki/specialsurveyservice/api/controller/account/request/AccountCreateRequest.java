@@ -34,7 +34,7 @@ public class AccountCreateRequest {
   @Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$", message = "휴대폰 번호는 10~11자리의 숫자만 입력가능합니다.")
   private String phoneNumber;
 
-  @NotNull(message = "생년월일은 필수입니다.")
+  @NotNull(message = "출생년도는 필수입니다.")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private LocalDate birthday;
 

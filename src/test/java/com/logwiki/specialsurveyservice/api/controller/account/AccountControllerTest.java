@@ -272,7 +272,7 @@ class AccountControllerTest extends ControllerTestSupport {
     ;
   }
 
-  @DisplayName("회원가입을 할 때 생년월일은 필수값이다.")
+  @DisplayName("회원가입을 할 때 출생년도는 필수값이다.")
   @WithMockUser
   @Test
   void signupWithoutBirthday() throws Exception {
@@ -290,7 +290,7 @@ class AccountControllerTest extends ControllerTestSupport {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value("false"))
-        .andExpect(jsonPath("$.apiError.message").value("생년월일은 필수입니다."))
+        .andExpect(jsonPath("$.apiError.message").value("출생년도는 필수입니다."))
         .andExpect(jsonPath("$.apiError.status").value(1000))
     ;
   }
