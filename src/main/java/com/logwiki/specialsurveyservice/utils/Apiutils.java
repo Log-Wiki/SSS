@@ -2,15 +2,15 @@ package com.logwiki.specialsurveyservice.utils;
 
 public class Apiutils {
 
-  public static <T> ApiResult<T> success(T response) {
-    return new ApiResult<>(true, response, null);
+  public static <T> ApiResponse<T> success(T response) {
+    return new ApiResponse<>(true, response, null, null);
   }
 
-  public static ApiResult<?> error(String message, int status) {
-    return new ApiResult<>(false, null, new ApiError(message, status));
+  public static ApiResponse<?> error(String message, int status) {
+    return new ApiResponse<>(false, null, new ApiError(message, status), null);
   }
 
-  public static ApiResult<?> error(ApiError apiError) {
-    return new ApiResult<>(false, null, apiError);
+  public static ApiResponse<?> error(ApiError apiError) {
+    return new ApiResponse<>(false, null, apiError, null);
   }
 }

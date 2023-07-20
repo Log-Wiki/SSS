@@ -7,8 +7,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,15 +30,5 @@ public class BaseEntity {
   @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
   private Status status = Status.ACTIVE;
 
-  @PrePersist
-  public void prePersist() {
-    this.createAt = LocalDateTime.now();
-    this.modifiedAt = LocalDateTime.now();
-    this.status = Status.ACTIVE;
-  }
 
-  @PreUpdate
-  public void preUpdate() {
-    this.modifiedAt = LocalDateTime.now();
-  }
 }
