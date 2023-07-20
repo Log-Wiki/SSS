@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Sex {
 
-  @JsonProperty("M")
+  @JsonProperty("MALE")
   MALE("남자"),
-  @JsonProperty("F")
+  @JsonProperty("FEMALE")
   FEMALE("여자");
 
   private final String text;
