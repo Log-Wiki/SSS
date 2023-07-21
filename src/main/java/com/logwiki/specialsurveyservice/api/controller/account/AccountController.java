@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class AccountController {
 
-  private final SignupAccountService signupAccountService;
+    private final SignupAccountService signupAccountService;
 
-  @PostMapping("/signup")
-  public ApiResponse<AccountResponse> signup(
-      @Valid @RequestBody AccountCreateRequest accountCreateRequest
-  ) {
-    return ApiUtils.success(signupAccountService.signup(accountCreateRequest.toServiceRequest()));
-  }
+    @PostMapping("/signup")
+    public ApiResponse<AccountResponse> signup(
+            @Valid @RequestBody AccountCreateRequest accountCreateRequest
+    ) {
+        return ApiUtils.success(
+                signupAccountService.signup(accountCreateRequest.toServiceRequest()));
+    }
 }

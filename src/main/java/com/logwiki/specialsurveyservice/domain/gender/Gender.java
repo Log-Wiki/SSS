@@ -9,15 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Gender {
 
-  @JsonProperty("MALE")
-  MALE("남자"),
-  @JsonProperty("FEMALE")
-  FEMALE("여자");
+    @JsonProperty("MALE")
+    MALE("남자"),
+    @JsonProperty("FEMALE")
+    FEMALE("여자");
 
-  private final String text;
+    private final String text;
 
-  @JsonCreator
-  public static Gender from(String s) {
-    return Gender.valueOf(s);
-  }
+    @JsonCreator
+    public static Gender from(String s) {
+        return Gender.valueOf(s);
+    }
 }
