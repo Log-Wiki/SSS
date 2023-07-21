@@ -34,7 +34,7 @@ public class SignupAccountService {
     Account account = Account.create(
         request.getEmail(),
         passwordEncoder.encode(request.getPassword()),
-        request.getSex(),
+        request.getGender(),
         request.getName(),
         request.getPhoneNumber(),
         request.getBirthday(),

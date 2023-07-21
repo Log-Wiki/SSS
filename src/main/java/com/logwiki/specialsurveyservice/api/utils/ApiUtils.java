@@ -1,6 +1,6 @@
-package com.logwiki.specialsurveyservice.utils;
+package com.logwiki.specialsurveyservice.api.utils;
 
-public class Apiutils {
+public class ApiUtils {
 
   public static <T> ApiResponse<T> success(T response) {
     return new ApiResponse<>(true, response, null, null);

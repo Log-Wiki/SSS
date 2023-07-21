@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.domain.sex;
+package com.logwiki.specialsurveyservice.domain.gender;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Sex {
+public enum Gender {
 
   @JsonProperty("MALE")
   MALE("남자"),
@@ -17,7 +17,7 @@ public enum Sex {
   private final String text;
 
   @JsonCreator
-  public static Sex from(String s) {
-    return Sex.valueOf(s);
+  public static Gender from(String s) {
+    return Gender.valueOf(s);
   }
 }

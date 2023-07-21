@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.authority;
 
-import com.logwiki.specialsurveyservice.utils.BaseEntity;
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

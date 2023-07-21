@@ -3,8 +3,8 @@ package com.logwiki.specialsurveyservice.api.controller.account;
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.account.SignupAccountService;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
-import com.logwiki.specialsurveyservice.utils.ApiResponse;
-import com.logwiki.specialsurveyservice.utils.Apiutils;
+import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
+import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +23,6 @@ public class AccountController {
   public ApiResponse<AccountResponse> signup(
       @Valid @RequestBody AccountCreateRequest accountCreateRequest
   ) {
-    return Apiutils.success(signupAccountService.signup(accountCreateRequest.toServiceRequest()));
+    return ApiUtils.success(signupAccountService.signup(accountCreateRequest.toServiceRequest()));
   }
 }

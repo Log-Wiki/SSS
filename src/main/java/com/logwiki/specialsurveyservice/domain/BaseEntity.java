@@ -1,7 +1,5 @@
-package com.logwiki.specialsurveyservice.utils;
+package com.logwiki.specialsurveyservice.domain;
 
-
-import com.logwiki.specialsurveyservice.status.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
