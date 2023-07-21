@@ -15,7 +15,8 @@ spring:
 jwt:
   header: Authorization
   secret: bG9uZy10ZXJtLW1lbW9yeS1wcm9qZWN0LXdpdGgtand0LXNwcmluZy1zZWN1cml0eS11c2luZy1zZWNyZXQta2V5LW1hZGUtYnktYW1lbmFibGUtbGV0LXVzLWdldC1pdC1zdGFydGVkCg==
-  token-validity-in-seconds: 86400
+  access-token-validity-in-seconds: 3600
+  refresh-token-validity-in-seconds: 1296000
 
 ---
 spring:
