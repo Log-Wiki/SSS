@@ -17,6 +17,5 @@ public class AuthService {
     public void saveRefreshToken(String email, String refreshToken) {
         Optional<Account> account = accountRepository.findOneWithAuthoritiesByEmail(email);
         account.ifPresent(value -> value.setRefreshToken(refreshToken));
-
     }
 }

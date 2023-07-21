@@ -2,7 +2,10 @@ package com.logwiki.specialsurveyservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.controller.account.AccountController;
+import com.logwiki.specialsurveyservice.api.controller.auth.AuthController;
 import com.logwiki.specialsurveyservice.api.service.account.SignupAccountService;
+import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
+import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {
     AccountController.class,
+    AuthController.class
 })
 public abstract class ControllerTestSupport {
 
@@ -25,4 +29,10 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected SignupAccountService signupAccountService;
+
+  @MockBean
+  protected TokenProvider tokenProvider;
+
+  @MockBean
+  protected AuthService authService;
 }
