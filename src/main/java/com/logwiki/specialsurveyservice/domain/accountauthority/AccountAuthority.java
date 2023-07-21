@@ -2,7 +2,7 @@ package com.logwiki.specialsurveyservice.domain.accountauthority;
 
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
-import com.logwiki.specialsurveyservice.utils.BaseEntity;
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

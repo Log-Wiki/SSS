@@ -9,7 +9,7 @@ import com.logwiki.specialsurveyservice.api.service.account.response.AccountResp
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.domain.sex.Sex;
+import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import com.logwiki.specialsurveyservice.exception.DuplicatedAccountException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -42,14 +42,14 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
     // given
     String email = "duswo0624@naver.com";
     String password = "1234";
-    Sex sex = Sex.MALE;
+    Gender gender = Gender.MALE;
     String name = "최연재";
     String phoneNumber = "010-1234-5678";
     LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
     AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
         .email(email)
         .password(password)
-        .sex(sex)
+        .gender(gender)
         .name(name)
         .phoneNumber(phoneNumber)
         .birthday(birthday)
@@ -61,8 +61,8 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
     // then
     assertThat(accountResponse).isNotNull();
     assertThat(accountResponse)
-        .extracting("email", "sex", "name", "phoneNumber", "birthday")
-        .contains(email, sex, name, phoneNumber, birthday);
+        .extracting("email", "gender", "name", "phoneNumber", "birthday")
+        .contains(email, gender, name, phoneNumber, birthday);
   }
 
   @DisplayName("중복 회원 가입 시나리오")
@@ -75,7 +75,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
         DynamicTest.dynamicTest("이미 가입된 계정이 없는 경우 회원 가입을 할 수 있다.", () -> {
           // given
           String password1 = "1234";
-          Sex sex1 = Sex.MALE;
+          Gender gender1 = Gender.MALE;
           String name1 = "최연재";
           String phoneNumber1 = "010-1234-5678";
           LocalDate birthday1 = LocalDate.of(1997, Month.JUNE, 24);
@@ -83,7 +83,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
           AccountCreateServiceRequest accountCreateServiceRequest1 = AccountCreateServiceRequest.builder()
               .email(email)
               .password(password1)
-              .sex(sex1)
+              .gender(gender1)
               .name(name1)
               .phoneNumber(phoneNumber1)
               .birthday(birthday1)
@@ -95,15 +95,15 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
           // then
           assertThat(accountResponse).isNotNull();
           assertThat(accountResponse)
-              .extracting("email", "sex", "name", "phoneNumber", "birthday")
-              .contains(email, sex1, name1, phoneNumber1, birthday1);
+              .extracting("email", "gender", "name", "phoneNumber", "birthday")
+              .contains(email, gender1, name1, phoneNumber1, birthday1);
         }),
 
         DynamicTest.dynamicTest("가입된 계정들 중 중복 이메일이 있는 경우 회원 가입을 할 수 없다.", () -> {
           // given
           String sameEmail = email;
           String password2 = "5678";
-          Sex sex2 = Sex.FEMALE;
+          Gender gender2 = Gender.FEMALE;
           String name2 = "홍길동";
           String phoneNumber2 = "010-5678-1234";
           LocalDate birthday2 = LocalDate.of(1990, Month.JANUARY, 1);
@@ -111,7 +111,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
           AccountCreateServiceRequest accountCreateServiceRequest2 = AccountCreateServiceRequest.builder()
               .email(sameEmail)
               .password(password2)
-              .sex(sex2)
+              .gender(gender2)
               .name(name2)
               .phoneNumber(phoneNumber2)
               .birthday(birthday2)

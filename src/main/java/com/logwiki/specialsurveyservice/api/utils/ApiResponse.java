@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.utils;
+package com.logwiki.specialsurveyservice.api.utils;
 
 import lombok.Getter;
 import lombok.Setter;

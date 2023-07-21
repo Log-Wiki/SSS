@@ -2,8 +2,8 @@ package com.logwiki.specialsurveyservice.domain.account;
 
 import com.logwiki.specialsurveyservice.domain.accountauthority.AccountAuthority;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
-import com.logwiki.specialsurveyservice.domain.sex.Sex;
-import com.logwiki.specialsurveyservice.utils.BaseEntity;
+import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,7 +35,7 @@ public class Account extends BaseEntity {
   private String password;
 
   @Enumerated(EnumType.STRING)
-  private Sex sex;
+  private Gender gender;
 
   private String name;
 
@@ -58,12 +58,12 @@ public class Account extends BaseEntity {
 
   @Builder
   public Account(String email, String password,
-      Sex sex, String name,
+      Gender gender, String name,
       String phoneNumber, LocalDate birthday,
       List<Authority> authorities) {
       this.email = email;
       this.password = password;
-      this.sex = sex;
+      this.gender = gender;
       this.name = name;
       this.phoneNumber = phoneNumber;
       this.birthday = birthday;
@@ -73,13 +73,13 @@ public class Account extends BaseEntity {
   }
 
     public static Account create(String email, String password,
-        Sex sex, String name,
+        Gender gender, String name,
         String phoneNumber, LocalDate birthday,
         List<Authority> authorities) {
         return Account.builder()
             .email(email)
             .password(password)
-            .sex(sex)
+            .gender(gender)
             .name(name)
             .phoneNumber(phoneNumber)
             .birthday(birthday)

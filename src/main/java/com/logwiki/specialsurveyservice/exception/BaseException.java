@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.exception;
 
-import com.logwiki.specialsurveyservice.utils.ApiError;
+import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

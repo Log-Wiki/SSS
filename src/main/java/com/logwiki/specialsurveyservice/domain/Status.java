@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.status;
+package com.logwiki.specialsurveyservice.domain;
 
 public enum Status {
   ACTIVE("Active"),

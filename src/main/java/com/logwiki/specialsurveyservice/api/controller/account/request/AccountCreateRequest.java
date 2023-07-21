@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.controller.account.request;
 
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
-import com.logwiki.specialsurveyservice.domain.sex.Sex;
+import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +25,7 @@ public class AccountCreateRequest {
   private String password;
 
   @NotNull(message = "성별은 필수입니다.")
-  private Sex sex;
+  private Gender gender;
 
   @NotEmpty(message = "이름은 필수입니다.")
   private String name;
@@ -39,10 +39,10 @@ public class AccountCreateRequest {
   private LocalDate birthday;
 
   @Builder
-  private AccountCreateRequest(String email, String password, Sex sex, String name, String phoneNumber, LocalDate birthday) {
+  private AccountCreateRequest(String email, String password, Gender gender, String name, String phoneNumber, LocalDate birthday) {
     this.email = email;
     this.password = password;
-    this.sex = sex;
+    this.gender = gender;
     this.name = name;
     this.phoneNumber = phoneNumber;
     this.birthday = birthday;
@@ -52,7 +52,7 @@ public class AccountCreateRequest {
     return AccountCreateServiceRequest.builder()
         .email(email)
         .password(password)
-        .sex(sex)
+        .gender(gender)
         .name(name)
         .phoneNumber(phoneNumber)
         .birthday(birthday)
