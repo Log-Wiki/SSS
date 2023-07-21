@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LoginDto {
+public class LoginRequest {
 
     @NotEmpty(message = "이메일은 필수입니다.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$", message = "이메일 형식에 맞지 않습니다.")
@@ -20,7 +20,7 @@ public class LoginDto {
     private String password;
 
     @Builder
-    private LoginDto(String email, String password) {
+    private LoginRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }

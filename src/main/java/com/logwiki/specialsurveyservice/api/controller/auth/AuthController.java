@@ -1,7 +1,11 @@
 package com.logwiki.specialsurveyservice.api.controller.auth;
 
-import com.logwiki.specialsurveyservice.api.controller.auth.request.LoginDto;
-import com.logwiki.specialsurveyservice.api.controller.auth.request.TokenDto;
+import com.logwiki.specialsurveyservice.api.controller.auth.request.LoginRequest;
+import com.logwiki.specialsurveyservice.api.controller.auth.request.RefreshRequest;
+import com.logwiki.specialsurveyservice.api.controller.auth.response.LoginResponse;
+import com.logwiki.specialsurveyservice.api.controller.auth.response.RefreshResponse;
+import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
+import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import com.logwiki.specialsurveyservice.jwt.JwtFilter;
@@ -29,21 +33,47 @@ public class AuthController {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final AuthService authService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<ApiResponse<TokenDto>> authorize(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<ApiResponse<LoginResponse>> authorize(@Valid @RequestBody LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.createAccessToken(authentication);
+        String accessToken = tokenProvider.createAccessToken(authentication);
+        String refreshToken = tokenProvider.createRefreshToken(authentication);
+        authService.saveRefreshToken(loginRequest.getEmail(), refreshToken);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 
-        ApiResponse<TokenDto> apiResponse = ApiUtils.success(new TokenDto(jwt));
+        ApiResponse<LoginResponse> apiResponse = ApiUtils.success(new LoginResponse(accessToken, refreshToken));
+        return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<RefreshResponse>> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
+        if(tokenProvider.validateRefreshToken(refreshRequest.getRefreshToken())) {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(refreshRequest.getEmail(), refreshRequest.getPassword());
+
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String accessToken = tokenProvider.createAccessToken(authentication);
+
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
+
+            ApiResponse<RefreshResponse> apiResponse = ApiUtils.success(new RefreshResponse(accessToken));
+            return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        ApiResponse apiResponse = ApiUtils.error(new ApiError("Refresh Token이 유효하지 않습니다.", 1000));
         return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
     }
 
