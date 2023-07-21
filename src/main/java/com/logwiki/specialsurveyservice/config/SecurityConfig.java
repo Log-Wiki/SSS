@@ -1,5 +1,9 @@
 package com.logwiki.specialsurveyservice.config;
 
+import com.logwiki.specialsurveyservice.jwt.JwtAccessDeniedHandler;
+import com.logwiki.specialsurveyservice.jwt.JwtAuthenticationEntryPoint;
+import com.logwiki.specialsurveyservice.jwt.JwtSecurityConfig;
+import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -20,35 +24,44 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final CorsFilter corsFilter;
+    private final TokenProvider tokenProvider;
+    private final CorsFilter corsFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
 
-        .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
 
-        .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-            .requestMatchers("/api/signup").permitAll()
-            .requestMatchers(PathRequest.toH2Console()).permitAll()
-            .anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/api/signup", "/api/authenticate").permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated())
 
-        .sessionManagement(sessionManagement ->
-            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-        .headers(headers ->
-            headers.frameOptions(options ->
-                options.sameOrigin()
-            )
-        );
+                .headers(headers ->
+                        headers.frameOptions(options ->
+                                options.sameOrigin()
+                        )
+                )
 
-    return http.build();
-  }
+                .apply(new JwtSecurityConfig(tokenProvider));
+
+        return http.build();
+    }
 }
