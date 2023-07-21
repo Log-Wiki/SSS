@@ -18,13 +18,18 @@ import lombok.NoArgsConstructor;
 @Entity
 public class AccountAuthority extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Account account;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Account account;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Authority authority;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Authority authority;
+
+  public AccountAuthority(Account account, Authority authority) {
+    this.account = account;
+    this.authority = authority;
+  }
 }

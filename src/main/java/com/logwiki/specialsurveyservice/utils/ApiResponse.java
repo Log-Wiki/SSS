@@ -18,6 +18,6 @@ public class ApiResponse<T> {
     this.apiError = apiError;
     this.accessToken = accessToken;
   }
-  
+
 }
 

@@ -5,11 +5,12 @@ import com.logwiki.specialsurveyservice.exception.ValidationException;
 import com.logwiki.specialsurveyservice.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.utils.Apiutils;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(BaseException.class)
@@ -28,5 +29,13 @@ public class GlobalExceptionHandler {
       return Apiutils.error(errorMessage, 1000);
     }
     return Apiutils.error("Valid 에러", 1000);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ApiResponse<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    return Apiutils.error(
+        e.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
+        1000
+    );
   }
 }
