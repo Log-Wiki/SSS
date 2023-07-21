@@ -1,8 +1,8 @@
 package com.logwiki.specialsurveyservice.domain.accountauthority;
 
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
-import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,18 +18,18 @@ import lombok.NoArgsConstructor;
 @Entity
 public class AccountAuthority extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Account account;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Account account;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Authority authority;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Authority authority;
 
-  public AccountAuthority(Account account, Authority authority) {
-    this.account = account;
-    this.authority = authority;
-  }
+    public AccountAuthority(Account account, Authority authority) {
+        this.account = account;
+        this.authority = authority;
+    }
 }

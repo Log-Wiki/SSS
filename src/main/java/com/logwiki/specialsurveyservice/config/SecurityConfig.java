@@ -20,35 +20,35 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final CorsFilter corsFilter;
+    private final CorsFilter corsFilter;
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
 
-        .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 
-        .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-            .requestMatchers("/api/signup").permitAll()
-            .requestMatchers(PathRequest.toH2Console()).permitAll()
-            .anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated())
 
-        .sessionManagement(sessionManagement ->
-            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-        .headers(headers ->
-            headers.frameOptions(options ->
-                options.sameOrigin()
-            )
-        );
+                .headers(headers ->
+                        headers.frameOptions(options ->
+                                options.sameOrigin()
+                        )
+                );
 
-    return http.build();
-  }
+        return http.build();
+    }
 }

@@ -18,29 +18,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SignupAccountService {
 
-  private final AccountRepository accountRepository;
-  private final AuthorityRepository authorityRepository;
-  private final PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
+    private final AuthorityRepository authorityRepository;
+    private final PasswordEncoder passwordEncoder;
 
-  @Transactional
-  public AccountResponse signup(AccountCreateServiceRequest request) {
-    if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null) != null) {
-      throw new DuplicatedAccountException("이미 가입되어 있는 유저입니다.");
+    @Transactional
+    public AccountResponse signup(AccountCreateServiceRequest request) {
+        if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
+                != null) {
+            throw new DuplicatedAccountException("이미 가입되어 있는 유저입니다.");
+        }
+
+        Authority authority = authorityRepository.findAuthorityByType(AuthorityType.ROLE_USER);
+        List<Authority> authorities = List.of(authority);
+
+        Account account = Account.create(
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                request.getGender(),
+                request.getName(),
+                request.getPhoneNumber(),
+                request.getBirthday(),
+                authorities
+        );
+
+        return AccountResponse.from(accountRepository.save(account));
     }
-
-    Authority authority = authorityRepository.findAuthorityByType(AuthorityType.ROLE_USER);
-    List<Authority> authorities = List.of(authority);
-
-    Account account = Account.create(
-        request.getEmail(),
-        passwordEncoder.encode(request.getPassword()),
-        request.getGender(),
-        request.getName(),
-        request.getPhoneNumber(),
-        request.getBirthday(),
-        authorities
-    );
-
-    return AccountResponse.from(accountRepository.save(account));
-  }
 }

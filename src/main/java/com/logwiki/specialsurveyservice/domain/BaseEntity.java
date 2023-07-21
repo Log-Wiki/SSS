@@ -18,15 +18,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-  @CreatedDate
-  private LocalDateTime createAt;
+    @CreatedDate
+    private LocalDateTime createAt;
 
-  @LastModifiedDate
-  private LocalDateTime modifiedAt;
+    @LastModifiedDate
+    private LocalDateTime modifiedAt;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
-  private Status status = Status.ACTIVE;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
+    private Status status = Status.ACTIVE;
 
 
 }
