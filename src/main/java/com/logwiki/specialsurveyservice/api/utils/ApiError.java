@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 public class ApiError {
 
-  private final String message;
-  private final int status;
+    private final String message;
+    private final int status;
 
-  public ApiError(String message, int status) {
-    this.message = message;
-    this.status = status;
-  }
+    public ApiError(String message, int status) {
+        this.message = message;
+        this.status = status;
+    }
 }

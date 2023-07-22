@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum AuthorityType {
 
-  ROLE_ADMIN("ROLE_ADMIN"),
-  ROLE_USER("ROLE_USER");
+    ROLE_ADMIN("ROLE_ADMIN"),
+    ROLE_USER("ROLE_USER");
 
-  private final String text;
+    private final String text;
 }

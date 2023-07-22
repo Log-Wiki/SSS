@@ -17,15 +17,15 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Authority extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Enumerated(EnumType.STRING)
-  private AuthorityType type;
+    @Enumerated(EnumType.STRING)
+    private AuthorityType type;
 
-  @Builder
-  public Authority(AuthorityType type) {
-    this.type = type;
-  }
+    @Builder
+    public Authority(AuthorityType type) {
+        this.type = type;
+    }
 }

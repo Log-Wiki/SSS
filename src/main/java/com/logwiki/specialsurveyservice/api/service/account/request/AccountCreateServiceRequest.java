@@ -10,25 +10,26 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountCreateServiceRequest {
 
-  private String email;
+    private String email;
 
-  private String password;
+    private String password;
 
-  private Gender gender;
+    private Gender gender;
 
-  private String name;
+    private String name;
 
-  private String phoneNumber;
+    private String phoneNumber;
 
-  private LocalDate birthday;
+    private LocalDate birthday;
 
-  @Builder
-  private AccountCreateServiceRequest(String email, String password, Gender gender, String name, String phoneNumber, LocalDate birthday) {
-    this.email = email;
-    this.password = password;
-    this.gender = gender;
-    this.name = name;
-    this.phoneNumber = phoneNumber;
-    this.birthday = birthday;
-  }
+    @Builder
+    private AccountCreateServiceRequest(String email, String password, Gender gender, String name,
+            String phoneNumber, LocalDate birthday) {
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.birthday = birthday;
+    }
 }
