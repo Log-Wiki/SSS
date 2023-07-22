@@ -1,8 +1,17 @@
 package com.logwiki.specialsurveyservice.domain.question;
 
-import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategory;
+import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
+import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,15 +35,21 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private QuestionCategory questionCategory;
+    private QuestionCategoryType type;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<MultipleChoice> multipleChoice;
 
     @Builder
-    public Question(Long questionNumber, String content, String imgAddress, Survey survey, QuestionCategory questionCategory) {
+
+    public Question(Long questionNumber, String content, String imgAddress, Survey survey,
+            QuestionCategoryType type, List<MultipleChoice> multipleChoice) {
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
         this.survey = survey;
-        this.questionCategory = questionCategory;
+        this.type = type;
+        this.multipleChoice = multipleChoice;
     }
+
 }
