@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.controller.account;
 
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountCreateRequest;
-import com.logwiki.specialsurveyservice.api.service.account.SignupAccountService;
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class AccountController {
 
-    private final SignupAccountService signupAccountService;
+    private final AccountService accountService;
 
     @PostMapping("/signup")
     public ApiResponse<AccountResponse> signup(
             @Valid @RequestBody AccountCreateRequest accountCreateRequest
     ) {
         return ApiUtils.success(
-                signupAccountService.signup(accountCreateRequest.toServiceRequest()));
+                accountService.signup(accountCreateRequest.toServiceRequest()));
     }
 }

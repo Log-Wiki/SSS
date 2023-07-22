@@ -3,7 +3,7 @@ package com.logwiki.specialsurveyservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.controller.account.AccountController;
 import com.logwiki.specialsurveyservice.api.controller.auth.AuthController;
-import com.logwiki.specialsurveyservice.api.service.account.SignupAccountService;
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
 import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public abstract class ControllerTestSupport {
   protected AuthenticationManagerBuilder authenticationManagerBuilder;
 
   @MockBean
-  protected SignupAccountService signupAccountService;
+  protected AccountService accountService;
 
   @MockBean
   protected TokenProvider tokenProvider;

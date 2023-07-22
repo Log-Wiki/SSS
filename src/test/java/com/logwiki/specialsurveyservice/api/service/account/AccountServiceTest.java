@@ -24,10 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class SignupAccountServiceTest extends IntegrationTestSupport {
+class AccountServiceTest extends IntegrationTestSupport {
 
   @Autowired
-  private SignupAccountService signupAccountService;
+  private AccountService accountService;
   @Autowired
   private AuthorityRepository authorityRepository;
 
@@ -56,7 +56,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
         .build();
 
     // when
-    AccountResponse accountResponse = signupAccountService.signup(accountCreateServiceRequest);
+    AccountResponse accountResponse = accountService.signup(accountCreateServiceRequest);
 
     // then
     assertThat(accountResponse).isNotNull();
@@ -90,7 +90,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
               .build();
 
           // when
-          AccountResponse accountResponse = signupAccountService.signup(accountCreateServiceRequest1);
+          AccountResponse accountResponse = accountService.signup(accountCreateServiceRequest1);
 
           // then
           assertThat(accountResponse).isNotNull();
@@ -118,7 +118,7 @@ class SignupAccountServiceTest extends IntegrationTestSupport {
               .build();
 
           // when // then
-          assertThatThrownBy(() -> signupAccountService.signup(accountCreateServiceRequest2))
+          assertThatThrownBy(() -> accountService.signup(accountCreateServiceRequest2))
               .isInstanceOf(DuplicatedAccountException.class)
               .hasMessage("이미 가입되어 있는 유저입니다.");
         })

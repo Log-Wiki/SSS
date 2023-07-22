@@ -42,7 +42,7 @@ class AccountControllerTest extends ControllerTestSupport {
         .build();
 
 
-    when(signupAccountService.signup(any())).thenReturn(accountResponse);
+    when(accountService.signup(any())).thenReturn(accountResponse);
 
     AccountCreateRequest request =
         createAccountCreateRequest(email, password, gender, name, phoneNumber, birthday);
