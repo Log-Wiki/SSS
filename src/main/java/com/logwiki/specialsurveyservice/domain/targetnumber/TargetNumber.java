@@ -1,12 +1,10 @@
 package com.logwiki.specialsurveyservice.domain.targetnumber;
 
+import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +17,20 @@ public class TargetNumber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    private Long number;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
-    
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Giveaway giveaway;
+
+    @Builder
+    public TargetNumber(Long number, Survey survey, Giveaway giveaway) {
+        this.number = number;
+        this.survey = survey;
+        this.giveaway = giveaway;
+    }
+
 }

@@ -1,6 +1,7 @@
-package com.logwiki.specialsurveyservice.domain.survey;
+package com.logwiki.specialsurveyservice.domain.surveyresult;
 
-import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.account.Account;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,25 +12,21 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Survey {
+public class SurveyResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
-    private LocalDateTime startTime;
+    private Boolean isWin;
 
     private LocalDateTime endTime;
 
-    private int headCount;
-
-    private int closedHeadCount;
-
-    private Long writer;
+    private Long submitOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private SurveyCategory surveyCategory;
-    
+    private Survey survey;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Account account;
 }

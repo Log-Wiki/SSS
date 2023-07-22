@@ -1,6 +1,5 @@
-package com.logwiki.specialsurveyservice.domain.accountcode;
+package com.logwiki.specialsurveyservice.domain.questioncategory;
 
-import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,17 +9,18 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class AccountCode {
+public class QuestionCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private SurveyCategoryType surveyCategoryType;
+    private QuestionCategoryType questionCategoryType;
 
     @Builder
-    public AccountCode(SurveyCategoryType surveyCategoryType) {
-        this.surveyCategoryType = surveyCategoryType;
+    public QuestionCategory(QuestionCategoryType questionCategoryType) {
+        this.questionCategoryType = questionCategoryType;
     }
+
 }

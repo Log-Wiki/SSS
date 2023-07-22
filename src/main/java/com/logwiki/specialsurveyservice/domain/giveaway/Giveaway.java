@@ -1,10 +1,8 @@
 package com.logwiki.specialsurveyservice.domain.giveaway;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,5 +15,11 @@ public class Giveaway {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private GiveawayType giveawayType;
+
+    @Builder
+    public Giveaway(GiveawayType giveawayType) {
+        this.giveawayType = giveawayType;
+    }
 }
