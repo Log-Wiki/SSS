@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,13 @@ public class SurveyResult {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
+
+    @Builder
+    public SurveyResult(Boolean isWin, LocalDateTime endTime, Long submitOrder, Survey survey, Account account) {
+        this.isWin = isWin;
+        this.endTime = endTime;
+        this.submitOrder = submitOrder;
+        this.survey = survey;
+        this.account = account;
+    }
 }
