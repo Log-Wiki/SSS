@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.domain.order;
+package com.logwiki.specialsurveyservice.domain.orders;
 
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Order extends BaseEntity {
+public class Orders extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,14 +23,14 @@ public class Order extends BaseEntity {
 
   private Boolean isSuccess;
   @Builder
-  public Order(Long orderId , Integer orderAmount , Boolean isSuccess) {
+  public Orders(Long orderId , Integer orderAmount , Boolean isSuccess) {
      this.orderId = orderId;
      this.orderAmount = orderAmount;
      this.isSuccess = isSuccess;
   }
 
-    public static Order create(Integer orderAmount) {
-        return Order.builder()
+    public static Orders create(Integer orderAmount) {
+        return Orders.builder()
             .orderAmount(orderAmount)
             .build();
     }

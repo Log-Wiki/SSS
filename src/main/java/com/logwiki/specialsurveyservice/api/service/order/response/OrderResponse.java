@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.order.response;
 
-import com.logwiki.specialsurveyservice.domain.order.Order;
+import com.logwiki.specialsurveyservice.domain.orders.Orders;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class OrderResponse {
         this.isSucess = isSucess;
     }
 
-    public static OrderResponse from(Order order) {
+    public static OrderResponse from(Orders order) {
         if (order == null) {
             return null;
         }

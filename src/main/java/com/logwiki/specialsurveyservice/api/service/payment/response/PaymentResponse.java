@@ -1,6 +1,5 @@
 package com.logwiki.specialsurveyservice.api.service.payment.response;
 
-import com.logwiki.specialsurveyservice.domain.order.Order;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.Builder;
 import lombok.Getter;

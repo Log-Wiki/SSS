@@ -1,6 +1,6 @@
-package com.logwiki.specialsurveyservice.api.controller.order;
+package com.logwiki.specialsurveyservice.api.controller.orders;
 
-import com.logwiki.specialsurveyservice.api.controller.order.request.OrderCreateRequest;
+import com.logwiki.specialsurveyservice.api.controller.orders.request.OrderCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.order.RegistOrderService;
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
