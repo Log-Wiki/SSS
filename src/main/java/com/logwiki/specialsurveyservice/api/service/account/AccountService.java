@@ -2,14 +2,12 @@ package com.logwiki.specialsurveyservice.api.service.account;
 
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
-import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.exception.DuplicatedAccountException;
-import com.logwiki.specialsurveyservice.exception.NotFoundAccountException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,19 +43,5 @@ public class AccountService {
         );
 
         return AccountResponse.from(accountRepository.save(account));
-    }
-
-    @Transactional(readOnly = true)
-    public AccountResponse getUserWithAuthorities(String email) {
-        return AccountResponse.from(accountRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
-    }
-
-    @Transactional(readOnly = true)
-    public AccountResponse getMyUserWithAuthorities() {
-        return AccountResponse.from(
-                SecurityUtil.getCurrentUsername()
-                        .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new NotFoundAccountException("Member not found"))
-        );
     }
 }
