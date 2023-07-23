@@ -3,7 +3,6 @@ package com.logwiki.specialsurveyservice.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import com.logwiki.specialsurveyservice.exception.ForbiddenException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,10 +23,10 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
 
-        ForbiddenException forbiddenException = new ForbiddenException("FORBIDDEN MESSAGE");
         ApiResponse<?> apiResponse = ApiUtils.error(
-                forbiddenException.getMessage(),
+                "접근 권한이 없습니다.",
                 1000
         );
 

@@ -10,12 +10,15 @@ public class BaseException extends RuntimeException {
 
     private ApiError apiError;
 
-    public BaseException(String message) {
-        super(message); // RuntimeException 클래스의 생성자를 호출합니다.
+    private int status;
+
+    private BaseException(ApiError apiError) {
+        this.apiError = apiError;
     }
 
-    public BaseException(ApiError apiError) {
-        this.apiError = apiError;
+    public BaseException(String message, int status) {
+        super(message);
+        this.apiError = new ApiError(message,status);
     }
 
 }

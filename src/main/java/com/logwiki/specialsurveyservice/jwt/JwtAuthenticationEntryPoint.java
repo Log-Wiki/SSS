@@ -3,8 +3,8 @@ package com.logwiki.specialsurveyservice.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import com.logwiki.specialsurveyservice.exception.ExpiredTokenException;
-import com.logwiki.specialsurveyservice.exception.UnauthorizedException;
+import com.logwiki.specialsurveyservice.exception.security.ExpiredTokenException;
+import com.logwiki.specialsurveyservice.exception.security.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -31,19 +31,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
-        Exception exception;
-        if(authException instanceof BadCredentialsException){
-            exception = new UnauthorizedException("회원 정보가 일치하지 않습니다.");
-        }
-        else if(authException instanceof InsufficientAuthenticationException) {
-            exception = new ExpiredTokenException("엑세스 토큰이 만료되었습니다.");
-        }
-        else {
-            exception = new Exception("예외가 발생하였습니다.");
-        }
-
         ApiResponse<?> apiResponse = ApiUtils.error(
-            exception.getMessage(),
+            "인증 과정을 실패하였습니다.",
             1000
         );
 

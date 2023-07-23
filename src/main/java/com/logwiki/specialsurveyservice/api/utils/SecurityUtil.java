@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.api.utils;
 
-import com.logwiki.specialsurveyservice.exception.NotFoundAuthenticationException;
+import com.logwiki.specialsurveyservice.exception.security.NotFoundAuthenticationException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

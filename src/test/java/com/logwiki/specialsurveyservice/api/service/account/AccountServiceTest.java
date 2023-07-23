@@ -10,7 +10,7 @@ import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.domain.gender.Gender;
-import com.logwiki.specialsurveyservice.exception.DuplicatedAccountException;
+import com.logwiki.specialsurveyservice.exception.account.DuplicatedAccountException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collection;
