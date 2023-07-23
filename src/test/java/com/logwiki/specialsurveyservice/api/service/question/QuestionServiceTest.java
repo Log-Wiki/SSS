@@ -1,12 +1,17 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.logwiki.specialsurveyservice.api.controller.question.request.MultipleChoiceCreateRequest;
 import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionCreateRequest;
+import com.logwiki.specialsurveyservice.api.service.question.request.QuestionModifyServiceRequest;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,5 +74,19 @@ class QuestionServiceTest {
         });
     }
 
+    @DisplayName("문항을 찾지 못할 겨웅 에러를 반환")
+    @Test
+    void notFoundQuestionThrowError() {
+        // given
+        QuestionModifyServiceRequest dto = new QuestionModifyServiceRequest();
+
+        // when
+        when(questionRepository.findById(any())).thenReturn(Optional.ofNullable(null));
+
+        // then
+        Assertions.assertThrows(BaseException.class, () -> {
+            questionService.modifyQuestion(dto);
+        });
+    }
 
 }
