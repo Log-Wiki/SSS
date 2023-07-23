@@ -16,16 +16,16 @@ public class UserDetailService {
     private final AccountRepository accountRepository;
 
     @Transactional(readOnly = true)
-    public UserDetailResponse getUserWithAuthorities(String email) {
-        return UserDetailResponse.from(accountRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
-    }
-
-    @Transactional(readOnly = true)
     public UserDetailResponse getMyUserWithAuthorities() {
         return UserDetailResponse.from(
                 SecurityUtil.getCurrentUsername()
                         .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
                         .orElseThrow(() -> new NotFoundAccountException("Member not found"))
         );
+    }
+
+    @Transactional(readOnly = true)
+    public UserDetailResponse getUserWithAuthorities(String email) {
+        return UserDetailResponse.from(accountRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }
 }
