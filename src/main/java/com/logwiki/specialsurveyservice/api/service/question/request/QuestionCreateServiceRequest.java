@@ -1,9 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.question.request;
 
-import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
-import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -28,12 +26,6 @@ public class QuestionCreateServiceRequest {
     public QuestionCreateServiceRequest(Long questionNumber, String content,
             String imgAddress,
             QuestionCategoryType type, List<MultipleChoiceCreateServiceRequest> multipleChoices) {
-        if (type == QuestionCategoryType.MULTIPLE_CHOICE && multipleChoices != null) {
-            throw new BaseException(new ApiError("주관식은 보기를 가질수 없습니다.", 2001));
-        }
-        if (type == QuestionCategoryType.SHORT_FORM && multipleChoices == null) {
-            throw new BaseException(new ApiError("객관식은 보기를 가져야합니다.", 2002));
-        }
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
