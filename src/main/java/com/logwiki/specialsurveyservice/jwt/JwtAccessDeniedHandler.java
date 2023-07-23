@@ -3,7 +3,7 @@ package com.logwiki.specialsurveyservice.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import com.logwiki.specialsurveyservice.exception.ForbiddenException;
+import com.logwiki.specialsurveyservice.exception.security.ForbiddenException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

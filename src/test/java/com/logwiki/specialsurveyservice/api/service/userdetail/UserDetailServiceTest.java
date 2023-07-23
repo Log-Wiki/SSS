@@ -11,7 +11,7 @@ import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.domain.gender.Gender;
-import com.logwiki.specialsurveyservice.exception.NotFoundAuthenticationException;
+import com.logwiki.specialsurveyservice.exception.security.NotFoundAuthenticationException;
 import java.time.LocalDate;
 import java.time.Month;
 import org.junit.jupiter.api.BeforeEach;
