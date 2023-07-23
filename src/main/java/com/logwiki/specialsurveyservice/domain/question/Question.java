@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.question;
 
+import com.logwiki.specialsurveyservice.api.service.question.request.QuestionModifyServiceRequest;
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
@@ -41,7 +42,6 @@ public class Question {
     private List<MultipleChoice> multipleChoice;
 
     @Builder
-
     public Question(Long questionNumber, String content, String imgAddress, Survey survey,
             QuestionCategoryType type, List<MultipleChoice> multipleChoice) {
         this.questionNumber = questionNumber;
@@ -50,6 +50,12 @@ public class Question {
         this.survey = survey;
         this.type = type;
         this.multipleChoice = multipleChoice;
+    }
+
+    public void updateQuestion(QuestionModifyServiceRequest questionModifyServiceRequest) {
+        this.content = questionModifyServiceRequest.getContent();
+        this.imgAddress = questionModifyServiceRequest.getImgAddress();
+        this.type = questionModifyServiceRequest.getType();
     }
 
 }
