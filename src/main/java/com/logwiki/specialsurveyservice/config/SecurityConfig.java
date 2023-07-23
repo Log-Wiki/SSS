@@ -1,5 +1,9 @@
 package com.logwiki.specialsurveyservice.config;
 
+import com.logwiki.specialsurveyservice.jwt.JwtAccessDeniedHandler;
+import com.logwiki.specialsurveyservice.jwt.JwtAuthenticationEntryPoint;
+import com.logwiki.specialsurveyservice.jwt.JwtSecurityConfig;
+import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +24,10 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,8 +41,13 @@ public class SecurityConfig {
 
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/api/signup", "/api/authenticate", "/api/refresh").permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated())
 
@@ -47,7 +59,9 @@ public class SecurityConfig {
                         headers.frameOptions(options ->
                                 options.sameOrigin()
                         )
-                );
+                )
+
+                .apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
     }
