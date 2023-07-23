@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
-public class SignupAccountService {
+public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
     public AccountResponse signup(AccountCreateServiceRequest request) {
         if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
                 != null) {
