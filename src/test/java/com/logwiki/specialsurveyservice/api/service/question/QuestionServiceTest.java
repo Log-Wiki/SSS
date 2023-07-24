@@ -74,7 +74,7 @@ class QuestionServiceTest {
         });
     }
 
-    @DisplayName("문항을 찾지 못할 겨웅 에러를 반환")
+    @DisplayName("문항을 찾지 못할 경우 에러를 반환")
     @Test
     void notFoundQuestionThrowError() {
         // given
