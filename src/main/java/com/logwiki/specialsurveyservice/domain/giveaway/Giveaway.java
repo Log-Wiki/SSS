@@ -18,11 +18,14 @@ public class Giveaway {
     @Enumerated(EnumType.STRING)
     private GiveawayType giveawayType;
 
+    private String name;
+
     private int price;
 
     @Builder
-    public Giveaway(GiveawayType giveawayType, int price) {
+    public Giveaway(GiveawayType giveawayType, String name, int price) {
         this.giveawayType = giveawayType;
+        this.name = name;
         this.price = price;
     }
 }
