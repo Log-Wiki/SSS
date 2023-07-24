@@ -247,6 +247,105 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response.price").value(price));
     }
 
+    @DisplayName("상품을 수정할 때 상품 타입은 필수값이다.")
+    @WithMockUser
+    @Test
+    void updateGiveawayWithoutGiveawayType() throws Exception {
+        // given
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(null)
+                .name("스타벅스 아메리카노")
+                .price(4500)
+                .build();
+
+        // when // then
+        mockMvc.perform(
+                        put("/api/giveaway/{id}", 1)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"))
+                .andExpect(jsonPath("$.apiError.message").value("상품 타입은 필수입니다."))
+                .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
+    @DisplayName("상품을 수정할 때 상품 이름은 필수값이다.")
+    @WithMockUser
+    @Test
+    void updateGiveawayWithoutName() throws Exception {
+        // given
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(GiveawayType.COFFEE)
+                .name(null)
+                .price(4500)
+                .build();
+
+        // when // then
+        mockMvc.perform(
+                        put("/api/giveaway/{id}", 1)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"))
+                .andExpect(jsonPath("$.apiError.message").value("상품 이름은 필수입니다."))
+                .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
+    @DisplayName("상품을 수정할 때 상품 가격은 필수값이다.")
+    @WithMockUser
+    @Test
+    void updateGiveawayWithoutPrice() throws Exception {
+        // given
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(GiveawayType.COFFEE)
+                .name("스타벅스 아메리카노")
+                .build();
+
+        // when // then
+        mockMvc.perform(
+                        put("/api/giveaway/{id}", 1)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"))
+                .andExpect(jsonPath("$.apiError.message").value("상품 가격은 필수(양수)입니다."))
+                .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
+    @DisplayName("상품을 수정할 때 상품 가격은 양수여야 한다.")
+    @WithMockUser
+    @Test
+    void updateGiveawayWithNotValidPrice() throws Exception {
+        // given
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(GiveawayType.COFFEE)
+                .name("스타벅스 아메리카노")
+                .price(0)
+                .build();
+
+        // when // then
+        mockMvc.perform(
+                        put("/api/giveaway/{id}", 1)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"))
+                .andExpect(jsonPath("$.apiError.message").value("상품 가격은 필수(양수)입니다."))
+                .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
     private static GiveawayResponse getGiveawayResponse(Long id, GiveawayType giveawayType, String name, int price) {
         return GiveawayResponse.builder()
                 .id(id)
