@@ -1,8 +1,14 @@
 package com.logwiki.specialsurveyservice.domain.questionanswer;
 
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.question.Question;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class QuestionAnswer {
+public class QuestionAnswer extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +34,8 @@ public class QuestionAnswer {
     private Account account;
 
     @Builder
-    public QuestionAnswer(Long answerNumber, String shortFormAnswer, Question question, Account account) {
+    public QuestionAnswer(Long answerNumber, String shortFormAnswer, Question question,
+            Account account) {
         this.answerNumber = answerNumber;
         this.shortFormAnswer = shortFormAnswer;
         this.question = question;
