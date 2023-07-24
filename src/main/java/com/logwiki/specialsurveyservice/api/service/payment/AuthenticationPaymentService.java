@@ -34,7 +34,7 @@ public class AuthenticationPaymentService {
             throw new BaseException("주문 정보가 없는 결제인증 요청입니다." , 2000);
         }
 
-        IamportResponse<Payment> iamportResponse = null;
+        IamportResponse<Payment> iamportResponse;
         try {
             iamportResponse = iamportClientApi.paymentByImpUid(request.getImp_uid());
         } catch (IamportResponseException e) {
