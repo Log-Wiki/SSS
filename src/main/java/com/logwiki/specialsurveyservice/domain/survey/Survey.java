@@ -1,17 +1,16 @@
 package com.logwiki.specialsurveyservice.domain.survey;
 
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
+import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,4 +36,20 @@ public class Survey extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyCategory surveyCategory;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "survey_id")
+    private List<Question> questions;
+
+    @Builder
+    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount, int closedHeadCount,
+                  Long writer, SurveyCategory type, List<Question> questions) {
+        this.title = title;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.headCount = headCount;
+        this.closedHeadCount = closedHeadCount;
+        this.surveyCategory = type;
+        this.writer = writer;
+        this.questions = questions;
+    }
 }
