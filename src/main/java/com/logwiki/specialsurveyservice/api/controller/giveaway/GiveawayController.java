@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +37,10 @@ public class GiveawayController {
     @DeleteMapping("/giveaway/{id}")
     public ApiResponse<GiveawayResponse> deleteGiveaway(@PathVariable Long id) {
         return ApiUtils.success(giveawayService.deleteGiveaway(id));
+    }
+
+    @PutMapping("/giveaway/{id}")
+    public ApiResponse<GiveawayResponse> updateGiveaway(@PathVariable Long id, @Valid @RequestBody GiveawayRequest giveawayRequest) {
+        return ApiUtils.success(giveawayService.updateGiveaway(id, giveawayRequest));
     }
 }

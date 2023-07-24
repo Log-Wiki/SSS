@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.giveaway;
 
+import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,5 +33,12 @@ public class Giveaway extends BaseEntity {
         this.giveawayType = giveawayType;
         this.name = name;
         this.price = price;
+    }
+
+    public Giveaway update(GiveawayRequest giveawayRequest) {
+        this.giveawayType = giveawayRequest.getGiveawayType();
+        this.name = giveawayRequest.getName();
+        this.price = giveawayRequest.getPrice();
+        return this;
     }
 }
