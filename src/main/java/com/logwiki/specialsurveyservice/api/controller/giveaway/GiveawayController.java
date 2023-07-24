@@ -6,7 +6,9 @@ import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayRe
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +24,10 @@ public class GiveawayController {
     @PostMapping("/giveaway/new")
     public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayDto giveawayDto) {
         return ApiUtils.success(giveawayService.createGiveaway(giveawayDto));
+    }
+
+    @GetMapping("/giveaway")
+    public ApiResponse<List<GiveawayResponse>> getGiveaways() {
+        return ApiUtils.success(giveawayService.getGiveaways());
     }
 }

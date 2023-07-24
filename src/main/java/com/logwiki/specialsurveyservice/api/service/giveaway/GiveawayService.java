@@ -5,7 +5,9 @@ import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayRe
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,13 @@ public class GiveawayService {
 
         Giveaway saveGiveaway = giveawayRepository.save(giveaway);
         return GiveawayResponse.of(saveGiveaway);
+    }
+
+    public List<GiveawayResponse> getGiveaways() {
+        List<Giveaway> giveaways = giveawayRepository.findAll();
+
+        return giveaways.stream()
+                .map(giveaway -> GiveawayResponse.of(giveaway))
+                .collect(Collectors.toList());
     }
 }
