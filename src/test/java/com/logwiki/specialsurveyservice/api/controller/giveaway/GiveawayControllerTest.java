@@ -24,6 +24,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @WithMockUser
     @Test
     void createGiveaway() throws Exception {
+        // given
         GiveawayType giveawayType = GiveawayType.COFFEE;
         String name = "스타벅스 아메리카노";
         int price = 4500;
@@ -42,6 +43,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .price(price)
                 .build();
 
+        // when // then
         mockMvc.perform(
                 post("/api/giveaway/new")
                         .content(objectMapper.writeValueAsString(request))
@@ -60,12 +62,14 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @WithMockUser
     @Test
     void createGiveawayWithoutGiveawayType() throws Exception {
+        // given
         GiveawayDto request = GiveawayDto.builder()
                 .giveawayType(null)
                 .name("스타벅스 아메리카노")
                 .price(4500)
                 .build();
 
+        // when // then
         mockMvc.perform(
                         post("/api/giveaway/new")
                                 .content(objectMapper.writeValueAsString(request))
@@ -83,12 +87,14 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @WithMockUser
     @Test
     void createGiveawayWithoutName() throws Exception {
+        // given
         GiveawayDto request = GiveawayDto.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name(null)
                 .price(4500)
                 .build();
 
+        // when // then
         mockMvc.perform(
                         post("/api/giveaway/new")
                                 .content(objectMapper.writeValueAsString(request))
@@ -106,11 +112,13 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @WithMockUser
     @Test
     void createGiveawayWithoutPrice() throws Exception {
+        // given
         GiveawayDto request = GiveawayDto.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name("스타벅스 아메리카노")
                 .build();
 
+        // when // then
         mockMvc.perform(
                         post("/api/giveaway/new")
                                 .content(objectMapper.writeValueAsString(request))
@@ -128,12 +136,14 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @WithMockUser
     @Test
     void createGiveawayWithNotValidPrice() throws Exception {
+        // given
         GiveawayDto request = GiveawayDto.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name("스타벅스 아메리카노")
                 .price(0)
                 .build();
 
+        // when // then
         mockMvc.perform(
                         post("/api/giveaway/new")
                                 .content(objectMapper.writeValueAsString(request))
