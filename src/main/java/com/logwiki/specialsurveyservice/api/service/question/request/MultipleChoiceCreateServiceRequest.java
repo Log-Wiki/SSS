@@ -2,9 +2,13 @@ package com.logwiki.specialsurveyservice.api.service.question.request;
 
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 public class MultipleChoiceCreateServiceRequest {
-    
+
     private String content;
 
     private Long linkNumber;
