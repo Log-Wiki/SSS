@@ -1,10 +1,9 @@
 package com.logwiki.specialsurveyservice.api.controller.giveaway;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,6 +12,7 @@ import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayDto;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -29,11 +29,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayResponse giveawayResponse = GiveawayResponse.builder()
-                .giveawayType(giveawayType)
-                .name(name)
-                .price(price)
-                .build();
+        GiveawayResponse giveawayResponse = getGiveawayResponse(giveawayType, name, price);
 
         when(giveawayService.createGiveaway(any())).thenReturn(giveawayResponse);
 
@@ -155,5 +151,45 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value("false"))
                 .andExpect(jsonPath("$.apiError.message").value("상품 가격은 필수(양수)입니다."))
                 .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
+    @DisplayName("등록된 상품을 조회한다.")
+    @WithMockUser
+    @Test
+    void getGiveaways() throws Exception {
+        // given
+        GiveawayResponse giveawayResponse1 = getGiveawayResponse(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
+        GiveawayResponse giveawayResponse2 = getGiveawayResponse(GiveawayType.COFFEE, "컴포즈 아메리카노", 1500);
+        GiveawayResponse giveawayResponse3 = getGiveawayResponse(GiveawayType.COFFEE, "BHC 뿌링클", 20_000);
+        List<GiveawayResponse> giveawaysResponse = List.of(giveawayResponse1, giveawayResponse2, giveawayResponse3);
+
+        when(giveawayService.getGiveaways()).thenReturn(giveawaysResponse);
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/giveaway")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response[0].giveawayType").value(giveawayResponse1.getGiveawayType().name()))
+                .andExpect(jsonPath("$.response[0].name").value(giveawayResponse1.getName()))
+                .andExpect(jsonPath("$.response[0].price").value(giveawayResponse1.getPrice()))
+                .andExpect(jsonPath("$.response[1].giveawayType").value(giveawayResponse2.getGiveawayType().name()))
+                .andExpect(jsonPath("$.response[1].name").value(giveawayResponse2.getName()))
+                .andExpect(jsonPath("$.response[1].price").value(giveawayResponse2.getPrice()))
+                .andExpect(jsonPath("$.response[2].giveawayType").value(giveawayResponse3.getGiveawayType().name()))
+                .andExpect(jsonPath("$.response[2].name").value(giveawayResponse3.getName()))
+                .andExpect(jsonPath("$.response[2].price").value(giveawayResponse3.getPrice()));
+    }
+
+    private static GiveawayResponse getGiveawayResponse(GiveawayType giveawayType, String name, int price) {
+        return GiveawayResponse.builder()
+                .giveawayType(giveawayType)
+                .name(name)
+                .price(price)
+                .build();
     }
 }
