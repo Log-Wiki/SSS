@@ -3,9 +3,11 @@ package com.logwiki.specialsurveyservice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.controller.account.AccountController;
 import com.logwiki.specialsurveyservice.api.controller.auth.AuthController;
+import com.logwiki.specialsurveyservice.api.controller.giveaway.GiveawayController;
 import com.logwiki.specialsurveyservice.api.controller.userdetail.UserDetailController;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
+import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.userdetail.UserDetailService;
 import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
         AccountController.class,
         AuthController.class,
-        UserDetailController.class
+        UserDetailController.class,
+        GiveawayController.class
 })
 public abstract class ControllerTestSupport {
 
@@ -41,4 +44,7 @@ public abstract class ControllerTestSupport {
 
   @MockBean
   protected UserDetailService userDetailService;
+
+  @MockBean
+  protected GiveawayService giveawayService;
 }
