@@ -33,7 +33,7 @@ public class Survey extends BaseEntity {
 
     private Long writer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private SurveyCategory surveyCategory;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -51,5 +51,9 @@ public class Survey extends BaseEntity {
         this.surveyCategory = type;
         this.writer = writer;
         this.questions = questions;
+    }
+
+    public void addCategory(SurveyCategory surveyCategory) {
+        this.surveyCategory = surveyCategory;
     }
 }
