@@ -6,7 +6,6 @@ import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,8 @@ public class GiveawayService {
 
     @Transactional
     public GiveawayResponse createGiveaway(GiveawayDto request) {
-        Optional<Giveaway> giveawayByName = giveawayRepository.findGiveawayByName(request.getName());
-        if(giveawayByName.isPresent())
-            throw new BaseException("이미 등록되어 있는 상품이 있습니다", 1000);
+        giveawayRepository.findGiveawayByName(request.getName())
+                .ifPresent(giveaway -> {throw new BaseException("이미 등록되어 있는 상품이 있습니다.", 1000);});
 
         Giveaway giveaway = Giveaway.builder()
                 .giveawayType(request.getGiveawayType())
@@ -46,11 +44,8 @@ public class GiveawayService {
 
     @Transactional
     public GiveawayResponse deleteGiveaway(String name) {
-        Optional<Giveaway> giveawayByName = giveawayRepository.findGiveawayByName(name);
-        if(giveawayByName.isEmpty())
-            throw new BaseException("삭제할 상품의 이름이 올바르지 않습니다.", 1000);
-
-        Giveaway giveaway = giveawayByName.get();
+        Giveaway giveaway = giveawayRepository.findGiveawayByName(name)
+                .orElseThrow(() -> new BaseException("삭제할 상품의 이름이 올바르지 않습니다.", 1000));
         giveawayRepository.delete(giveaway);
         return GiveawayResponse.of(giveaway);
     }

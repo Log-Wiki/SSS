@@ -70,7 +70,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                     // when // then
                     assertThatThrownBy(() -> giveawayService.createGiveaway(request))
                             .isInstanceOf(BaseException.class)
-                            .hasMessage("이미 등록되어 있는 상품이 있습니다");
+                            .hasMessage("이미 등록되어 있는 상품이 있습니다.");
                 })
         );
     }
