@@ -1,8 +1,8 @@
 package com.logwiki.specialsurveyservice.exception;
 
-public class NonExistOrderException extends RuntimeException {
+public class NonExistOrderException extends BaseException {
 
     public NonExistOrderException(String message) {
-        super(message);
+        super(message , 2020);
     }
 }
