@@ -25,11 +25,12 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void createGiveaway() throws Exception {
         // given
+        Long id = 1L;
         GiveawayType giveawayType = GiveawayType.COFFEE;
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayResponse giveawayResponse = getGiveawayResponse(giveawayType, name, price);
+        GiveawayResponse giveawayResponse = getGiveawayResponse(id, giveawayType, name, price);
 
         when(giveawayService.createGiveaway(any())).thenReturn(giveawayResponse);
 
@@ -41,7 +42,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                post("/api/giveaway/new")
+                post("/api/giveaway")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf())
@@ -67,7 +68,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/api/giveaway/new")
+                        post("/api/giveaway")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -92,7 +93,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/api/giveaway/new")
+                        post("/api/giveaway")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -116,7 +117,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/api/giveaway/new")
+                        post("/api/giveaway")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -141,7 +142,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        post("/api/giveaway/new")
+                        post("/api/giveaway")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -158,9 +159,9 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void getGiveaways() throws Exception {
         // given
-        GiveawayResponse giveawayResponse1 = getGiveawayResponse(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
-        GiveawayResponse giveawayResponse2 = getGiveawayResponse(GiveawayType.COFFEE, "컴포즈 아메리카노", 1500);
-        GiveawayResponse giveawayResponse3 = getGiveawayResponse(GiveawayType.COFFEE, "BHC 뿌링클", 20_000);
+        GiveawayResponse giveawayResponse1 = getGiveawayResponse(1L, GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
+        GiveawayResponse giveawayResponse2 = getGiveawayResponse(2L, GiveawayType.COFFEE, "컴포즈 아메리카노", 1500);
+        GiveawayResponse giveawayResponse3 = getGiveawayResponse(3L, GiveawayType.COFFEE, "BHC 뿌링클", 20_000);
         List<GiveawayResponse> giveawaysResponse = List.of(giveawayResponse1, giveawayResponse2, giveawayResponse3);
 
         when(giveawayService.getGiveaways()).thenReturn(giveawaysResponse);
@@ -190,16 +191,17 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void deleteGiveaway() throws Exception {
         // given
+        Long id = 1L;
         GiveawayType giveawayType = GiveawayType.COFFEE;
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayResponse giveawayResponse = getGiveawayResponse(giveawayType, name, price);
+        GiveawayResponse giveawayResponse = getGiveawayResponse(id, giveawayType, name, price);
         when(giveawayService.deleteGiveaway(any())).thenReturn(giveawayResponse);
 
         // when // then
         mockMvc.perform(
-                        delete("/api/giveaway")
+                        delete("/api/giveaway/{id}", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
                 )
@@ -211,8 +213,9 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response.price").value(price));
     }
 
-    private static GiveawayResponse getGiveawayResponse(GiveawayType giveawayType, String name, int price) {
+    private static GiveawayResponse getGiveawayResponse(Long id, GiveawayType giveawayType, String name, int price) {
         return GiveawayResponse.builder()
+                .id(id)
                 .giveawayType(giveawayType)
                 .name(name)
                 .price(price)

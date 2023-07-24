@@ -43,9 +43,9 @@ public class GiveawayService {
     }
 
     @Transactional
-    public GiveawayResponse deleteGiveaway(String name) {
-        Giveaway giveaway = giveawayRepository.findGiveawayByName(name)
-                .orElseThrow(() -> new BaseException("삭제할 상품의 이름이 올바르지 않습니다.", 1000));
+    public GiveawayResponse deleteGiveaway(Long id) {
+        Giveaway giveaway = giveawayRepository.findById(id)
+                .orElseThrow(() -> new BaseException("삭제할 상품의 PK가 올바르지 않습니다.", 1000));
         giveawayRepository.delete(giveaway);
         return GiveawayResponse.of(giveaway);
     }

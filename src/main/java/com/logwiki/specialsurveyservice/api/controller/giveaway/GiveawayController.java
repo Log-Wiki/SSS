@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class GiveawayController {
 
     private final GiveawayService giveawayService;
 
-    @PostMapping("/giveaway/new")
+    @PostMapping("/giveaway")
     public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayDto giveawayDto) {
         return ApiUtils.success(giveawayService.createGiveaway(giveawayDto));
     }
@@ -32,8 +33,8 @@ public class GiveawayController {
         return ApiUtils.success(giveawayService.getGiveaways());
     }
 
-    @DeleteMapping("/giveaway")
-    public ApiResponse<GiveawayResponse> deleteGiveaway(String name) {
-        return ApiUtils.success(giveawayService.deleteGiveaway(name));
+    @DeleteMapping("/giveaway/{id}")
+    public ApiResponse<GiveawayResponse> deleteGiveaway(@PathVariable Long id) {
+        return ApiUtils.success(giveawayService.deleteGiveaway(id));
     }
 }

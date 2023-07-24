@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GiveawayResponse {
 
+    private Long id;
     private GiveawayType giveawayType;
     private String name;
     private int price;
 
     @Builder
-    private GiveawayResponse(GiveawayType giveawayType, String name, int price) {
+    private GiveawayResponse(Long id, GiveawayType giveawayType, String name, int price) {
+        this.id = id;
         this.giveawayType = giveawayType;
         this.name = name;
         this.price = price;
@@ -23,6 +25,7 @@ public class GiveawayResponse {
 
     public static GiveawayResponse of(Giveaway giveaway) {
         return GiveawayResponse.builder()
+                .id(giveaway.getId())
                 .giveawayType(giveaway.getGiveawayType())
                 .name(giveaway.getName())
                 .price(giveaway.getPrice())

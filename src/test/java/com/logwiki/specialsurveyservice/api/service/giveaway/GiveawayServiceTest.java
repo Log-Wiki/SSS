@@ -109,10 +109,10 @@ class GiveawayServiceTest extends IntegrationTestSupport {
 
         GiveawayDto request = createGiveawayDto(giveawayType, name, price);
 
-        giveawayService.createGiveaway(request);
+        GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
 
         // when
-        GiveawayResponse giveawayResponse = giveawayService.deleteGiveaway(name);
+        GiveawayResponse giveawayResponse = giveawayService.deleteGiveaway(saveGiveaway.getId());
 
         // then
         assertThat(giveawayResponse).isNotNull();
@@ -121,7 +121,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                 .contains(giveawayType, name, price);
     }
 
-    @DisplayName("삭제할 상품의 이름을 올바르게 입력하지 않은 경우 예외를 발생한다.")
+    @DisplayName("삭제할 상품의 PK를 올바르게 입력하지 않은 경우 예외를 발생한다.")
     @Test
     void deleteGiveawayWithWrongName() {
         // given
@@ -131,14 +131,12 @@ class GiveawayServiceTest extends IntegrationTestSupport {
 
         GiveawayDto request = createGiveawayDto(giveawayType, name, price);
 
-        giveawayService.createGiveaway(request);
-
-        String wrongName = "할리스 아메리카노";
+        GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
 
         // when // then
-        assertThatThrownBy(() -> giveawayService.deleteGiveaway(wrongName))
+        assertThatThrownBy(() -> giveawayService.deleteGiveaway(saveGiveaway.getId() + 1L))
                 .isInstanceOf(BaseException.class)
-                .hasMessage("삭제할 상품의 이름이 올바르지 않습니다.");
+                .hasMessage("삭제할 상품의 PK가 올바르지 않습니다.");
     }
 
     private static GiveawayDto createGiveawayDto(GiveawayType giveawayType, String name, int price) {
@@ -148,4 +146,6 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                 .price(price)
                 .build();
     }
+
+
 }
