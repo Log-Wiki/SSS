@@ -49,14 +49,22 @@ public class QuestionCreateRequest {
         if (type == QuestionCategoryType.MULTIPLE_CHOICE && multipleChoices == null) {
             throw new BaseException("객관식은 보기를 가져야합니다.", 2002);
         }
+        if (multipleChoices != null) {
+            return QuestionCreateServiceRequest.builder()
+                    .questionNumber(questionNumber)
+                    .content(content)
+                    .imgAddress(imgAddress)
+                    .type(type)
+                    .multipleChoices(multipleChoices.stream()
+                            .map(MultipleChoiceCreateRequest::toServiceRequest)
+                            .collect(Collectors.toList()))
+                    .build();
+        }
         return QuestionCreateServiceRequest.builder()
                 .questionNumber(questionNumber)
                 .content(content)
                 .imgAddress(imgAddress)
                 .type(type)
-                .multipleChoices(multipleChoices.stream()
-                        .map(MultipleChoiceCreateRequest::toServiceRequest)
-                        .collect(Collectors.toList()))
                 .build();
     }
 
