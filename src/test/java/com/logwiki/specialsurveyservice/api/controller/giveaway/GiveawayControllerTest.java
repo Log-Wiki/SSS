@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
-import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayDto;
+import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import java.util.List;
@@ -34,7 +34,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         when(giveawayService.createGiveaway(any())).thenReturn(giveawayResponse);
 
-        GiveawayDto request = GiveawayDto.builder()
+        GiveawayRequest request = GiveawayRequest.builder()
                 .giveawayType(giveawayType)
                 .name(name)
                 .price(price)
@@ -60,7 +60,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void createGiveawayWithoutGiveawayType() throws Exception {
         // given
-        GiveawayDto request = GiveawayDto.builder()
+        GiveawayRequest request = GiveawayRequest.builder()
                 .giveawayType(null)
                 .name("스타벅스 아메리카노")
                 .price(4500)
@@ -85,7 +85,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void createGiveawayWithoutName() throws Exception {
         // given
-        GiveawayDto request = GiveawayDto.builder()
+        GiveawayRequest request = GiveawayRequest.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name(null)
                 .price(4500)
@@ -110,7 +110,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void createGiveawayWithoutPrice() throws Exception {
         // given
-        GiveawayDto request = GiveawayDto.builder()
+        GiveawayRequest request = GiveawayRequest.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name("스타벅스 아메리카노")
                 .build();
@@ -134,7 +134,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
     @Test
     void createGiveawayWithNotValidPrice() throws Exception {
         // given
-        GiveawayDto request = GiveawayDto.builder()
+        GiveawayRequest request = GiveawayRequest.builder()
                 .giveawayType(GiveawayType.COFFEE)
                 .name("스타벅스 아메리카노")
                 .price(0)

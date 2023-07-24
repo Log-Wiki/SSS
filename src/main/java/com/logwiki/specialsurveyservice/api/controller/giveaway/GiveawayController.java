@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.api.controller.giveaway;
 
-import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayDto;
+import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
@@ -24,8 +24,8 @@ public class GiveawayController {
     private final GiveawayService giveawayService;
 
     @PostMapping("/giveaway")
-    public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayDto giveawayDto) {
-        return ApiUtils.success(giveawayService.createGiveaway(giveawayDto));
+    public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayRequest giveawayRequest) {
+        return ApiUtils.success(giveawayService.createGiveaway(giveawayRequest));
     }
 
     @GetMapping("/giveaway")
