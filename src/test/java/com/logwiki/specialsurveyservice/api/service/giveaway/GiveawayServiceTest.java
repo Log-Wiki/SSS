@@ -48,7 +48,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
     @DisplayName("중복 상품 등록 시나리오")
     @TestFactory
     Collection<DynamicTest> createDuplicateGiveaway() {
-
+        // given
         GiveawayType giveawayType = GiveawayType.COFFEE;
         String name = "스타벅스 아메리카노";
         int price = 4500;
@@ -57,6 +57,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
 
         return List.of(
                 DynamicTest.dynamicTest("중복된 상품 이름이 없는 경우 상품을 등록할 수 있다.", () -> {
+                    // when
                     GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
 
                     // then
@@ -66,6 +67,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                             .contains(giveawayType, name, price);
                 }),
                 DynamicTest.dynamicTest("중복된 상품 이름이 있는 경우 상품을 등록할 수 없다.", () -> {
+                    // when // then
                     assertThatThrownBy(() -> giveawayService.createGiveaway(request))
                             .isInstanceOf(BaseException.class)
                             .hasMessage("이미 등록되어 있는 상품이 있습니다");
@@ -76,6 +78,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
     @DisplayName("등록된 경품 목록을 조회한다.")
     @Test
     void getGiveaways() {
+        // given
         GiveawayDto giveaway1 = createGiveawayDto(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
         GiveawayDto giveaway2 = createGiveawayDto(GiveawayType.COFFEE, "컴포즈 아메리카노", 4500);
         GiveawayDto giveaway3 = createGiveawayDto(GiveawayType.CHICKEN, "BHC 뿌링클", 20_000);
@@ -83,8 +86,10 @@ class GiveawayServiceTest extends IntegrationTestSupport {
         giveawayService.createGiveaway(giveaway2);
         giveawayService.createGiveaway(giveaway3);
 
+        // when
         List<GiveawayResponse> giveaways = giveawayService.getGiveaways();
 
+        // then
         assertThat(giveaways).hasSize(3)
                 .extracting("giveawayType", "name", "price")
                 .contains(
@@ -92,6 +97,48 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                         tuple(giveaway2.getGiveawayType(), giveaway2.getName(), giveaway2.getPrice()),
                         tuple(giveaway3.getGiveawayType(), giveaway3.getName(), giveaway3.getPrice())
                 );
+    }
+
+    @DisplayName("등록된 상품을 삭제합니다.")
+    @Test
+    void deleteGiveaway() {
+        // given
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String name = "스타벅스 아메리카노";
+        int price = 4500;
+
+        GiveawayDto request = createGiveawayDto(giveawayType, name, price);
+
+        giveawayService.createGiveaway(request);
+
+        // when
+        GiveawayResponse giveawayResponse = giveawayService.deleteGiveaway(name);
+
+        // then
+        assertThat(giveawayResponse).isNotNull();
+        assertThat(giveawayResponse)
+                .extracting("giveawayType", "name", "price")
+                .contains(giveawayType, name, price);
+    }
+
+    @DisplayName("삭제할 상품의 이름을 올바르게 입력하지 않은 경우 예외를 발생한다.")
+    @Test
+    void deleteGiveawayWithWrongName() {
+        // given
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String name = "스타벅스 아메리카노";
+        int price = 4500;
+
+        GiveawayDto request = createGiveawayDto(giveawayType, name, price);
+
+        giveawayService.createGiveaway(request);
+
+        String wrongName = "할리스 아메리카노";
+
+        // when // then
+        assertThatThrownBy(() -> giveawayService.deleteGiveaway(wrongName))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("삭제할 상품의 이름이 올바르지 않습니다.");
     }
 
     private static GiveawayDto createGiveawayDto(GiveawayType giveawayType, String name, int price) {

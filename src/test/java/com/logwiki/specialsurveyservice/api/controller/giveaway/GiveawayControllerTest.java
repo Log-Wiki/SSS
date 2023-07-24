@@ -185,6 +185,32 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response[2].price").value(giveawayResponse3.getPrice()));
     }
 
+    @DisplayName("상품 삭제를 성공하면 삭제된 상품의 정보를 받는다.")
+    @WithMockUser
+    @Test
+    void deleteGiveaway() throws Exception {
+        // given
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String name = "스타벅스 아메리카노";
+        int price = 4500;
+
+        GiveawayResponse giveawayResponse = getGiveawayResponse(giveawayType, name, price);
+        when(giveawayService.deleteGiveaway(any())).thenReturn(giveawayResponse);
+
+        // when // then
+        mockMvc.perform(
+                        delete("/api/giveaway")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.giveawayType").value(giveawayType.name()))
+                .andExpect(jsonPath("$.response.name").value(name))
+                .andExpect(jsonPath("$.response.price").value(price));
+    }
+
     private static GiveawayResponse getGiveawayResponse(GiveawayType giveawayType, String name, int price) {
         return GiveawayResponse.builder()
                 .giveawayType(giveawayType)
