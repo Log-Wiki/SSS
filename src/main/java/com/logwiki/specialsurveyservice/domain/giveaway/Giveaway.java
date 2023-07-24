@@ -1,15 +1,20 @@
 package com.logwiki.specialsurveyservice.domain.giveaway;
 
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE giveaway SET status = 'INACTIVE' WHERE id = ?")
+@Where(clause = "status = 'ACTIVE'")
 @Entity
-public class Giveaway {
+public class Giveaway extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

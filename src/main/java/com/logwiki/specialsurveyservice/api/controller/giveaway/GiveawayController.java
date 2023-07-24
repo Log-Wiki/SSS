@@ -8,6 +8,7 @@ import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,5 +30,10 @@ public class GiveawayController {
     @GetMapping("/giveaway")
     public ApiResponse<List<GiveawayResponse>> getGiveaways() {
         return ApiUtils.success(giveawayService.getGiveaways());
+    }
+
+    @DeleteMapping("/giveaway")
+    public ApiResponse<GiveawayResponse> deleteGiveaway(String name) {
+        return ApiUtils.success(giveawayService.deleteGiveaway(name));
     }
 }

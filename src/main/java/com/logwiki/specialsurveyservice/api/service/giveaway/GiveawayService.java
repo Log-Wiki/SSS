@@ -35,11 +35,25 @@ public class GiveawayService {
         return GiveawayResponse.of(saveGiveaway);
     }
 
+
     public List<GiveawayResponse> getGiveaways() {
         List<Giveaway> giveaways = giveawayRepository.findAll();
 
         return giveaways.stream()
                 .map(giveaway -> GiveawayResponse.of(giveaway))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public GiveawayResponse deleteGiveaway(String name) {
+        System.out.println("삭제 이름 : " + name);
+        Optional<Giveaway> giveawayByName = giveawayRepository.findGiveawayByName(name);
+        System.out.println(giveawayByName.isEmpty());
+        if(giveawayByName.isEmpty())
+            throw new BaseException("삭제할 상품의 이름이 올바르지 않습니다.", 1000);
+
+        Giveaway giveaway = giveawayByName.get();
+        giveawayRepository.delete(giveaway);
+        return GiveawayResponse.of(giveaway);
     }
 }
