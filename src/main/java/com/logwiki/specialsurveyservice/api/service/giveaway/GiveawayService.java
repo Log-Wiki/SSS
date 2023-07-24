@@ -46,9 +46,7 @@ public class GiveawayService {
 
     @Transactional
     public GiveawayResponse deleteGiveaway(String name) {
-        System.out.println("삭제 이름 : " + name);
         Optional<Giveaway> giveawayByName = giveawayRepository.findGiveawayByName(name);
-        System.out.println(giveawayByName.isEmpty());
         if(giveawayByName.isEmpty())
             throw new BaseException("삭제할 상품의 이름이 올바르지 않습니다.", 1000);
 
