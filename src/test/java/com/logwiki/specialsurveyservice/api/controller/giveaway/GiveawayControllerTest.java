@@ -213,6 +213,40 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response.price").value(price));
     }
 
+    @DisplayName("상품 수정을 성공하면 수정된 상품의 정보를 받는다.")
+    @WithMockUser
+    @Test
+    void updateGiveaway() throws Exception {
+        // given
+        Long id = 1L;
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String name = "스타벅스 아메리카노";
+        int price = 4500;
+
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(giveawayType)
+                .name(name)
+                .price(price)
+                .build();
+
+        GiveawayResponse giveawayResponse = getGiveawayResponse(id, giveawayType, name, price);
+        when(giveawayService.updateGiveaway(any(), any())).thenReturn(giveawayResponse);
+
+        // when // then
+        mockMvc.perform(
+                        put("/api/giveaway/{id}", id)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.giveawayType").value(giveawayType.name()))
+                .andExpect(jsonPath("$.response.name").value(name))
+                .andExpect(jsonPath("$.response.price").value(price));
+    }
+
     private static GiveawayResponse getGiveawayResponse(Long id, GiveawayType giveawayType, String name, int price) {
         return GiveawayResponse.builder()
                 .id(id)

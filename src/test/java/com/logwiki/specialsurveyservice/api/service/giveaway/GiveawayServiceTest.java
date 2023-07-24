@@ -139,6 +139,42 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                 .hasMessage("삭제할 상품의 PK가 올바르지 않습니다.");
     }
 
+    @DisplayName("요청으로 들어온 정보를 이용하여 상품의 정보를 수정한다.")
+    @Test
+    void updateGiveaway() {
+        // given
+        GiveawayRequest originGiveaway = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
+        GiveawayResponse saveGiveaway = giveawayService.createGiveaway(originGiveaway);
+
+        GiveawayType updateGiveawayType = GiveawayType.COFFEE;
+        String updateName = "스타벅스 카페라떼";
+        int updatePrice = 5000;
+
+        GiveawayRequest giveawayUpdateRequest = createGiveawayRequest(updateGiveawayType, updateName, updatePrice);
+
+        // when
+        GiveawayResponse updateGiveaway = giveawayService.updateGiveaway(saveGiveaway.getId(), giveawayUpdateRequest);
+
+        // then
+        assertThat(updateGiveaway)
+                .extracting("giveawayType", "name", "price")
+                .contains(updateGiveawayType, updateName, updatePrice);
+    }
+
+    @DisplayName("수정할 상품의 PK 값이 올바르지 않으면 예외를 반환한다.")
+    @Test
+    void updateGiveawayWithInvalidPK() {
+        // given
+        GiveawayRequest giveawayUpdateRequest = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 카페라떼", 5000);
+
+        Long wrongPK = 0L;
+
+        // when // then
+        assertThatThrownBy(() -> giveawayService.updateGiveaway(wrongPK, giveawayUpdateRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("수정할 상품의 PK가 올바르지 않습니다.");
+    }
+
     private static GiveawayRequest createGiveawayRequest(GiveawayType giveawayType, String name, int price) {
         return GiveawayRequest.builder()
                 .giveawayType(giveawayType)
@@ -146,6 +182,4 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                 .price(price)
                 .build();
     }
-
-
 }
