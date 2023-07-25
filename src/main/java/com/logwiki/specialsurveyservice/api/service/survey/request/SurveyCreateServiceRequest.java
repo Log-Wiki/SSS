@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.survey.request;
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +55,9 @@ public class SurveyCreateServiceRequest {
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)
                 .writer(userId)
+                .type(SurveyCategory.builder()
+                        .type(type)
+                        .build())
                 .questions(questions.stream().map(
                         QuestionCreateServiceRequest::toEntity
                 ).collect(Collectors.toList()))
