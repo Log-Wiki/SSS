@@ -8,6 +8,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USER_NAME}
     password: ${DB_USER_PASSWORD}
+        
   jpa:
     hibernate:
       ddl-auto: none
