@@ -21,8 +21,11 @@ jobs:
           spring.datasource.username: ${{ secrets.DB_USER_NAME }}
           spring.datasource.password: ${{ secrets.DB_USER_PASSWORD }}
 
+      - name: gradlew 권한 설정
+        run: chmod +x gradlew
+
       - name: 스프링부트 애플리케이션 빌드 # (1)
-        run: chmod +x ./gradlew build
+        run: ./gradlew build
 
       - name: 도커 이미지 빌드 # (2)
         run: docker build --build-arg ENVIRONMENT=prd -t ${{ secrets.HOME_USERNAME }}/sss-dev .
