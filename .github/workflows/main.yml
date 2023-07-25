@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: 저장소 Checkout
         uses: actions/checkout@v3
-        
+
       - name: JDK 17 셋팅
         uses: actions/setup-java@v2
         with:
@@ -21,7 +21,7 @@ jobs:
       - name: Set Yaml # 환경변수 설정
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-prd.yml
+          files: ./src/main/resources/application.yml
         env:
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USER_NAME }}
