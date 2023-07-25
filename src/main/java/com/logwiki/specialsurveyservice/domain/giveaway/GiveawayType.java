@@ -1,5 +1,7 @@
 package com.logwiki.specialsurveyservice.domain.giveaway;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +9,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum GiveawayType {
 
-    COFFEE("커피");
+    @JsonProperty("COFFEE")
+    COFFEE("커피"),
+    @JsonProperty("CHICKEN")
+    CHICKEN("치킨");
 
     private final String text;
+
+    @JsonCreator
+    public static GiveawayType from(String s) {
+        return GiveawayType.valueOf(s);
+    }
 }
