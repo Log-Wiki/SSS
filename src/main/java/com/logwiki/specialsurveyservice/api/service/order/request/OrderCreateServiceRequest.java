@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderCreateServiceRequest {
 
-    private List<OrderCreateRequest> orderCreateRequestList;
+    private List<OrderCreateRequest> giveaways;
 
     @Builder
-    private OrderCreateServiceRequest(List<OrderCreateRequest> orderCreateRequestList) {
-        this.orderCreateRequestList = orderCreateRequestList;
+    private OrderCreateServiceRequest(List<OrderCreateRequest> giveaways) {
+        this.giveaways = giveaways;
     }
 }

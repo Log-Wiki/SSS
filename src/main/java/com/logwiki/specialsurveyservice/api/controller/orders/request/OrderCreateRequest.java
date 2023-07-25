@@ -1,7 +1,6 @@
 package com.logwiki.specialsurveyservice.api.controller.orders.request;
 
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +13,7 @@ public class OrderCreateRequest {
     private String giveawayName;
     private Integer giveawayNumber;
 
-    private List<OrderCreateRequest> giveawayList;
+    private List<OrderCreateRequest> giveaways;
 
     @Builder
     private OrderCreateRequest(String giveawayName , Integer giveawayNumber) {
@@ -23,20 +22,7 @@ public class OrderCreateRequest {
     }
     public OrderCreateServiceRequest toServiceRequest() {
         return OrderCreateServiceRequest.builder()
-                .orderCreateRequestList(giveawayList)
+                .giveaways(giveaways)
                 .build();
     }
-//    @NotEmpty(message = "주문 가격은 필수입니다.")
-//    private Integer orderAmount;
-//
-//    @Builder
-//    private OrderCreateRequest(Integer orderAmount) {
-//        this.orderAmount = orderAmount;
-//    }
-//
-//    public OrderCreateServiceRequest toServiceRequest() {
-//        return OrderCreateServiceRequest.builder()
-//                .orderAmount(orderAmount)
-//                .build();
-//    }
 }

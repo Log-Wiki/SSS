@@ -18,10 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class AuthenticationPaymentService {
-
-    // iamport api 사용해서 결제정보 가져오기
-    // order 테이블에서 주문정보 가져오기
-    // 두 정보의 가격이 같으면 정상
     private final OrdersRepository orderRepository;
 
     @Transactional

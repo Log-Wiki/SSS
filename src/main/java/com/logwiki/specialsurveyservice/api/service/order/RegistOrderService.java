@@ -17,8 +17,8 @@ public class RegistOrderService {
   private final OrdersRepository orderRepository;
   @Transactional
   public OrderResponse regist(OrderCreateServiceRequest request) {
-    Integer orderAmount = 0;
-    for(OrderCreateRequest orderCreateRequest : request.getOrderCreateRequestList()){
+    int orderAmount = 0;
+    for(OrderCreateRequest orderCreateRequest : request.getGiveaways()){
       orderAmount += GiveawayPrice.valueOf(orderCreateRequest.getGiveawayName()).getPrice()
         * orderCreateRequest.getGiveawayNumber();
     }

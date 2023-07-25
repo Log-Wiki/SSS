@@ -5,7 +5,6 @@ import com.logwiki.specialsurveyservice.api.service.order.RegistOrderService;
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,10 +20,8 @@ public class OrderController {
 
     @PostMapping("/registOrder")
     public ApiResponse<OrderResponse> registOrder(
-            @Valid @RequestBody OrderCreateRequest orderCreateRequest
+            @RequestBody OrderCreateRequest orderCreateRequest
     ) {
-        // 검증 추가?
-        // 들어온 가격이랑 물건수 * 물건가격이 같은지 확인
         return ApiUtils.success(registOrderService.regist(orderCreateRequest.toServiceRequest()));
     }
 }

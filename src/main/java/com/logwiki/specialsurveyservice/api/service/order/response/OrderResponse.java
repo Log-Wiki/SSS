@@ -9,13 +9,13 @@ public class OrderResponse {
 
     private final Long orderId;
     private final Integer orderAmount;
-    private final Boolean isSucess;
+    private final Boolean isSuccess;
 
     @Builder
-    private OrderResponse(Long orderId, Integer orderAmount, Boolean isSucess) {
+    private OrderResponse(Long orderId, Integer orderAmount, Boolean isSuccess) {
         this.orderId = orderId;
         this.orderAmount = orderAmount;
-        this.isSucess = isSucess;
+        this.isSuccess = isSuccess;
     }
 
     public static OrderResponse from(Orders order) {
@@ -24,6 +24,6 @@ public class OrderResponse {
         }
 
         return OrderResponse.builder().orderId(order.getOrderId())
-                .orderAmount(order.getOrderAmount()).isSucess(order.getIsSuccess()).build();
+                .orderAmount(order.getOrderAmount()).isSuccess(order.getIsSuccess()).build();
     }
 }
