@@ -34,3 +34,5 @@ values ('FIFTIES');
 insert into account_code (type)
 values ('SIXTIES');
 
+insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT)
+values ('설문1', 100, 200);
