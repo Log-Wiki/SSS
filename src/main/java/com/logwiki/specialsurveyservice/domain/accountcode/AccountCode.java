@@ -1,6 +1,5 @@
 package com.logwiki.specialsurveyservice.domain.accountcode;
 
-import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,10 +16,10 @@ public class AccountCode {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private SurveyCategoryType surveyCategoryType;
+    private AccountCodeType type;
 
     @Builder
-    public AccountCode(SurveyCategoryType surveyCategoryType) {
-        this.surveyCategoryType = surveyCategoryType;
+    public AccountCode(AccountCodeType type) {
+        this.type = type;
     }
 }

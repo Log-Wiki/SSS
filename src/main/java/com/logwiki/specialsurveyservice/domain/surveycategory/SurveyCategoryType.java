@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SurveyCategoryType {
 
-    TIME_ATTACK("타임어택");
+    NORMAL("일반"), INSTANT_WIN("즉시 당첨");
 
     private final String text;
 }
