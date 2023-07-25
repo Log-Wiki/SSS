@@ -28,7 +28,7 @@ public class SseConnectService {
                     .data("connected!"));
         }
         catch (IOException e) {
-            throw new BaseException("Sse 구독 과정에서 IO 예외발생" , 2040);
+            throw new BaseException("Sse 구독 과정에서 IO 예외발ㄴ생" , 2040);
         }
 
         sseEmitter.onCompletion(() -> {
