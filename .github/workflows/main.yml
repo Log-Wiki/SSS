@@ -15,7 +15,7 @@ jobs:
       - name: Set Yaml # 환경변수 설정
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application.yml
+          files: ./src/main/resources/application-prd.yml
         env:
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USER_NAME }}
