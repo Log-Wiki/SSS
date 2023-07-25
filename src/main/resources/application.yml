@@ -18,6 +18,7 @@ jwt:
   refresh-secret: dGhpcy1pcy10aGUtc3BlY2lhbC1zdXJ2ZXktc2VydmljZS1tYWRlLWJ5LXNpeC1kZXZlbG9wZXItaXQtY2FuLWJlLXRoZS1iZXN0LXNlcnZpY2UtaW4tNy10ZWFtCg==
   access-token-validity-in-seconds: 3600 # 1시간 3600
   refresh-token-validity-in-seconds: 1296000 # 15일 1296000
+
 ---
 spring:
   config:
@@ -27,7 +28,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
     defer-datasource-initialization: true
 
   h2:
