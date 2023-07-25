@@ -31,4 +31,12 @@ public class SurveyGiveaway {
         this.survey = survey;
         this.giveaway = giveaway;
     }
+
+    public static SurveyGiveaway create(int count, Survey survey, Giveaway giveaway) {
+        return SurveyGiveaway.builder()
+                .count(count)
+                .survey(survey)
+                .giveaway(giveaway)
+                .build();
+    }
 }

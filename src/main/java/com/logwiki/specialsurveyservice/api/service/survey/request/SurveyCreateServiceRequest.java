@@ -29,10 +29,13 @@ public class SurveyCreateServiceRequest {
 
     private List<QuestionCreateServiceRequest> questions;
 
+    private List<GiveawayAssignServiceRequest> giveaways;
+
     @Builder
     public SurveyCreateServiceRequest(String title, LocalDateTime startTime, LocalDateTime endTime,
                                       int headCount, int closedHeadCount, SurveyCategoryType type,
-                                      List<QuestionCreateServiceRequest> questions) {
+                                      List<QuestionCreateServiceRequest> questions,
+                                      List<GiveawayAssignServiceRequest> giveaways) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -40,6 +43,7 @@ public class SurveyCreateServiceRequest {
         this.closedHeadCount = closedHeadCount;
         this.type = type;
         this.questions = questions;
+        this.giveaways = giveaways;
     }
 
     public Survey toEntity(Long userId) {
