@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.api.controller.giveaway;
 
-import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
+import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
@@ -25,8 +25,8 @@ public class GiveawayController {
     private final GiveawayService giveawayService;
 
     @PostMapping("/giveaway")
-    public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayRequest giveawayRequest) {
-        return ApiUtils.success(giveawayService.createGiveaway(giveawayRequest));
+    public ApiResponse<GiveawayResponse> createGiveaway(@Valid @RequestBody GiveawayCreateRequest giveawayCreateRequest) {
+        return ApiUtils.success(giveawayService.createGiveaway(giveawayCreateRequest));
     }
 
     @GetMapping("/giveaway")
@@ -40,7 +40,7 @@ public class GiveawayController {
     }
 
     @PutMapping("/giveaway/{id}")
-    public ApiResponse<GiveawayResponse> updateGiveaway(@PathVariable Long id, @Valid @RequestBody GiveawayRequest giveawayRequest) {
-        return ApiUtils.success(giveawayService.updateGiveaway(id, giveawayRequest));
+    public ApiResponse<GiveawayResponse> updateGiveaway(@PathVariable Long id, @Valid @RequestBody GiveawayCreateRequest giveawayCreateRequest) {
+        return ApiUtils.success(giveawayService.updateGiveaway(id, giveawayCreateRequest));
     }
 }
