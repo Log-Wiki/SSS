@@ -3,7 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.giveaway;
 import static org.assertj.core.api.Assertions.*;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
-import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayCreateRequest;
+import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
@@ -33,7 +33,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayCreateRequest request = createGiveawayRequest(giveawayType, name, price);
+        GiveawayRequest request = createGiveawayRequest(giveawayType, name, price);
 
         // when
         GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
@@ -53,7 +53,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayCreateRequest request = createGiveawayRequest(giveawayType, name, price);
+        GiveawayRequest request = createGiveawayRequest(giveawayType, name, price);
 
         return List.of(
                 DynamicTest.dynamicTest("중복된 상품 이름이 없는 경우 상품을 등록할 수 있다.", () -> {
@@ -79,9 +79,9 @@ class GiveawayServiceTest extends IntegrationTestSupport {
     @Test
     void getGiveaways() {
         // given
-        GiveawayCreateRequest giveaway1 = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
-        GiveawayCreateRequest giveaway2 = createGiveawayRequest(GiveawayType.COFFEE, "컴포즈 아메리카노", 4500);
-        GiveawayCreateRequest giveaway3 = createGiveawayRequest(GiveawayType.CHICKEN, "BHC 뿌링클", 20_000);
+        GiveawayRequest giveaway1 = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
+        GiveawayRequest giveaway2 = createGiveawayRequest(GiveawayType.COFFEE, "컴포즈 아메리카노", 4500);
+        GiveawayRequest giveaway3 = createGiveawayRequest(GiveawayType.CHICKEN, "BHC 뿌링클", 20_000);
         giveawayService.createGiveaway(giveaway1);
         giveawayService.createGiveaway(giveaway2);
         giveawayService.createGiveaway(giveaway3);
@@ -107,7 +107,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayCreateRequest request = createGiveawayRequest(giveawayType, name, price);
+        GiveawayRequest request = createGiveawayRequest(giveawayType, name, price);
 
         GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
 
@@ -129,7 +129,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
         String name = "스타벅스 아메리카노";
         int price = 4500;
 
-        GiveawayCreateRequest request = createGiveawayRequest(giveawayType, name, price);
+        GiveawayRequest request = createGiveawayRequest(giveawayType, name, price);
 
         GiveawayResponse saveGiveaway = giveawayService.createGiveaway(request);
 
@@ -143,14 +143,14 @@ class GiveawayServiceTest extends IntegrationTestSupport {
     @Test
     void updateGiveaway() {
         // given
-        GiveawayCreateRequest originGiveaway = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
+        GiveawayRequest originGiveaway = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 아메리카노", 4500);
         GiveawayResponse saveGiveaway = giveawayService.createGiveaway(originGiveaway);
 
         GiveawayType updateGiveawayType = GiveawayType.COFFEE;
         String updateName = "스타벅스 카페라떼";
         int updatePrice = 5000;
 
-        GiveawayCreateRequest giveawayUpdateRequest = createGiveawayRequest(updateGiveawayType, updateName, updatePrice);
+        GiveawayRequest giveawayUpdateRequest = createGiveawayRequest(updateGiveawayType, updateName, updatePrice);
 
         // when
         GiveawayResponse updateGiveaway = giveawayService.updateGiveaway(saveGiveaway.getId(), giveawayUpdateRequest);
@@ -165,7 +165,7 @@ class GiveawayServiceTest extends IntegrationTestSupport {
     @Test
     void updateGiveawayWithInvalidPK() {
         // given
-        GiveawayCreateRequest giveawayUpdateRequest = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 카페라떼", 5000);
+        GiveawayRequest giveawayUpdateRequest = createGiveawayRequest(GiveawayType.COFFEE, "스타벅스 카페라떼", 5000);
 
         Long wrongPK = 0L;
 
@@ -175,8 +175,8 @@ class GiveawayServiceTest extends IntegrationTestSupport {
                 .hasMessage("수정할 상품의 PK가 올바르지 않습니다.");
     }
 
-    private static GiveawayCreateRequest createGiveawayRequest(GiveawayType giveawayType, String name, int price) {
-        return GiveawayCreateRequest.builder()
+    private static GiveawayRequest createGiveawayRequest(GiveawayType giveawayType, String name, int price) {
+        return GiveawayRequest.builder()
                 .giveawayType(giveawayType)
                 .name(name)
                 .price(price)

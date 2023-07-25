@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class GiveawayCreateRequest {
+public class GiveawayRequest {
 
     @NotNull(message = "상품 타입은 필수입니다.")
     private GiveawayType giveawayType;
@@ -22,7 +22,7 @@ public class GiveawayCreateRequest {
     private int price;
 
     @Builder
-    private GiveawayCreateRequest(GiveawayType giveawayType, String name, int price) {
+    private GiveawayRequest(GiveawayType giveawayType, String name, int price) {
         this.giveawayType = giveawayType;
         this.name = name;
         this.price = price;
