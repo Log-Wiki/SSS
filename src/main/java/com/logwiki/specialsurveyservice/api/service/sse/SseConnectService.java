@@ -18,7 +18,7 @@ public class SseConnectService {
     }
 
     public SseEmitter add(Long login_id , Long survey_id,SseEmitter sseEmitter) {
-        String id = String.valueOf(survey_id) + "_" + String.valueOf(login_id) + "_" + System.currentTimeMillis();
+        String id = survey_id + "_" + login_id + "_" + System.currentTimeMillis();
         log.info("sseEmitter add Event : addTo {} as {}" , survey_id, id);
         sseEmitter = emitterRepository.save(id , sseEmitter);
         log.info("sseEmitter now size : {}" , emitterRepository.sseEmitterMap.size());
@@ -42,8 +42,6 @@ public class SseConnectService {
         return sseEmitter;
     }
 
-    public void probability() {
 
-    }
 
 }
