@@ -38,12 +38,14 @@ public class TargetNumberService {
     private static Map<Integer, Long> getTargetNumbers(TargetNumberCreateServiceRequest request,
             Map<Long, Integer> giveaways) {
         Map<Integer, Long> targetNumbers = new HashMap<>();
-        for(Long giveawayId : giveaways.keySet()) {
+        for (Long giveawayId : giveaways.keySet()) {
             int giveawayCount = giveaways.get(giveawayId);
-            while(giveawayCount > 0) {
-                int randomNumber = ThreadLocalRandom.current().nextInt(1, request.getClosedHeadCount());
-                if(targetNumbers.containsKey(randomNumber))
+            while (giveawayCount > 0) {
+                int randomNumber = ThreadLocalRandom.current()
+                        .nextInt(1, request.getClosedHeadCount());
+                if (targetNumbers.containsKey(randomNumber)) {
                     continue;
+                }
 
                 targetNumbers.put(randomNumber, giveawayId);
                 giveawayCount--;
@@ -55,12 +57,11 @@ public class TargetNumberService {
     private List<TargetNumber> getTargetNumbersForSurvey(TargetNumberCreateServiceRequest request,
             Map<Integer, Long> targetNumbers) {
         List<TargetNumber> targetNumbersForSurvey = new ArrayList<>();
-        for(int key : targetNumbers.keySet()) {
+        for (int key : targetNumbers.keySet()) {
             Giveaway giveaway = giveawayRepository.findById(targetNumbers.get(key)).orElseThrow(
                     () -> new BaseException("설문에 등록할 당첨 상품의 값이 올바르지 않습니다.", 1000));
             TargetNumber targetNumber = TargetNumber.create(key, request.getSurvey(), giveaway);
             targetNumbersForSurvey.add(targetNumber);
-            targetNumberRepository.save(targetNumber);
         }
         return targetNumbersForSurvey;
     }

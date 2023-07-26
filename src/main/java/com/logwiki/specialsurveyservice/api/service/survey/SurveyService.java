@@ -32,14 +32,15 @@ public class SurveyService {
 
     private final TargetNumberService targetNumberService;
 
-    public Survey addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
+    public String addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
                 .orElseThrow(() -> new BaseException("유저를 찾지못했습니다.", 1000));
 
         Survey survey = dto.toEntity(account.getId());
 
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = dto.getGiveaways();
-        List<SurveyGiveaway> surveyGiveaways = getSurveyGiveaways(survey, giveawayAssignServiceRequests);
+        List<SurveyGiveaway> surveyGiveaways = getSurveyGiveaways(survey,
+                giveawayAssignServiceRequests);
         survey.addSurveyGiveaways(surveyGiveaways);
 
         TargetNumberCreateServiceRequest targetNumberCreateServiceRequest = TargetNumberCreateServiceRequest.create(
@@ -47,8 +48,8 @@ public class SurveyService {
         List<TargetNumber> targetNumbers = targetNumberService.createTargetNumbers(
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
-
-        return surveyRepository.save(survey);
+        surveyRepository.save(survey);
+        return "success";
     }
 
     private List<SurveyGiveaway> getSurveyGiveaways(Survey survey,
@@ -58,7 +59,8 @@ public class SurveyService {
                 .map(giveaway -> SurveyGiveaway.create(giveaway.getCount(), survey,
                         giveawayRepository.findById(giveaway.getId())
                                 .orElseThrow(
-                                        () -> new BaseException("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.", 1000))))
+                                        () -> new BaseException("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.",
+                                                1000))))
                 .collect(Collectors.toList());
     }
 }

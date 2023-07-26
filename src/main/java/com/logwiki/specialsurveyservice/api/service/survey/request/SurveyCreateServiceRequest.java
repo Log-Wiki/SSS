@@ -4,13 +4,12 @@ import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCre
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -34,9 +33,9 @@ public class SurveyCreateServiceRequest {
 
     @Builder
     public SurveyCreateServiceRequest(String title, LocalDateTime startTime, LocalDateTime endTime,
-                                      int headCount, int closedHeadCount, SurveyCategoryType type,
-                                      List<QuestionCreateServiceRequest> questions,
-                                      List<GiveawayAssignServiceRequest> giveaways) {
+            int headCount, int closedHeadCount, SurveyCategoryType type,
+            List<QuestionCreateServiceRequest> questions,
+            List<GiveawayAssignServiceRequest> giveaways) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -48,7 +47,7 @@ public class SurveyCreateServiceRequest {
     }
 
     public Survey toEntity(Long userId) {
-        return Survey.builder()
+        Survey survey = Survey.builder()
                 .title(title)
                 .startTime(startTime)
                 .endTime(endTime)
@@ -58,9 +57,13 @@ public class SurveyCreateServiceRequest {
                 .type(SurveyCategory.builder()
                         .type(type)
                         .build())
-                .questions(questions.stream().map(
-                        QuestionCreateServiceRequest::toEntity
-                ).collect(Collectors.toList()))
                 .build();
+        survey.addQuestions(questions.stream()
+                .map(questionCreateServiceRequest -> {
+                    return questionCreateServiceRequest.toEntity(survey);
+                }).collect(Collectors.toList()));
+        return survey;
     }
+
+
 }
