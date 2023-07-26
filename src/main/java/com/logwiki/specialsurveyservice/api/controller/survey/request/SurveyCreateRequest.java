@@ -7,6 +7,7 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,6 +43,11 @@ public class SurveyCreateRequest {
     @Valid
     private List<QuestionCreateRequest> questions;
 
+    @Valid
+    @NotNull(message = "당첨 상품은 필수입니다.")
+    @Size(min = 1, message = "당첨 상품은 최소 1개 이상이어야 합니다.")
+    private List<GiveawayAssignRequest> giveaways;
+
     // 상품코드 , 개수 필요할듯
     public SurveyCreateServiceRequest from() {
         return SurveyCreateServiceRequest.builder()
@@ -55,6 +61,8 @@ public class SurveyCreateRequest {
                         questions.stream().map(QuestionCreateRequest::toServiceRequest)
                                 .collect(Collectors.toList())
                 )
+                .giveaways(giveaways.stream().map(GiveawayAssignRequest::toServiceRequest)
+                                .collect(Collectors.toList()))
                 .build();
     }
 }
