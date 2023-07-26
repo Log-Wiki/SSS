@@ -8,12 +8,12 @@ import lombok.Getter;
 public class PaymentResponse {
 
     private final String imp_uid;
-    private final Long orderId;
+    private final String orderId;
     private final Integer orderAmount;
     private final String isSucess;
 
     @Builder
-    private PaymentResponse(String impUid, Long orderId, Integer orderAmount, String isSucess) {
+    private PaymentResponse(String impUid, String orderId, Integer orderAmount, String isSucess) {
         imp_uid = impUid;
         this.orderId = orderId;
         this.orderAmount = orderAmount;
@@ -25,7 +25,7 @@ public class PaymentResponse {
             return null;
         }
 
-        return PaymentResponse.builder().impUid(payment.getImpUid()).orderId(Long.parseLong(payment.getMerchantUid()))
+        return PaymentResponse.builder().impUid(payment.getImpUid()).orderId(payment.getMerchantUid())
                 .orderAmount(payment.getAmount().intValue()).isSucess(payment.getStatus()).build();
     }
 }

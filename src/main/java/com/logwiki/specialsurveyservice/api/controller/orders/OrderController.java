@@ -6,11 +6,14 @@ import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -18,10 +21,12 @@ public class OrderController {
 
     private final RegistOrderService registOrderService;
 
-    @PostMapping("/registOrder")
+    @PostMapping("/registOrder/{userId}")
     public ApiResponse<OrderResponse> registOrder(
-            @RequestBody OrderCreateRequest orderCreateRequest
+            @RequestBody OrderCreateRequest orderCreateRequest,
+            @PathVariable String userId
     ) {
-        return ApiUtils.success(registOrderService.regist(orderCreateRequest.toServiceRequest()));
+        log.info("controller {}",orderCreateRequest.getGiveaways().size());
+        return ApiUtils.success(registOrderService.regist(orderCreateRequest.toServiceRequest(userId)));
     }
 }

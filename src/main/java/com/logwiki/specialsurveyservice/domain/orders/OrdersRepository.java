@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrdersRepository extends JpaRepository<Orders, Long> {
+public interface OrdersRepository extends JpaRepository<Orders, String> {
 
 
-  Optional<Orders> findOneByOrderId(Long OrderId);
+  Optional<Orders> findOneByOrderId(String OrderId);
 }

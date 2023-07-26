@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class OrderCreateServiceRequest {
-
+    private String userId;
     private List<OrderCreateRequest> giveaways;
-
     @Builder
-    private OrderCreateServiceRequest(List<OrderCreateRequest> giveaways) {
+    private OrderCreateServiceRequest(String userId, List<OrderCreateRequest> giveaways) {
+        this.userId = userId;
         this.giveaways = giveaways;
     }
 }

@@ -12,16 +12,16 @@ public class OrderCreateRequest {
 
     private String giveawayName;
     private Integer giveawayNumber;
-
     private List<OrderCreateRequest> giveaways;
 
     @Builder
-    private OrderCreateRequest(String giveawayName , Integer giveawayNumber) {
+    public OrderCreateRequest(String giveawayName, Integer giveawayNumber) {
         this.giveawayName = giveawayName;
         this.giveawayNumber = giveawayNumber;
     }
-    public OrderCreateServiceRequest toServiceRequest() {
+    public OrderCreateServiceRequest toServiceRequest(String userId) {
         return OrderCreateServiceRequest.builder()
+                .userId(userId)
                 .giveaways(giveaways)
                 .build();
     }
