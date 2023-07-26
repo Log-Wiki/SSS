@@ -1,8 +1,7 @@
 name: SSS develop CI/CD
 on:
   push:
-    branches:
-      - ft/git-actions
+    branches: [ main,develop ]
 
 jobs:
   deploy:
