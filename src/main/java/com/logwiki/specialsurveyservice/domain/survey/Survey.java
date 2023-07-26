@@ -78,4 +78,8 @@ public class Survey extends BaseEntity {
     public void addTargetNumbers(List<TargetNumber> targetNumbers) {
         this.targetNumbers = targetNumbers;
     }
+
+    public void addQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
 }
