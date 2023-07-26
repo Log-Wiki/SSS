@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,13 +34,20 @@ public class QuestionAnswer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 
+    private LocalDateTime writeDate;
+
     @Builder
     public QuestionAnswer(Long answerNumber, String shortFormAnswer, Question question,
-            Account account) {
+            Account account, LocalDateTime writeDate) {
         this.answerNumber = answerNumber;
         this.shortFormAnswer = shortFormAnswer;
         this.question = question;
         this.account = account;
+        this.writeDate = writeDate;
+    }
+
+    public void setWriteDate(LocalDateTime writeDate) {
+        this.writeDate = writeDate;
     }
 
 }
