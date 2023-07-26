@@ -11,23 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class QuestionAnswerCreateRequest {
 
+    @NotNull(message = "문항 아이디는 필수입니다.")
+    private Long questionId;
+
     private Long multipleChoiceAnswer;
 
     private String shorFormAnswer;
 
-    @NotNull(message = "문항 번호는 필수입니다.")
-    private Long questionNumber;
-
-    @NotNull(message = "설문 번호는 필수입니다.")
-    private Long surveyNumber;
 
     @Builder
-    public QuestionAnswerCreateRequest(Long multipleChoiceAnswer, String shorFormAnswer,
-                                       Long questionNumber, Long surveyNumber) {
+    public QuestionAnswerCreateRequest(Long questionId, Long multipleChoiceAnswer,
+            String shorFormAnswer,
+            Long questionNumber) {
+        this.questionId = questionId;
         this.multipleChoiceAnswer = multipleChoiceAnswer;
         this.shorFormAnswer = shorFormAnswer;
-        this.questionNumber = questionNumber;
-        this.surveyNumber = surveyNumber;
     }
 
     public QuestionAnswerCreateServiceRequest toServiceRequest() {
@@ -39,7 +37,7 @@ public class QuestionAnswerCreateRequest {
         return QuestionAnswerCreateServiceRequest.builder()
                 .multipleChoiceAnswer(multipleChoiceAnswer)
                 .shorFormAnswer(shorFormAnswer)
-                .questionNumber(questionNumber)
+                .questionId(questionId)
                 .build();
     }
 }
