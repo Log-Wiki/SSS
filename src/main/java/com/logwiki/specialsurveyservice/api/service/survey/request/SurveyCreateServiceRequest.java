@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.survey.request;
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,10 +30,13 @@ public class SurveyCreateServiceRequest {
 
     private List<QuestionCreateServiceRequest> questions;
 
+    private List<GiveawayAssignServiceRequest> giveaways;
+
     @Builder
     public SurveyCreateServiceRequest(String title, LocalDateTime startTime, LocalDateTime endTime,
                                       int headCount, int closedHeadCount, SurveyCategoryType type,
-                                      List<QuestionCreateServiceRequest> questions) {
+                                      List<QuestionCreateServiceRequest> questions,
+                                      List<GiveawayAssignServiceRequest> giveaways) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -40,6 +44,7 @@ public class SurveyCreateServiceRequest {
         this.closedHeadCount = closedHeadCount;
         this.type = type;
         this.questions = questions;
+        this.giveaways = giveaways;
     }
 
     public Survey toEntity(Long userId) {
@@ -50,6 +55,9 @@ public class SurveyCreateServiceRequest {
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)
                 .writer(userId)
+                .type(SurveyCategory.builder()
+                        .type(type)
+                        .build())
                 .questions(questions.stream().map(
                         QuestionCreateServiceRequest::toEntity
                 ).collect(Collectors.toList()))
