@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 public class UserDetailResponse {
 
+    private Long id;
     private String email;
     private Gender gender;
     private String name;
@@ -18,9 +19,11 @@ public class UserDetailResponse {
     private int winningGiveawayCount;
     private int point;
     private LocalDate birthday;
+    private String refreshToken;
 
     @Builder
-    private UserDetailResponse(String email, Gender gender, String name, String phoneNumber, int responseSurveyCount, int createSurveyCount, int winningGiveawayCount, int point, LocalDate birthday) {
+    private UserDetailResponse(Long id, String email, Gender gender, String name, String phoneNumber, int responseSurveyCount, int createSurveyCount, int winningGiveawayCount, int point, LocalDate birthday, String refreshToken) {
+        this.id = id;
         this.email = email;
         this.gender = gender;
         this.name = name;
@@ -30,6 +33,7 @@ public class UserDetailResponse {
         this.winningGiveawayCount = winningGiveawayCount;
         this.point = point;
         this.birthday = birthday;
+        this.refreshToken = refreshToken;
     }
 
     public static UserDetailResponse from(Account account) {
@@ -38,6 +42,7 @@ public class UserDetailResponse {
         }
 
         return UserDetailResponse.builder()
+                .id(account.getId())
                 .email(account.getEmail())
                 .gender(account.getGender())
                 .name(account.getName())
@@ -47,6 +52,7 @@ public class UserDetailResponse {
                 .winningGiveawayCount(account.getWinningGiveawayCount())
                 .point(account.getPoint())
                 .birthday(account.getBirthday())
+                .refreshToken(account.getRefreshToken())
                 .build();
     }
 }
