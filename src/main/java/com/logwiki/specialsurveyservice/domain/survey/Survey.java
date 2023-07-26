@@ -5,14 +5,20 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,20 +45,18 @@ public class Survey extends BaseEntity {
     private SurveyCategory surveyCategory;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "survey_id")
     private List<Question> questions;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "survey_giveaway_id")
     private List<SurveyGiveaway> surveyGiveaways;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "target_number_id")
     private List<TargetNumber> targetNumbers;
 
     @Builder
-    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount, int closedHeadCount,
-                  Long writer, SurveyCategory type, List<Question> questions) {
+    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
+            int closedHeadCount,
+            Long writer, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
