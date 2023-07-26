@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.question;
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerCreateServiceResponse;
+import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.question.Question;
@@ -25,6 +26,7 @@ public class QuestionAnswerService {
     private final QuestionAnswerRepository questionAnswerRepository;
     private final QuestionRepository questionRepository;
     private final AccountRepository accountRepository;
+    private final SurveyResultService surveyResultService;
 
     public List<QuestionAnswerCreateServiceResponse> addQuestionAnswer(
             LocalDateTime writeDate,
@@ -55,7 +57,8 @@ public class QuestionAnswerService {
             }
         }
 
-        return result;
+        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
 
+        return result;
     }
 }
