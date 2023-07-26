@@ -3,15 +3,17 @@ package com.logwiki.specialsurveyservice.domain.SseEmiters;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
+@Slf4j
 @Repository
 public class EmitterRepository {
     public final Map<String , SseEmitter> sseEmitterMap = new ConcurrentHashMap<>();
 
     public SseEmitter save(String id , SseEmitter sseEmitter) {
         sseEmitterMap.put(id , sseEmitter);
+        log.info("repo size : {}", sseEmitterMap.size());
         return sseEmitter;
     }
 
