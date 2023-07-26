@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.accountauthority.AccountAuthority;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,6 +57,9 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<AccountAuthority> authorities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<SurveyResult> surveyResults = new ArrayList<>();
+
     @Builder
     public Account(String email, String password,
             Gender gender, String name,
@@ -89,5 +93,13 @@ public class Account extends BaseEntity {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void increaseResponseSurveyCount() {
+        this.responseSurveyCount++;
+    }
+
+    public void increaseWinningGiveawayCount() {
+        this.winningGiveawayCount++;
     }
 }

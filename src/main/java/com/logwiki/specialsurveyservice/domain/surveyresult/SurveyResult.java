@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.surveyresult;
 
+import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class SurveyResult {
+public class SurveyResult extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,7 @@ public class SurveyResult {
 
     private LocalDateTime endTime;
 
-    private Long submitOrder;
+    private int submitOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
@@ -32,11 +33,21 @@ public class SurveyResult {
     private Account account;
 
     @Builder
-    public SurveyResult(Boolean isWin, LocalDateTime endTime, Long submitOrder, Survey survey, Account account) {
+    private SurveyResult(Boolean isWin, LocalDateTime endTime, int submitOrder, Survey survey, Account account) {
         this.isWin = isWin;
         this.endTime = endTime;
         this.submitOrder = submitOrder;
         this.survey = survey;
         this.account = account;
+    }
+
+    public static SurveyResult create(Boolean isWin, LocalDateTime endTime, int submitOrder, Survey survey, Account account) {
+        return SurveyResult.builder()
+                .isWin(isWin)
+                .endTime(endTime)
+                .submitOrder(submitOrder)
+                .survey(survey)
+                .account(account)
+                .build();
     }
 }
