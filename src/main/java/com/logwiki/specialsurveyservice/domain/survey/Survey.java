@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,6 +46,10 @@ public class Survey extends BaseEntity {
     @JoinColumn(name = "survey_giveaway_id")
     private List<SurveyGiveaway> surveyGiveaways;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "target_number_id")
+    private List<TargetNumber> targetNumbers;
+
     @Builder
     public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount, int closedHeadCount,
                   Long writer, SurveyCategory type, List<Question> questions) {
@@ -64,5 +69,9 @@ public class Survey extends BaseEntity {
 
     public void addSurveyGiveaways(List<SurveyGiveaway> surveyGiveaways) {
         this.surveyGiveaways = surveyGiveaways;
+    }
+
+    public void addTargetNumbers(List<TargetNumber> targetNumbers) {
+        this.targetNumbers = targetNumbers;
     }
 }

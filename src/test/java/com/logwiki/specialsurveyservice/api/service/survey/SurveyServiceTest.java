@@ -133,7 +133,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .title(title)
                 .startTime(LocalDateTime.of(2023, 7, 28, 0, 0))
                 .endTime(LocalDateTime.of(2023, 7, 30, 0, 0))
-                .headCount(50)
+                .headCount(0)
                 .closedHeadCount(closedHeadCount)
                 .type(surveyCategoryType)
                 .questions(questionCreateServiceRequests)
@@ -150,6 +150,9 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         assertThat(saveSurvey.getQuestions().size()).isEqualTo(questionCreateServiceRequests.size());
         assertThat(saveSurvey.getSurveyGiveaways().size()).isEqualTo(giveawayAssignServiceRequests.size());
+        assertThat(saveSurvey.getTargetNumbers().size()).isEqualTo(giveawayAssignServiceRequests.stream()
+                .mapToInt(GiveawayAssignServiceRequest -> giveawayAssignServiceRequest.getCount())
+                .sum());
     }
 
     @DisplayName("설문을 제작할 때는 등록된 당첨 상품을 사용해야 한다.")
