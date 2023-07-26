@@ -33,4 +33,8 @@ insert into account_code (type)
 values ('FIFTIES');
 insert into account_code (type)
 values ('SIXTIES');
+insert into giveaway (name, price)
+values ('COFFEE' , 1300);
+insert into giveaway (name, price)
+values ('CHICKEN' , 20000);
 
