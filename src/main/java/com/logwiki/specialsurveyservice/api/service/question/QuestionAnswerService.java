@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class QuestionAnswerService {
 
@@ -28,6 +27,7 @@ public class QuestionAnswerService {
     private final AccountRepository accountRepository;
     private final SurveyResultService surveyResultService;
 
+    @Transactional
     public List<QuestionAnswerCreateServiceResponse> addQuestionAnswer(
             LocalDateTime writeDate,
             Long surveyId,
