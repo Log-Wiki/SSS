@@ -10,4 +10,6 @@ public interface SurveyResultRepository extends JpaRepository<SurveyResult, Long
 
     @Query(value = "select COUNT(*) from survey_result sr where sr.survey_id = :surveyId", nativeQuery = true)
     int findSubmitCountBy(@Param("surveyId") Long surveyId);
+
+    SurveyResult findSurveyResultByAccount_Id(Long accountId);
 }
