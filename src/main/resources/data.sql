@@ -34,7 +34,7 @@ values ('FIFTIES');
 insert into account_code (type)
 values ('SIXTIES');
 insert into giveaway (name, price)
-values ('COFFEE' , 1300);
+values ('컴포즈커피' , 1300);
 insert into giveaway (name, price)
-values ('CHICKEN' , 20000);
+values ('BBQ후라이드치킨' , 20000);
 
