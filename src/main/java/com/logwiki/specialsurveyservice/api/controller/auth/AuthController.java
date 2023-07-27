@@ -8,6 +8,7 @@ import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
 import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.logwiki.specialsurveyservice.jwt.JwtFilter;
 import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import jakarta.validation.Valid;
@@ -40,18 +41,24 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject()
+                    .authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = tokenProvider.createAccessToken(authentication);
-        String refreshToken = tokenProvider.createRefreshToken(authentication);
-        authService.saveRefreshToken(loginRequest.getEmail(), refreshToken);
+            String accessToken = tokenProvider.createAccessToken(authentication);
+            String refreshToken = tokenProvider.createRefreshToken(authentication);
+            authService.saveRefreshToken(loginRequest.getEmail(), refreshToken);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + accessToken);
 
-        ApiResponse<LoginResponse> apiResponse = ApiUtils.success(new LoginResponse(accessToken, refreshToken));
-        return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
+            ApiResponse<LoginResponse> apiResponse = ApiUtils.success(new LoginResponse(accessToken, refreshToken));
+            return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
+        }
+        catch(Exception e) {
+            throw new BaseException("로그인에 실패했습니다.", 1000);
+        }
     }
 
     @PostMapping("/refresh")
