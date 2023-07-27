@@ -5,10 +5,10 @@ import static org.assertj.core.api.Assertions.*;
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,8 @@ class AuthServiceTest extends IntegrationTestSupport {
         Account account = Account.create(
                 email,
                 "1234",
-                Gender.MALE,
+                AccountCodeType.MAN,
+                AccountCodeType.TWENTIES,
                 "최연재",
                 "010-1234-5678",
                 LocalDate.of(1997, 6, 24),

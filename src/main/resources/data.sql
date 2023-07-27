@@ -5,10 +5,10 @@ insert into authority (type)
 values ('ROLE_ADMIN');
 
 -- 유저(관리자, 일반 사용자) 등록
-insert into account (email, password, gender, name, phone_number, response_survey_count, create_survey_count, winning_giveaway_count, point, birthday, create_at, modified_at)
-values ('admin@naver.com', '$2a$10$SuhlmaC1Rfyn4F7tc0x8duB9YkDjU1PXY2BXI7xtc08hjsI/RmzF.', 'MALE', '최주인', '010-1111-2222', 0, 0, 0, 0, now(), now(), now());
-insert into account (email, password, gender, name, phone_number, response_survey_count, create_survey_count, winning_giveaway_count, point, birthday, create_at, modified_at)
-values ('user@naver.com', '$2a$10$s493xSE6O4c6kS.TStPjIuiuF0nHXjhemDH3YaSzzIBdFb54EuZNS', 'FEMALE', '김유저', '010-3333-4444', 0, 0, 0, 0, now(), now(), now());
+insert into account (email, password, gender, age, name, phone_number, response_survey_count, create_survey_count, winning_giveaway_count, point, birthday, create_at, modified_at)
+values ('admin@naver.com', '$2a$10$SuhlmaC1Rfyn4F7tc0x8duB9YkDjU1PXY2BXI7xtc08hjsI/RmzF.', 'MAN', 'TWENTIES', '최주인', '010-1111-2222', 0, 0, 0, 0, now(), now(), now());
+insert into account (email, password, gender, age, name, phone_number, response_survey_count, create_survey_count, winning_giveaway_count, point, birthday, create_at, modified_at)
+values ('user@naver.com', '$2a$10$s493xSE6O4c6kS.TStPjIuiuF0nHXjhemDH3YaSzzIBdFb54EuZNS', 'WOMAN', 'THIRTIES', '김유저', '010-3333-4444', 0, 0, 0, 0, now(), now(), now());
 
 -- 유저에게 권한 부여
 insert into account_authority (account_id, authority_id, create_at, modified_at)

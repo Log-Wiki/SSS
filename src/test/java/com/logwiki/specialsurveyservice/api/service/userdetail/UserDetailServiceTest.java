@@ -7,10 +7,10 @@ import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.userdetail.response.UserDetailResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import com.logwiki.specialsurveyservice.exception.security.NotFoundAuthenticationException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -45,7 +45,8 @@ class UserDetailServiceTest extends IntegrationTestSupport {
         // given
         String email = "duswo0624@naver.com";
         String password = "1234";
-        Gender gender = Gender.MALE;
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
         String name = "최연재";
         String phoneNumber = "010-1234-5678";
         LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
@@ -53,6 +54,7 @@ class UserDetailServiceTest extends IntegrationTestSupport {
                 .email(email)
                 .password(password)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .birthday(birthday)
@@ -76,7 +78,8 @@ class UserDetailServiceTest extends IntegrationTestSupport {
         // given
         String email = "duswo0624@naver.com";
         String password = "1234";
-        Gender gender = Gender.MALE;
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
         String name = "최연재";
         String phoneNumber = "010-1234-5678";
         LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
@@ -84,6 +87,7 @@ class UserDetailServiceTest extends IntegrationTestSupport {
                 .email(email)
                 .password(password)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .birthday(birthday)
@@ -103,7 +107,8 @@ class UserDetailServiceTest extends IntegrationTestSupport {
         // given
         String email = "duswo0624@naver.com";
         String password = "1234";
-        Gender gender = Gender.MALE;
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
         String name = "최연재";
         String phoneNumber = "010-1234-5678";
         LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
@@ -111,6 +116,7 @@ class UserDetailServiceTest extends IntegrationTestSupport {
                 .email(email)
                 .password(password)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .birthday(birthday)
