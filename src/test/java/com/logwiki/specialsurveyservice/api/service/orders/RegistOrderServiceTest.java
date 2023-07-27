@@ -13,6 +13,7 @@ import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayRe
 import com.logwiki.specialsurveyservice.api.service.order.RegistOrderService;
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
+import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
@@ -43,7 +44,10 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
 
         String userId = "ksr4037@naver.com";
         List<OrderCreateRequest> giveaways = new ArrayList<>();
-
+        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
+        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
+        giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways).build();
         // when
         OrderResponse saveOrder = registOrderService.regist(request);
@@ -51,8 +55,9 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
         // then
         assertThat(saveOrder).isNotNull();
         assertThat(saveOrder)
-                .extracting("orderId", "orderAmount", "isSuccess")
-                .contains("ksr4037@gmail.com", 26000 , true);
+                .extracting( "orderAmount", "isSuccess")
+                .contains( 43900 , false);
+
     }
 
 
