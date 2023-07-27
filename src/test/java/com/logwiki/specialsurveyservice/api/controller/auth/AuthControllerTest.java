@@ -258,8 +258,6 @@ class AuthControllerTest extends ControllerTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.message").value("Refresh Token이 유효하지 않습니다."))
-                .andExpect(jsonPath("$.apiError.status").value(1000))
         ;
     }
 

@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import java.time.LocalDate;
 import java.time.Month;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,8 @@ class AccountControllerTest extends ControllerTestSupport {
     // given
     String email = "duswo0624@naver.com";
     String password = "1234";
-    Gender gender = Gender.MALE;
+    AccountCodeType gender = AccountCodeType.MAN;
+    AccountCodeType age = AccountCodeType.TWENTIES;
     String name = "최연재";
     String phoneNumber = "010-3499-4698";
     LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
@@ -36,6 +37,7 @@ class AccountControllerTest extends ControllerTestSupport {
     AccountResponse accountResponse = AccountResponse.builder()
         .email(email)
         .gender(gender)
+        .age(age)
         .name(name)
         .phoneNumber(phoneNumber)
         .birthday(birthday)
@@ -45,7 +47,7 @@ class AccountControllerTest extends ControllerTestSupport {
     when(accountService.signup(any())).thenReturn(accountResponse);
 
     AccountCreateRequest request =
-        createAccountCreateRequest(email, password, gender, name, phoneNumber, birthday);
+        createAccountCreateRequest(email, password, gender, age, name, phoneNumber, birthday);
 
     // when // then
     mockMvc.perform(
@@ -71,7 +73,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutEmail() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest(null, "1234", Gender.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest(null, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -94,7 +96,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithWrongEmailFormat() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("emailNotFollowEmailFormat", "1234", Gender.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("emailNotFollowEmailFormat", "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -117,7 +119,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutPassword() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", null, Gender.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", null, AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -140,7 +142,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithPasswordNotInRange1() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "12", Gender.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "12", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -163,7 +165,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithPasswordNotInRange2() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "0123456789012345678901234567891", Gender.MALE, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "0123456789012345678901234567891", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -186,7 +188,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutgender() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "1234", null, "최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "1234", null, AccountCodeType.TWENTIES,"최연재", "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -209,7 +211,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutName() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "1234", Gender.MALE, null, "010-3499-4698", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, null, "010-3499-4698", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -232,7 +234,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutPhoneNumber() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "1234", Gender.MALE, "최연재", null, LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", null, LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -255,7 +257,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithPhoneNumberNotInRange() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "1234", Gender.MALE, "최연재", "010-1234-56789", LocalDate.of(1997, 6, 24));
+        createAccountCreateRequest("duswo0624@naver.com", "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-1234-56789", LocalDate.of(1997, 6, 24));
 
     // when // then
     mockMvc.perform(
@@ -278,7 +280,7 @@ class AccountControllerTest extends ControllerTestSupport {
   void signupWithoutBirthday() throws Exception {
     // given
     AccountCreateRequest request =
-        createAccountCreateRequest("duswo0624@naver.com", "1234", Gender.MALE, "최연재", "010-1234-5678", null);
+        createAccountCreateRequest("duswo0624@naver.com", "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재", "010-1234-5678", null);
 
     // when // then
     mockMvc.perform(
@@ -296,11 +298,12 @@ class AccountControllerTest extends ControllerTestSupport {
   }
 
 
-  private AccountCreateRequest createAccountCreateRequest(String email, String password, Gender gender, String name, String phoneNumber, LocalDate birthday) {
+  private AccountCreateRequest createAccountCreateRequest(String email, String password, AccountCodeType gender, AccountCodeType age, String name, String phoneNumber, LocalDate birthday) {
     return AccountCreateRequest.builder()
         .email(email)
         .password(password)
         .gender(gender)
+        .age(age)
         .name(name)
         .phoneNumber(phoneNumber)
         .birthday(birthday)

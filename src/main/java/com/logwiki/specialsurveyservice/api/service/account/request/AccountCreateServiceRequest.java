@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.account.request;
 
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,9 @@ public class AccountCreateServiceRequest {
 
     private String password;
 
-    private Gender gender;
+    private AccountCodeType gender;
+
+    private AccountCodeType age;
 
     private String name;
 
@@ -23,11 +25,12 @@ public class AccountCreateServiceRequest {
     private LocalDate birthday;
 
     @Builder
-    private AccountCreateServiceRequest(String email, String password, Gender gender, String name,
-            String phoneNumber, LocalDate birthday) {
+    private AccountCreateServiceRequest(String email, String password, AccountCodeType gender,
+            AccountCodeType age, String name, String phoneNumber, LocalDate birthday) {
         this.email = email;
         this.password = password;
         this.gender = gender;
+        this.age = age;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;

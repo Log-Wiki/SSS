@@ -6,10 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import com.logwiki.specialsurveyservice.exception.account.DuplicatedAccountException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -42,7 +42,8 @@ class AccountServiceTest extends IntegrationTestSupport {
     // given
     String email = "duswo0624@naver.com";
     String password = "1234";
-    Gender gender = Gender.MALE;
+    AccountCodeType gender = AccountCodeType.MAN;
+    AccountCodeType age = AccountCodeType.TWENTIES;
     String name = "최연재";
     String phoneNumber = "010-1234-5678";
     LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
@@ -50,6 +51,7 @@ class AccountServiceTest extends IntegrationTestSupport {
         .email(email)
         .password(password)
         .gender(gender)
+        .age(age)
         .name(name)
         .phoneNumber(phoneNumber)
         .birthday(birthday)
@@ -75,7 +77,8 @@ class AccountServiceTest extends IntegrationTestSupport {
         DynamicTest.dynamicTest("이미 가입된 계정이 없는 경우 회원 가입을 할 수 있다.", () -> {
           // given
           String password1 = "1234";
-          Gender gender1 = Gender.MALE;
+          AccountCodeType gender1 = AccountCodeType.MAN;
+          AccountCodeType age1 = AccountCodeType.TWENTIES;
           String name1 = "최연재";
           String phoneNumber1 = "010-1234-5678";
           LocalDate birthday1 = LocalDate.of(1997, Month.JUNE, 24);
@@ -84,6 +87,7 @@ class AccountServiceTest extends IntegrationTestSupport {
               .email(email)
               .password(password1)
               .gender(gender1)
+              .age(age1)
               .name(name1)
               .phoneNumber(phoneNumber1)
               .birthday(birthday1)
@@ -103,7 +107,8 @@ class AccountServiceTest extends IntegrationTestSupport {
           // given
           String sameEmail = email;
           String password2 = "5678";
-          Gender gender2 = Gender.FEMALE;
+          AccountCodeType gender2 = AccountCodeType.WOMAN;
+          AccountCodeType age2 = AccountCodeType.THIRTIES;
           String name2 = "홍길동";
           String phoneNumber2 = "010-5678-1234";
           LocalDate birthday2 = LocalDate.of(1990, Month.JANUARY, 1);
@@ -112,6 +117,7 @@ class AccountServiceTest extends IntegrationTestSupport {
               .email(sameEmail)
               .password(password2)
               .gender(gender2)
+              .age(age2)
               .name(name2)
               .phoneNumber(phoneNumber2)
               .birthday(birthday2)
