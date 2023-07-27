@@ -21,7 +21,7 @@ public class OrderController {
 
     private final RegistOrderService registOrderService;
 
-    @PostMapping("/registOrder/{userId}")
+    @PostMapping("/order/regist/{userId}")
     public ApiResponse<OrderResponse> registOrder(
             @RequestBody OrderCreateRequest orderCreateRequest,
             @PathVariable String userId
