@@ -34,10 +34,11 @@ public class Orders extends BaseEntity {
      this.isSuccess = isSuccess;
   }
 
-    public static Orders create(String orderId, Integer orderAmount) {
+    public static Orders create(String orderId, Integer orderAmount , Boolean isSuccess) {
         return Orders.builder()
                 .orderId(orderId)
                 .orderAmount(orderAmount)
+                .isSuccess(isSuccess)
                 .build();
     }
 }

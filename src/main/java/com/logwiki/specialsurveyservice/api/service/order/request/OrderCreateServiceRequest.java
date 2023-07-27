@@ -11,9 +11,11 @@ import lombok.NoArgsConstructor;
 public class OrderCreateServiceRequest {
     private String userId;
     private List<OrderCreateRequest> giveaways;
+    private Long requestTime;
     @Builder
-    private OrderCreateServiceRequest(String userId, List<OrderCreateRequest> giveaways) {
+    private OrderCreateServiceRequest(String userId, List<OrderCreateRequest> giveaways , Long requestTime) {
         this.userId = userId;
         this.giveaways = giveaways;
+        this.requestTime = requestTime;
     }
 }

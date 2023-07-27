@@ -27,6 +27,6 @@ public class OrderController {
             @PathVariable String userId
     ) {
         log.info("controller {}",orderCreateRequest.getGiveaways().size());
-        return ApiUtils.success(registOrderService.regist(orderCreateRequest.toServiceRequest(userId)));
+        return ApiUtils.success(registOrderService.regist(orderCreateRequest.toServiceRequest(userId,System.currentTimeMillis())));
     }
 }

@@ -19,10 +19,11 @@ public class OrderCreateRequest {
         this.giveawayName = giveawayName;
         this.giveawayNumber = giveawayNumber;
     }
-    public OrderCreateServiceRequest toServiceRequest(String userId) {
+    public OrderCreateServiceRequest toServiceRequest(String userId , Long requestTime) {
         return OrderCreateServiceRequest.builder()
                 .userId(userId)
                 .giveaways(giveaways)
+                .requestTime(requestTime)
                 .build();
     }
 }

@@ -33,8 +33,9 @@ public class RegistOrderService {
 
     log.info(String.valueOf(orderAmount));
     Orders order = Orders.create(
-            request.getUserId() + "_" + System.currentTimeMillis(),
-        orderAmount
+            request.getUserId() + "_" + request.getRequestTime(),
+            orderAmount,
+            false
     );
 
     return OrderResponse.from(orderRepository.save(order));
