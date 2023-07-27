@@ -244,7 +244,7 @@ class AuthControllerTest extends ControllerTestSupport {
     @Test
     void refreshWithInvalidRefreshToken() throws Exception {
         // given
-        given(tokenProvider.validateRefreshToken(any())).willReturn(false);
+        given(tokenProvider.validateRefreshToken(any())).willThrow(IllegalArgumentException.class);
 
         RefreshRequest refreshRequest = createRefreshRequest("duswo0624@naver.com", "1234", "invalid-refresh-token");
 
