@@ -7,10 +7,14 @@ import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberSer
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
+import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
@@ -32,11 +36,27 @@ public class SurveyService {
 
     private final TargetNumberService targetNumberService;
 
+    private final AccountCodeRepository accountCodeRepository;
+
+    private final SurveyTargetRepository surveyTargetRepository;
+
+
     public String addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
                 .orElseThrow(() -> new BaseException("유저를 찾지못했습니다.", 1000));
 
         Survey survey = dto.toEntity(account.getId());
+
+        for (Long accountCodeId : dto.getSurveyTarget()) {
+            AccountCode accountCode = accountCodeRepository.findById(accountCodeId).orElseThrow(
+                    () -> new BaseException("없는 나이,성별 코드 입니다.", 3007)
+            );
+            SurveyTarget surveyTarget = SurveyTarget.builder()
+                    .survey(survey)
+                    .accountCode(accountCode)
+                    .build();
+            surveyTargetRepository.save(surveyTarget);
+        }
 
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = dto.getGiveaways();
         List<SurveyGiveaway> surveyGiveaways = getSurveyGiveaways(survey,
