@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.account.Account;
@@ -41,7 +42,7 @@ public class SurveyService {
     private final SurveyTargetRepository surveyTargetRepository;
 
 
-    public String addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
+    public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
                 .orElseThrow(() -> new BaseException("유저를 찾지못했습니다.", 1000));
 
@@ -69,7 +70,7 @@ public class SurveyService {
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
-        return "success";
+        return SurveyResponse.from(survey);
     }
 
     private List<SurveyGiveaway> getSurveyGiveaways(Survey survey,
