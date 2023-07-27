@@ -41,6 +41,10 @@ public class QuestionAnswerService {
 
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
+        if (questions.size() != dto.size()) {
+            throw new BaseException("모든 문항에 답변을 해야합니다.", 3007);
+        }
+        
         for (QuestionAnswerCreateServiceRequest answer : dto) {
             boolean notFoundQuestion = true;
             for (Question question : questions) {
