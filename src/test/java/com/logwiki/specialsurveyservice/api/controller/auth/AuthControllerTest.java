@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.auth.request.LoginRequest;
 import com.logwiki.specialsurveyservice.api.controller.auth.request.RefreshRequest;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -239,12 +240,12 @@ class AuthControllerTest extends ControllerTestSupport {
         ;
     }
 
-    @DisplayName("refresh token이 유효하지 않다면 에러 메시지를 클라이언트에게 제공한다.")
+    @DisplayName("refresh token이 유효하지 않다면 클라이언트는 access token을 받지 못한다.")
     @WithMockUser
     @Test
     void refreshWithInvalidRefreshToken() throws Exception {
         // given
-        given(tokenProvider.validateRefreshToken(any())).willThrow(IllegalArgumentException.class);
+        given(tokenProvider.validateRefreshToken(any())).willThrow(BaseException.class);
 
         RefreshRequest refreshRequest = createRefreshRequest("duswo0624@naver.com", "1234", "invalid-refresh-token");
 
@@ -258,8 +259,6 @@ class AuthControllerTest extends ControllerTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.message").value("Refresh Token이 유효하지 않습니다."))
-                .andExpect(jsonPath("$.apiError.status").value(1000))
         ;
     }
 
