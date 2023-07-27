@@ -14,7 +14,7 @@ public class PaymentResponse {
 
     @Builder
     private PaymentResponse(String impUid, String orderId, Integer orderAmount, String isSucess) {
-        imp_uid = impUid;
+        this.imp_uid = impUid;
         this.orderId = orderId;
         this.orderAmount = orderAmount;
         this.isSucess = isSucess;
