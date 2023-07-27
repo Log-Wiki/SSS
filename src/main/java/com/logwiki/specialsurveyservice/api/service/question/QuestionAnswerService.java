@@ -2,7 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.question;
 
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerCreateServiceResponse;
+import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
@@ -28,7 +28,7 @@ public class QuestionAnswerService {
     private final SurveyResultService surveyResultService;
 
     @Transactional
-    public List<QuestionAnswerCreateServiceResponse> addQuestionAnswer(
+    public List<QuestionAnswerResponse> addQuestionAnswer(
             LocalDateTime writeDate,
             Long surveyId,
             String userEmail,
@@ -39,7 +39,7 @@ public class QuestionAnswerService {
         List<Question> questions = questionRepository.findBySurveyId(surveyId).orElseThrow(
                 () -> new BaseException("없는 설문입니다.", 2005));
 
-        List<QuestionAnswerCreateServiceResponse> result = new ArrayList<>();
+        List<QuestionAnswerResponse> result = new ArrayList<>();
 
         for (QuestionAnswerCreateServiceRequest answer : dto) {
             boolean notFoundQuestion = true;
@@ -48,7 +48,7 @@ public class QuestionAnswerService {
                     QuestionAnswer questionAnswer = answer.toEntity(question, account);
                     questionAnswer.setWriteDate(writeDate);
                     questionAnswerRepository.save(questionAnswer);
-                    result.add(new QuestionAnswerCreateServiceResponse(questionAnswer));
+                    result.add(QuestionAnswerResponse.from(questionAnswer));
                     notFoundQuestion = false;
                 }
             }
