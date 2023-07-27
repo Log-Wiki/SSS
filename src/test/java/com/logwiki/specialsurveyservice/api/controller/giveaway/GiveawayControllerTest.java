@@ -234,7 +234,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        put("/api/giveaway/{id}", id)
+                        patch("/api/giveaway/{id}", id)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -260,7 +260,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        put("/api/giveaway/{id}", 1)
+                        patch("/api/giveaway/{id}", 1)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -285,7 +285,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        put("/api/giveaway/{id}", 1)
+                        patch("/api/giveaway/{id}", 1)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -309,7 +309,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        put("/api/giveaway/{id}", 1)
+                        patch("/api/giveaway/{id}", 1)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
@@ -334,7 +334,7 @@ class GiveawayControllerTest extends ControllerTestSupport {
 
         // when // then
         mockMvc.perform(
-                        put("/api/giveaway/{id}", 1)
+                        patch("/api/giveaway/{id}", 1)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
