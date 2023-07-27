@@ -19,7 +19,7 @@ class TargetNumberServiceTest extends IntegrationTestSupport {
     @Autowired
     TargetNumberService targetNumberService;
 
-    @DisplayName("")
+    @DisplayName("당첨 상품과 마감인원수를 통해 당첨 번호를 추출한다.")
     @Test
     void createTargetNumbers() {
         GiveawayAssignServiceRequest giveawayAssignServiceRequest1 = GiveawayAssignServiceRequest.builder()
