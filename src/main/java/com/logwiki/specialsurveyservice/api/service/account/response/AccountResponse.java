@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.account.response;
 
 import com.logwiki.specialsurveyservice.domain.account.Account;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +11,8 @@ public class AccountResponse {
 
     private Long id;
     private String email;
-    private Gender gender;
+    private AccountCodeType gender;
+    private AccountCodeType age;
     private String name;
     private String phoneNumber;
     private int responseSurveyCount;
@@ -22,12 +23,13 @@ public class AccountResponse {
     private String refreshToken;
 
     @Builder
-    private AccountResponse(Long id, String email, Gender gender, String name, String phoneNumber,
-                            int responseSurveyCount, int createSurveyCount, int winningGiveawayCount,
-                            int point, LocalDate birthday, String refreshToken) {
+    private AccountResponse(Long id, String email, AccountCodeType gender, AccountCodeType age,
+                            String name, String phoneNumber, int responseSurveyCount, int createSurveyCount,
+                             int winningGiveawayCount, int point, LocalDate birthday, String refreshToken) {
         this.id = id;
         this.email = email;
         this.gender = gender;
+        this.age = age;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.responseSurveyCount = responseSurveyCount;
@@ -47,6 +49,7 @@ public class AccountResponse {
                 .id(account.getId())
                 .email(account.getEmail())
                 .gender(account.getGender())
+                .age(account.getAge())
                 .name(account.getName())
                 .phoneNumber(account.getPhoneNumber())
                 .responseSurveyCount(account.getResponseSurveyCount())

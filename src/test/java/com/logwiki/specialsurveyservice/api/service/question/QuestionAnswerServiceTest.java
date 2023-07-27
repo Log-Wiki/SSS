@@ -2,9 +2,9 @@ package com.logwiki.specialsurveyservice.api.service.question;
 
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +46,8 @@ class QuestionAnswerServiceTest {
         Account account = Account.create(
                 email,
                 "1234",
-                Gender.MALE,
+                AccountCodeType.MAN,
+                AccountCodeType.TWENTIES,
                 "최연재",
                 "010-1234-5678",
                 LocalDate.of(1997, 6, 24),

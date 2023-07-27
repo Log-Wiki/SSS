@@ -2,8 +2,8 @@ package com.logwiki.specialsurveyservice.domain.account;
 
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.accountauthority.AccountAuthority;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -36,7 +36,10 @@ public class Account extends BaseEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private AccountCodeType gender;
+
+    @Enumerated(EnumType.STRING)
+    private AccountCodeType age;
 
     private String name;
 
@@ -62,12 +65,13 @@ public class Account extends BaseEntity {
 
     @Builder
     public Account(String email, String password,
-            Gender gender, String name,
+            AccountCodeType gender, AccountCodeType age, String name,
             String phoneNumber, LocalDate birthday,
             List<Authority> authorities) {
         this.email = email;
         this.password = password;
         this.gender = gender;
+        this.age = age;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthday = birthday;
@@ -77,13 +81,14 @@ public class Account extends BaseEntity {
     }
 
     public static Account create(String email, String password,
-            Gender gender, String name,
-            String phoneNumber, LocalDate birthday,
+            AccountCodeType gender, AccountCodeType age,
+            String name, String phoneNumber, LocalDate birthday,
             List<Authority> authorities) {
         return Account.builder()
                 .email(email)
                 .password(password)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .birthday(birthday)

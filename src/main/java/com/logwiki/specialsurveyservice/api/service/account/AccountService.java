@@ -36,6 +36,7 @@ public class AccountService {
                 request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getGender(),
+                request.getAge(),
                 request.getName(),
                 request.getPhoneNumber(),
                 request.getBirthday(),

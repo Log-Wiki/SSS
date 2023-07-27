@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.service.userdetail.response.UserDetailResponse;
-import com.logwiki.specialsurveyservice.domain.gender.Gender;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import java.time.LocalDate;
 import java.time.Month;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,8 @@ class UserDetailControllerTest extends ControllerTestSupport {
     void getMyUserInfo() throws Exception {
         // given
         String email = "duswo0624@naver.com";
-        Gender gender = Gender.MALE;
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
         String name = "최연재";
         String phoneNumber = "010-1234-5678";
         int responseSurveyCount = 3;
@@ -37,6 +38,7 @@ class UserDetailControllerTest extends ControllerTestSupport {
         UserDetailResponse userDetailResponse = UserDetailResponse.builder()
                 .email(email)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .responseSurveyCount(responseSurveyCount)
@@ -75,7 +77,8 @@ class UserDetailControllerTest extends ControllerTestSupport {
     void getUserInfo() throws Exception {
         // given
         String email = "duswo0624@naver.com";
-        Gender gender = Gender.MALE;
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
         String name = "최연재";
         String phoneNumber = "010-1234-5678";
         int responseSurveyCount = 3;
@@ -87,6 +90,7 @@ class UserDetailControllerTest extends ControllerTestSupport {
         UserDetailResponse userDetailResponse = UserDetailResponse.builder()
                 .email(email)
                 .gender(gender)
+                .age(age)
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .responseSurveyCount(responseSurveyCount)
