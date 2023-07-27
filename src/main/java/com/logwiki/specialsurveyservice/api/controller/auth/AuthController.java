@@ -5,7 +5,6 @@ import com.logwiki.specialsurveyservice.api.controller.auth.request.RefreshReque
 import com.logwiki.specialsurveyservice.api.controller.auth.response.LoginResponse;
 import com.logwiki.specialsurveyservice.api.controller.auth.response.RefreshResponse;
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
-import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import com.logwiki.specialsurveyservice.exception.BaseException;
