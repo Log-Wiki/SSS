@@ -36,4 +36,12 @@ public class GlobalExceptionHandler {
                 1000
         );
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiResponse<?> illegalArgumentException(IllegalArgumentException e) {
+        return ApiUtils.error(
+                e.getMessage(),
+                1000
+        );
+    }
 }
