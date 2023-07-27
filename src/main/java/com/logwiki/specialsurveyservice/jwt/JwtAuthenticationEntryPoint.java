@@ -32,9 +32,16 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
 
         ApiResponse<?> apiResponse = ApiUtils.error(
-            "인증 과정을 실패하였습니다.",
+            authException.getMessage(),
             1000
         );
+
+        if (authException instanceof BadCredentialsException) {
+            apiResponse = ApiUtils.error(
+                    "회원 정보가 올바르지 않습니다.",
+                    1000
+            );
+        }
 
         String json = objectMapper.writeValueAsString(apiResponse);
         PrintWriter writer = response.getWriter();
