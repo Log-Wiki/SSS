@@ -18,7 +18,7 @@ public class PaymentAuthenticationRequest {
 
 
     @Builder
-    private PaymentAuthenticationRequest(String orderId , String imp_uid) {
+    public PaymentAuthenticationRequest(String orderId, String imp_uid) {
         this.orderId = orderId;
         this.imp_uid = imp_uid;
     }
