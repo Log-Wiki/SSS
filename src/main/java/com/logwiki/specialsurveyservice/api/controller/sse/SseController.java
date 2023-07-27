@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.controller.sse;
 
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SseUpdateInfo;
 import com.logwiki.specialsurveyservice.api.service.sse.SseConnectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -18,16 +19,18 @@ public class SseController {
     public SseController(SseConnectService sseConnectService) {
         this.sseConnectService = sseConnectService;
     }
-    @GetMapping(value = "/subscribe/{login_id}/{survey_id}" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter connect(@PathVariable Long login_id , @PathVariable Long survey_id) {
+    @GetMapping(value = "/subscribe/{survey_id}" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter connect(@PathVariable Long survey_id) {
         log.info("connect request");
-        SseEmitter sseEmitter = new SseEmitter(60 * 1000L);
-        sseEmitter = sseConnectService.subscribe(login_id, survey_id,sseEmitter);
+        SseEmitter sseEmitter = new SseEmitter(10 * 60 * 1000L);
+        sseEmitter = sseConnectService.subscribe((long) (Math.random()*10000), survey_id,sseEmitter);
         return sseEmitter;
     }
 
     @GetMapping(value = "/updateTest", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public void updateTest(){
+        log.info("update");
+        sseConnectService.refreshSurveyFinisher(335L,new SseUpdateInfo(123L,"toki","소금빵",true));
         sseConnectService.refreshSurveyProbability(335L,"67");
     }
 }

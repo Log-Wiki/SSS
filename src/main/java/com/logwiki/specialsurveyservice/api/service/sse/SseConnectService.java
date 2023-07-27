@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.sse;
 
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SseUpdateInfo;
 import com.logwiki.specialsurveyservice.domain.SseEmiters.EmitterRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class SseConnectService {
         });
     }
 
-    public void refreshSurveyFinisher(Long survey_id , String data) {
+    public void refreshSurveyFinisher(Long survey_id , SseUpdateInfo data) {
         Map<String, SseEmitter> targets = emitterRepository.findAllStartWithById(String.valueOf(survey_id));
         targets.forEach((key , value) -> {
             try {
