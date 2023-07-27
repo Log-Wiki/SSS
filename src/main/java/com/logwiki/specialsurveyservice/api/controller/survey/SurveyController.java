@@ -22,7 +22,6 @@ public class SurveyController {
     @PostMapping("/survey")
     public ApiResponse<?> surveyAdd(@Valid @RequestBody SurveyCreateRequest dto, Authentication authentication) {
         String userId = authentication.getName();
-        surveyService.addSurvey(userId, dto.from());
-        return ApiUtils.success(dto.from());
+        return ApiUtils.success(surveyService.addSurvey(userId, dto.from()));
     }
 }

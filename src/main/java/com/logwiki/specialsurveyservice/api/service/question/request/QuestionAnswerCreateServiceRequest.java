@@ -11,22 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class QuestionAnswerCreateServiceRequest {
 
-    private String userEmail;
+    private Long questionId;
 
     private Long multipleChoiceAnswer;
 
     private String shorFormAnswer;
-
-    private Long questionNumber;
-
+    
     @Builder
-    public QuestionAnswerCreateServiceRequest(String userEmail, Long multipleChoiceAnswer,
-            String shorFormAnswer,
-            Long questionNumber) {
-        this.userEmail = userEmail;
+    public QuestionAnswerCreateServiceRequest(Long questionId, Long multipleChoiceAnswer,
+            String shorFormAnswer) {
+        this.questionId = questionId;
         this.multipleChoiceAnswer = multipleChoiceAnswer;
         this.shorFormAnswer = shorFormAnswer;
-        this.questionNumber = questionNumber;
     }
 
     public QuestionAnswer toEntity(Question question, Account account) {

@@ -3,6 +3,9 @@ package com.logwiki.specialsurveyservice.domain.survey;
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,11 +40,20 @@ public class Survey extends BaseEntity {
     private SurveyCategory surveyCategory;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "survey_id")
     private List<Question> questions;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SurveyGiveaway> surveyGiveaways;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TargetNumber> targetNumbers;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SurveyResult> surveyResults;
+
     @Builder
-    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount, int closedHeadCount,
+    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
+                  int closedHeadCount,
                   Long writer, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
@@ -55,5 +67,21 @@ public class Survey extends BaseEntity {
 
     public void addCategory(SurveyCategory surveyCategory) {
         this.surveyCategory = surveyCategory;
+    }
+
+    public void addSurveyGiveaways(List<SurveyGiveaway> surveyGiveaways) {
+        this.surveyGiveaways = surveyGiveaways;
+    }
+
+    public void addTargetNumbers(List<TargetNumber> targetNumbers) {
+        this.targetNumbers = targetNumbers;
+    }
+
+    public void addQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    public void addSurveyResults(List<SurveyResult> surveyResults) {
+        this.surveyResults = surveyResults;
     }
 }
