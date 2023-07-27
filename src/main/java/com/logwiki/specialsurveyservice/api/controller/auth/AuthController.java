@@ -5,7 +5,6 @@ import com.logwiki.specialsurveyservice.api.controller.auth.request.RefreshReque
 import com.logwiki.specialsurveyservice.api.controller.auth.response.LoginResponse;
 import com.logwiki.specialsurveyservice.api.controller.auth.response.RefreshResponse;
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
-import com.logwiki.specialsurveyservice.api.utils.ApiError;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import com.logwiki.specialsurveyservice.exception.BaseException;
@@ -63,10 +62,16 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<RefreshResponse>> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
-        if(tokenProvider.validateRefreshToken(refreshRequest.getRefreshToken())) {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(refreshRequest.getEmail(), refreshRequest.getPassword());
+        try {
+            tokenProvider.validateRefreshToken(refreshRequest.getRefreshToken());
+        }
+        catch (Exception e) {
+            throw new BaseException("Refresh Token이 유효하지 않습니다.", 1000);
+        }
 
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(refreshRequest.getEmail(), refreshRequest.getPassword());
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -78,10 +83,9 @@ public class AuthController {
             ApiResponse<RefreshResponse> apiResponse = ApiUtils.success(new RefreshResponse(accessToken));
             return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
         }
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        ApiResponse apiResponse = ApiUtils.error(new ApiError("Refresh Token이 유효하지 않습니다.", 1000));
-        return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
+        catch (Exception e) {
+            throw new BaseException("회원 정보가 올바르지 않습니다.", 1000);
+        }
     }
 
     @GetMapping("/hello")
