@@ -55,7 +55,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7.1'
 }
 
-tasks.named('test') {
+test {
 	jacoco {
 		destinationFile = file("$buildDir/jacoco/jacoco.exec")
 	}
