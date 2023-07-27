@@ -1,20 +1,31 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
 
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SseUpdateInfo;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerCreateServiceResponse;
+import com.logwiki.specialsurveyservice.api.service.sse.SseConnectService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
+import com.logwiki.specialsurveyservice.api.service.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
+import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
+import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +38,9 @@ public class QuestionAnswerService {
     private final QuestionRepository questionRepository;
     private final AccountRepository accountRepository;
     private final SurveyResultService surveyResultService;
+    private final SseConnectService sseConnectService;
+    private final SurveyRepository surveyRepository;
+    private final TargetNumberRepository targetNumberRepository;
 
     public List<QuestionAnswerCreateServiceResponse> addQuestionAnswer(
             LocalDateTime writeDate,
@@ -57,7 +71,48 @@ public class QuestionAnswerService {
             }
         }
 
-        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
+        SurveyResultResponse surveyResultResponse = surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
+
+
+        Survey targetSurvey = surveyRepository.getReferenceById(surveyId);
+
+        if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            List<SurveyGiveaway> surveyGiveaways = targetSurvey.getSurveyGiveaways();
+            int giveawayNum = 0;
+            for (SurveyGiveaway sg : surveyGiveaways) {
+                giveawayNum += sg.getCount();
+            }
+            double percentage = 0.0;
+            if (giveawayNum >= targetSurvey.getHeadCount()) {
+                percentage = 100.0;
+            } else {
+                percentage = (double) (giveawayNum / targetSurvey.getHeadCount());
+            }
+            sseConnectService.refreshSurveyProbability(surveyId, String.valueOf(percentage));
+        }
+
+
+
+        String giveawayName = "none";
+        Boolean isWin = false;
+        if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)){
+            isWin = surveyResultResponse.getIsWin();
+        }
+        Optional<TargetNumber> targetNumber = targetNumberRepository.findFirstBySurveyAndNumber(
+                targetSurvey,
+                surveyResultResponse.getSubmitOrder());
+        if (targetNumber.isPresent()) {
+            giveawayName = targetNumber.get().getGiveaway().getName();
+        } else {
+            giveawayName = targetSurvey.getSurveyGiveaways().get(0).getGiveaway().getName();
+        }
+        sseConnectService.refreshSurveyFinisher(surveyId, SseUpdateInfo.builder()
+                .answerTime(writeDate)
+                .giveAwayName(giveawayName)
+                .isWin(isWin)
+                .name(account.getName()).build());
+
+
 
         return result;
     }
