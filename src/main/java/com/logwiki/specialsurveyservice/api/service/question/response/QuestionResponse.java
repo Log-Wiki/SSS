@@ -39,6 +39,15 @@ public class QuestionResponse {
         if (question == null) {
             return null;
         }
+        if (question.getMultipleChoice() == null) {
+            return QuestionResponse.builder()
+                    .id(question.getId())
+                    .questionNumber(question.getQuestionNumber())
+                    .content(question.getContent())
+                    .imgAddress(question.getImgAddress())
+                    .type(question.getType())
+                    .build();
+        }
         return QuestionResponse.builder()
                 .id(question.getId())
                 .questionNumber(question.getQuestionNumber())
