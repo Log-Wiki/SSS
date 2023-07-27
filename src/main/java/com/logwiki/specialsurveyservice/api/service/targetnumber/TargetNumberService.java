@@ -1,17 +1,16 @@
 package com.logwiki.specialsurveyservice.api.service.targetnumber;
 
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.utils.Randoms;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
-import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class TargetNumberService {
 
     private final GiveawayRepository giveawayRepository;
 
-    private final TargetNumberRepository targetNumberRepository;
+    private static final int START_RANDOM_NUMBER = 1;
 
     public List<TargetNumber> createTargetNumbers(TargetNumberCreateServiceRequest request) {
         Map<Long, Integer> giveaways = request.getGiveaways();
@@ -37,17 +36,19 @@ public class TargetNumberService {
 
     private static Map<Integer, Long> getTargetNumbers(TargetNumberCreateServiceRequest request,
             Map<Long, Integer> giveaways) {
+        int closedHeadCount = request.getClosedHeadCount();
+        int totalGiveawayCount = request.getGiveaways().values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+        List<Integer> randomNumbers = Randoms.pickUniqueNumbersInRange(START_RANDOM_NUMBER, closedHeadCount,
+                totalGiveawayCount);
+
         Map<Integer, Long> targetNumbers = new HashMap<>();
+        int idx = 0;
         for (Long giveawayId : giveaways.keySet()) {
             int giveawayCount = giveaways.get(giveawayId);
             while (giveawayCount > 0) {
-                int randomNumber = ThreadLocalRandom.current()
-                        .nextInt(1, request.getClosedHeadCount());
-                if (targetNumbers.containsKey(randomNumber)) {
-                    continue;
-                }
-
-                targetNumbers.put(randomNumber, giveawayId);
+                targetNumbers.put(randomNumbers.get(idx++), giveawayId);
                 giveawayCount--;
             }
         }
