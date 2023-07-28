@@ -1,15 +1,17 @@
 package com.logwiki.specialsurveyservice.api.service.survey.request;
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -31,14 +33,14 @@ public class SurveyCreateServiceRequest {
 
     private List<GiveawayAssignServiceRequest> giveaways;
 
-    private List<Long> surveyTarget;
+    private List<AccountCodeType> surveyTarget;
 
     @Builder
     public SurveyCreateServiceRequest(String title, LocalDateTime startTime, LocalDateTime endTime,
             int headCount, int closedHeadCount, SurveyCategoryType type,
             List<QuestionCreateServiceRequest> questions,
             List<GiveawayAssignServiceRequest> giveaways,
-            List<Long> surveyTarget) {
+            List<AccountCodeType> surveyTarget) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;

@@ -2,14 +2,16 @@ package com.logwiki.specialsurveyservice.api.service.survey.response;
 
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -35,10 +37,13 @@ public class SurveyResponse {
 
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
+    private List<AccountCodeType> surveyTarget;
+
     @Builder
     public SurveyResponse(Long id, String title, LocalDateTime startTime,
             LocalDateTime endTime, int headCount, int closedHeadCount, Long writer, SurveyCategoryType surveyCategoryType,
-            List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways) {
+            List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways,
+            List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;
@@ -49,6 +54,7 @@ public class SurveyResponse {
         this.surveyCategoryType = surveyCategoryType;
         this.questions = questions;
         this.surveyGiveaways = surveyGiveaways;
+        this.surveyTarget = surveyTarget;
     }
 
     public static SurveyResponse from(Survey survey) {
@@ -64,9 +70,17 @@ public class SurveyResponse {
                 .closedHeadCount(survey.getClosedHeadCount())
                 .writer(survey.getWriter())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
-                .questions(survey.getQuestions().stream().map(QuestionResponse::from).collect(Collectors.toList()))
+                .questions(survey.getQuestions().stream()
+                        .map(QuestionResponse::from)
+                        .collect(Collectors.toList()))
                 .surveyGiveaways(survey.getSurveyGiveaways().stream()
-                        .map(SurveyGiveawayResponse::from).collect(Collectors.toList()))
+                        .map(SurveyGiveawayResponse::from)
+                        .collect(Collectors.toList()))
+                .surveyTarget(survey.getSurveyTargets().stream()
+                        .map(surveyTarget1 -> {
+                            return (surveyTarget1.getAccountCode().getType());
+                        })
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
