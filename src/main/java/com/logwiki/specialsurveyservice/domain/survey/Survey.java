@@ -53,8 +53,8 @@ public class Survey extends BaseEntity {
 
     @Builder
     public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
-                  int closedHeadCount,
-                  Long writer, SurveyCategory type, List<Question> questions) {
+            int closedHeadCount,
+            Long writer, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -83,5 +83,9 @@ public class Survey extends BaseEntity {
 
     public void addSurveyResults(List<SurveyResult> surveyResults) {
         this.surveyResults = surveyResults;
+    }
+
+    public void addHeadCount() {
+        this.headCount += 1;
     }
 }
