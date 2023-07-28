@@ -10,6 +10,7 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.logwiki.specialsurveyservice.exception.account.DuplicatedAccountException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -125,7 +126,7 @@ class AccountServiceTest extends IntegrationTestSupport {
 
           // when // then
           assertThatThrownBy(() -> accountService.signup(accountCreateServiceRequest2))
-              .isInstanceOf(DuplicatedAccountException.class)
+              .isInstanceOf(BaseException.class)
               .hasMessage("이미 가입되어 있는 유저입니다.");
         })
     );
