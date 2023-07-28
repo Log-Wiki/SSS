@@ -139,8 +139,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
         String title = "당신은 어떤 과일을 좋아하나요?";
         SurveyCategoryType surveyCategoryType = SurveyCategoryType.INSTANT_WIN;
         int closedHeadCount = 100;
-        LocalDateTime startTime = LocalDateTime.of(2023, 7, 28, 0, 0);
-        LocalDateTime endTime = LocalDateTime.of(2023, 7, 30, 0, 0);
+        LocalDateTime startTime = LocalDateTime.now().minusDays(1);
+        LocalDateTime endTime = LocalDateTime.now().plusDays(1);
         List<AccountCodeType> targets = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN,
                 AccountCodeType.UNDER_TEENS, AccountCodeType.TEENS, AccountCodeType.TWENTIES,
                 AccountCodeType.THIRTIES, AccountCodeType.FORTIES, AccountCodeType.FIFTIES,
@@ -164,6 +164,81 @@ class SurveyServiceTest extends IntegrationTestSupport {
         assertThat(saveSurvey).isNotNull();
         assertThat(saveSurvey).extracting("title", "startTime", "endTime")
                 .contains(title, startTime, endTime);
+    }
+
+    @DisplayName("설문을 작성하기 위해서는 email로 회원(작성자)를 조회할 수 있어야 한다.")
+    @Test
+    void addSurveyWithInvalidUser() {
+        // given
+        String email = "InvalidEmail@amenable.com";
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title("어떤 외국어를 배우고 싶습니까?")
+                .startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().plusDays(1))
+                .headCount(0)
+                .surveyTarget(List.of(AccountCodeType.MAN, AccountCodeType.WOMAN))
+                .closedHeadCount(100)
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> surveyService.addSurvey(email, surveyCreateServiceRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("존재하지 않는 유저입니다.");
+    }
+
+    @DisplayName("존재하지 않는 나이성별 코드로는 설문을 작성할 수 없다.")
+    @Test
+    void abc() {
+        // given
+        String email = "duswo0624@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
+                .questionNumber(1L)
+                .content("바나나를 좋아하는 이유는 무엇인가요?")
+                .imgAddress(null)
+                .type(QuestionCategoryType.SHORT_FORM)
+                .multipleChoices(null)
+                .build();
+        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(
+                questionCreateServiceRequestByShortForm);
+
+        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+                .id(1L)
+                .giveawayType(GiveawayType.COFFEE)
+                .name("스타벅스 아메리카노")
+                .count(10)
+                .build();
+        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+
+        AccountCodeType accountCodeType = AccountCodeType.MAN;
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title("당신은 어떤 과일을 좋아하나요?")
+                .startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().plusDays(1))
+                .headCount(0)
+                .surveyTarget(List.of(accountCodeType))
+                .closedHeadCount(100)
+                .type(SurveyCategoryType.INSTANT_WIN)
+                .questions(questionCreateServiceRequests)
+                .giveaways(giveawayAssignServiceRequests)
+                .build();
+
+        accountCodeRepository.delete(accountCodeRepository.findAccountCodeByType(accountCodeType).get());
+
+        // when // then
+        assertThatThrownBy(() -> surveyService.addSurvey(email, surveyCreateServiceRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("없는 나이,성별 코드 입니다.");
     }
 
     @DisplayName("설문을 제작할 때는 등록된 당첨 상품을 사용해야 한다.")
@@ -273,32 +348,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
     }
 
     private void setAccountCode() {
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.MAN)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.WOMAN)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.UNDER_TEENS)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.TEENS)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.TWENTIES)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.THIRTIES)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.FORTIES)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.FIFTIES)
-                .build());
-        accountCodeRepository.save(AccountCode.builder()
-                .type(AccountCodeType.SIXTIES)
-                .build());
+        List<AccountCodeType> accountCodeTypes = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.UNDER_TEENS,
+                AccountCodeType.TEENS, AccountCodeType.TWENTIES, AccountCodeType.THIRTIES,
+                AccountCodeType.FORTIES, AccountCodeType.FIFTIES, AccountCodeType.SIXTIES);
+        for(AccountCodeType accountCodeType : accountCodeTypes) {
+            accountCodeRepository.save(AccountCode.builder()
+                    .type(accountCodeType)
+                    .build());
+        }
     }
 }
