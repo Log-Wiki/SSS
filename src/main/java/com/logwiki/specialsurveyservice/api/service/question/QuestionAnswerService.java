@@ -6,10 +6,14 @@ import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAn
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
+import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
+import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -26,6 +30,8 @@ public class QuestionAnswerService {
     private final QuestionRepository questionRepository;
     private final AccountRepository accountRepository;
     private final SurveyResultService surveyResultService;
+    private final SurveyTargetRepository surveyTargetRepository;
+    private final AccountCodeRepository accountCodeRepository;
 
     @Transactional
     public List<QuestionAnswerResponse> addQuestionAnswer(
@@ -39,6 +45,11 @@ public class QuestionAnswerService {
         List<Question> questions = questionRepository.findBySurveyId(surveyId).orElseThrow(
                 () -> new BaseException("없는 설문입니다.", 2005));
 
+        List<AccountCodeType> accountGenderAgeType = new ArrayList<>();
+        accountGenderAgeType.add(account.getGender());
+        accountGenderAgeType.add(account.getAge());
+
+        isTarget(accountGenderAgeType, surveyId);
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
         if (questions.size() != dto.size()) {
@@ -64,5 +75,19 @@ public class QuestionAnswerService {
         surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
 
         return result;
+    }
+
+    private void isTarget(List<AccountCodeType> accountGenderAgeType, Long surveyId) {
+        List<SurveyTarget> surveyTargets = surveyTargetRepository.findSurveyTargetBySurvey_Id(surveyId);
+        List<AccountCodeType> accountCodeTypes = new ArrayList<>();
+        for (SurveyTarget surveyTarget : surveyTargets) {
+            accountCodeTypes.add(surveyTarget.getAccountCode().getType());
+        }
+        for (AccountCodeType accountCodeType : accountGenderAgeType) {
+            if (accountCodeTypes.contains(accountCodeType)) {
+                continue;
+            }
+            throw new BaseException("설문 대상자가 아닙니다.", 3002);
+        }
     }
 }
