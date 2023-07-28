@@ -10,12 +10,12 @@ import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
-import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
@@ -40,8 +40,6 @@ public class SurveyService {
 
     private final AccountCodeRepository accountCodeRepository;
 
-    private final SurveyTargetRepository surveyTargetRepository;
-
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -49,15 +47,16 @@ public class SurveyService {
 
         Survey survey = dto.toEntity(account.getId());
 
-        for (Long accountCodeId : dto.getSurveyTarget()) {
-            AccountCode accountCode = accountCodeRepository.findById(accountCodeId).orElseThrow(
+        for (AccountCodeType accountCodeType : dto.getSurveyTarget()) {
+            AccountCode accountCode = accountCodeRepository.findAccountCodeByType(accountCodeType).orElseThrow(
                     () -> new BaseException("없는 나이,성별 코드 입니다.", 3007)
             );
+
             SurveyTarget surveyTarget = SurveyTarget.builder()
                     .survey(survey)
                     .accountCode(accountCode)
                     .build();
-            surveyTargetRepository.save(surveyTarget);
+            survey.addSurveyTarget(surveyTarget);
         }
 
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = dto.getGiveaways();
@@ -75,7 +74,7 @@ public class SurveyService {
     }
 
     private List<SurveyGiveaway> getSurveyGiveaways(Survey survey,
-                                                    List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests) {
+            List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests) {
 
         return giveawayAssignServiceRequests.stream()
                 .map(giveaway -> SurveyGiveaway.create(giveaway.getCount(), survey,

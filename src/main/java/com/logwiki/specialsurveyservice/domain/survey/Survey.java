@@ -5,6 +5,7 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -52,9 +54,12 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyResult> surveyResults;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SurveyTarget> surveyTargets;
+
     @Builder
     public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
-            int closedHeadCount,
+            int closedHeadCount, List<SurveyTarget> surveyTargets,
             Long writer, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
@@ -64,6 +69,7 @@ public class Survey extends BaseEntity {
         this.surveyCategory = type;
         this.writer = writer;
         this.questions = questions;
+        this.surveyTargets = surveyTargets;
     }
 
     public void addCategory(SurveyCategory surveyCategory) {
@@ -85,7 +91,12 @@ public class Survey extends BaseEntity {
     public void addSurveyResults(List<SurveyResult> surveyResults) {
         this.surveyResults = surveyResults;
     }
-
+  
+    public void addSurveyTarget(SurveyTarget surveyTarget) {
+        if (this.surveyTargets == null) this.surveyTargets = new ArrayList<>();
+        this.surveyTargets.add(surveyTarget);
+    }
+  
     public void addHeadCount() {
         this.headCount += 1;
     }
