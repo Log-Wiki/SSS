@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetN
 import com.logwiki.specialsurveyservice.api.utils.Randoms;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
@@ -25,46 +26,50 @@ public class TargetNumberService {
     private static final int START_RANDOM_NUMBER = 1;
 
     public List<TargetNumber> createTargetNumbers(TargetNumberCreateServiceRequest request) {
-        Map<Long, Integer> giveaways = request.getGiveaways();
-        Map<Integer, Long> targetNumbers = getTargetNumbers(request, giveaways);
-
-        List<TargetNumber> targetNumbersForSurvey = getTargetNumbersForSurvey(
-                request, targetNumbers);
-        request.getSurvey().addTargetNumbers(targetNumbersForSurvey);
-
-        return targetNumbersForSurvey;
-    }
-
-    private static Map<Integer, Long> getTargetNumbers(TargetNumberCreateServiceRequest request,
-            Map<Long, Integer> giveaways) {
         int closedHeadCount = request.getClosedHeadCount();
-        int totalGiveawayCount = request.getGiveaways().values().stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-        List<Integer> randomNumbers = Randoms.pickUniqueNumbersInRange(START_RANDOM_NUMBER, closedHeadCount,
-                totalGiveawayCount);
 
-        Map<Integer, Long> targetNumbers = new HashMap<>();
-        int idx = 0;
-        for (Long giveawayId : giveaways.keySet()) {
-            int giveawayCount = giveaways.get(giveawayId);
-            while (giveawayCount > 0) {
-                targetNumbers.put(randomNumbers.get(idx++), giveawayId);
-                giveawayCount--;
-            }
-        }
+        Map<Long, Integer> giveawayIdAndCount = request.getGiveaways();
+        Map<Integer, Long> targetNumberAndGiveawayId = getTargetNumberAndGiveawayId(closedHeadCount, giveawayIdAndCount);
+
+        Survey survey = request.getSurvey();
+        List<TargetNumber> targetNumbers = getTargetNumbers(targetNumberAndGiveawayId, survey);
+        request.getSurvey().addTargetNumbers(targetNumbers);
+
         return targetNumbers;
     }
 
-    private List<TargetNumber> getTargetNumbersForSurvey(TargetNumberCreateServiceRequest request,
-            Map<Integer, Long> targetNumbers) {
-        List<TargetNumber> targetNumbersForSurvey = new ArrayList<>();
-        for (int key : targetNumbers.keySet()) {
-            Giveaway giveaway = giveawayRepository.findById(targetNumbers.get(key)).orElseThrow(
-                    () -> new BaseException("설문에 등록할 당첨 상품의 값이 올바르지 않습니다.", 5004));
-            TargetNumber targetNumber = TargetNumber.create(key, request.getSurvey(), giveaway);
-            targetNumbersForSurvey.add(targetNumber);
+    public Map<Integer, Long> getTargetNumberAndGiveawayId(int closedHeadCount, Map<Long, Integer> giveawayIdAndCount) {
+        int totalGiveawayCount = giveawayIdAndCount.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        List<Integer> randomNumbers = Randoms.pickUniqueNumbersInRange(START_RANDOM_NUMBER, closedHeadCount,
+                totalGiveawayCount);
+
+        Map<Integer, Long> targetNumberAndGiveawayId = new HashMap<>();
+        int idx = 0;
+        for (Long giveawayId : giveawayIdAndCount.keySet()) {
+            int giveawayCount = giveawayIdAndCount.get(giveawayId);
+            while (giveawayCount > 0) {
+                int randomNumber = randomNumbers.get(idx++);
+                targetNumberAndGiveawayId.put(randomNumber, giveawayId);
+                giveawayCount--;
+            }
         }
-        return targetNumbersForSurvey;
+
+        return targetNumberAndGiveawayId;
+    }
+
+    public List<TargetNumber> getTargetNumbers(Map<Integer, Long> targetNumberAndGiveawayId, Survey survey) {
+        List<TargetNumber> targetNumbers = new ArrayList<>();
+
+        for (int key : targetNumberAndGiveawayId.keySet()) {
+            Giveaway giveaway = giveawayRepository.findById(targetNumberAndGiveawayId.get(key)).orElseThrow(
+                    () -> new BaseException("설문에 등록할 당첨 상품의 값이 올바르지 않습니다.", 5004));
+            TargetNumber targetNumber = TargetNumber.create(key, survey, giveaway);
+            targetNumbers.add(targetNumber);
+        }
+
+        return targetNumbers;
     }
 }
