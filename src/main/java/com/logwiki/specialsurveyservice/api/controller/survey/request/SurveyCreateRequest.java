@@ -3,16 +3,18 @@ package com.logwiki.specialsurveyservice.api.controller.survey.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -40,7 +42,7 @@ public class SurveyCreateRequest {
 
 
     @NotNull(message = "설문 대상자는 필수입니다.")
-    private List<Long> surveyTarget;
+    private List<AccountCodeType> surveyTarget;
 
     @NotNull(message = "설문에 문항들은 필수입니다.")
     @Valid
