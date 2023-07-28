@@ -124,18 +124,18 @@ class TargetNumberServiceTest extends IntegrationTestSupport {
         String name1 = "스타벅스 아이스 아메리카노";
         int price1 = 4500;
         GiveawayRequest request1 = createGiveawayRequest(giveawayType1, name1, price1);
-        giveawayService.createGiveaway(request1);
+        GiveawayResponse giveaway1 = giveawayService.createGiveaway(request1);
 
         GiveawayType giveawayType2 = GiveawayType.CHICKEN;
         String name2 = "BHC 뿌링클";
         int price2 = 20_000;
         GiveawayRequest request2 = createGiveawayRequest(giveawayType2, name2, price2);
-        giveawayService.createGiveaway(request2);
+        GiveawayResponse giveaway2 = giveawayService.createGiveaway(request2);
 
         int closedHeadCount = 100;
         Map<Long, Integer> giveawayIdAndCount = new HashMap<>();
-        Long giveawayId1 = 1L;
-        Long giveawayId2 = 2L;
+        Long giveawayId1 = giveaway1.getId();
+        Long giveawayId2 = giveaway2.getId();
         int giveawayCount1 = 3;
         int giveawayCount2 = 5;
         giveawayIdAndCount.put(giveawayId1, giveawayCount1);
