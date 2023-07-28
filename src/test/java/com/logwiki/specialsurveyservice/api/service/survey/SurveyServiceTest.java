@@ -9,6 +9,8 @@ import com.logwiki.specialsurveyservice.api.service.question.request.MultipleCho
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
@@ -22,12 +24,14 @@ import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +51,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
     GiveawayService giveawayService;
     @Autowired
     AuthorityRepository authorityRepository;
+    @Mock
+    private AccountCodeRepository accountCodeRepository;
 
     @BeforeEach
     void setUp() {
@@ -132,11 +138,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         String title = "당신은 어떤 과일을 좋아하나요?";
         SurveyCategoryType surveyCategoryType = SurveyCategoryType.INSTANT_WIN;
         int closedHeadCount = 100;
+        List<Long> targets = new ArrayList<>();
         SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
                 .title(title)
                 .startTime(LocalDateTime.of(2023, 7, 28, 0, 0))
                 .endTime(LocalDateTime.of(2023, 7, 30, 0, 0))
                 .headCount(0)
+                .surveyTarget(targets)
                 .closedHeadCount(closedHeadCount)
                 .type(surveyCategoryType)
                 .questions(questionCreateServiceRequests)
@@ -144,7 +152,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
 
         // when
-        String saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
+        SurveyResponse saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
 
         // then
         assertThat(saveSurvey).isNotNull();
@@ -245,6 +253,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .headCount(50)
                 .closedHeadCount(closedHeadCount)
                 .type(surveyCategoryType)
+                .surveyTarget(new ArrayList<>())
                 .questions(questionCreateServiceRequests)
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
