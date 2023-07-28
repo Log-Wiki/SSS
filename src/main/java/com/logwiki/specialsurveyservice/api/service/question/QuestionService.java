@@ -24,7 +24,7 @@ public class QuestionService {
     @Transactional
     public void modifyQuestion(QuestionModifyServiceRequest dto) {
         Question question = questionRepository.findById(dto.getId())
-                .orElseThrow(() -> new BaseException("문항을 찾을 수 없습니다.", 2003));
+                .orElseThrow(() -> new BaseException("문항을 찾을 수 없습니다.", 3000));
         question.updateQuestion(dto);
     }
 }

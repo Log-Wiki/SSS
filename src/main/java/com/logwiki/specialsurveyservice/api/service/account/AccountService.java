@@ -7,12 +7,13 @@ import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
-import com.logwiki.specialsurveyservice.exception.account.DuplicatedAccountException;
-import java.util.List;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -26,7 +27,7 @@ public class AccountService {
     public AccountResponse signup(AccountCreateServiceRequest request) {
         if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
                 != null) {
-            throw new DuplicatedAccountException("이미 가입되어 있는 유저입니다.");
+            throw new BaseException("이미 가입되어 있는 유저입니다.", 2001);
         }
 
         Authority authority = authorityRepository.findAuthorityByType(AuthorityType.ROLE_USER);

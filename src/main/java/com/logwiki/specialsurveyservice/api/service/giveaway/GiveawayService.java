@@ -5,11 +5,12 @@ import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayRe
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -21,7 +22,9 @@ public class GiveawayService {
     @Transactional
     public GiveawayResponse createGiveaway(GiveawayRequest request) {
         giveawayRepository.findGiveawayByName(request.getName())
-                .ifPresent(giveaway -> {throw new BaseException("이미 등록되어 있는 상품이 있습니다.", 1000);});
+                .ifPresent(giveaway -> {
+                    throw new BaseException("이미 등록되어 있는 상품이 있습니다.", 5000);
+                });
 
         Giveaway giveaway = Giveaway.builder()
                 .giveawayType(request.getGiveawayType())
@@ -45,7 +48,7 @@ public class GiveawayService {
     @Transactional
     public GiveawayResponse deleteGiveaway(Long id) {
         Giveaway giveaway = giveawayRepository.findById(id)
-                .orElseThrow(() -> new BaseException("삭제할 상품의 PK가 올바르지 않습니다.", 1000));
+                .orElseThrow(() -> new BaseException("삭제할 상품의 PK가 올바르지 않습니다.", 5001));
         giveawayRepository.delete(giveaway);
         return GiveawayResponse.of(giveaway);
     }
@@ -53,7 +56,7 @@ public class GiveawayService {
     @Transactional
     public GiveawayResponse updateGiveaway(Long id, GiveawayRequest giveawayRequest) {
         Giveaway giveaway = giveawayRepository.findById(id)
-                .orElseThrow(() -> new BaseException("수정할 상품의 PK가 올바르지 않습니다.", 1000));
+                .orElseThrow(() -> new BaseException("수정할 상품의 PK가 올바르지 않습니다.", 5002));
 
         Giveaway updatedGiveaway = giveaway.update(giveawayRequest);
         return GiveawayResponse.of(updatedGiveaway);
