@@ -46,6 +46,9 @@ public class SurveyResultService {
         account.increaseResponseSurveyCount();
         SurveyResult surveyResult = surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
                 account));
+
+        survey.addHeadCount();
+        
         return SurveyResultResponse.of(surveyResult);
 
     }
