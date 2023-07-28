@@ -8,12 +8,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -39,6 +38,10 @@ public class SurveyCreateRequest {
     @NotNull(message = "설문 타입은 필수입니다.")
     private SurveyCategoryType type;
 
+
+    @NotNull(message = "설문 대상자는 필수입니다.")
+    private List<Long> surveyTarget;
+
     @NotNull(message = "설문에 문항들은 필수입니다.")
     @Valid
     private List<QuestionCreateRequest> questions;
@@ -57,12 +60,13 @@ public class SurveyCreateRequest {
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)
                 .type(type)
+                .surveyTarget(surveyTarget)
                 .questions(
                         questions.stream().map(QuestionCreateRequest::toServiceRequest)
                                 .collect(Collectors.toList())
                 )
                 .giveaways(giveaways.stream().map(GiveawayAssignRequest::toServiceRequest)
-                                .collect(Collectors.toList()))
+                        .collect(Collectors.toList()))
                 .build();
     }
 }
