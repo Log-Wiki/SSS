@@ -7,12 +7,13 @@ import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class TargetNumberService {
         List<TargetNumber> targetNumbersForSurvey = new ArrayList<>();
         for (int key : targetNumbers.keySet()) {
             Giveaway giveaway = giveawayRepository.findById(targetNumbers.get(key)).orElseThrow(
-                    () -> new BaseException("설문에 등록할 당첨 상품의 값이 올바르지 않습니다.", 1000));
+                    () -> new BaseException("설문에 등록할 당첨 상품의 값이 올바르지 않습니다.", 5004));
             TargetNumber targetNumber = TargetNumber.create(key, request.getSurvey(), giveaway);
             targetNumbersForSurvey.add(targetNumber);
         }
