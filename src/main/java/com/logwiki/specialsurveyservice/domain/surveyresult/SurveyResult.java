@@ -27,9 +27,11 @@ public class SurveyResult extends BaseEntity {
     private int submitOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @Builder

@@ -18,9 +18,11 @@ public class SurveyTarget {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_code_id")
     private AccountCode accountCode;
 
     @Builder
