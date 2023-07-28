@@ -39,18 +39,19 @@ public class Survey extends BaseEntity {
     private Long writer;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "survey_category_id")
     private SurveyCategory surveyCategory;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Question> questions;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyGiveaway> surveyGiveaways;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TargetNumber> targetNumbers;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyResult> surveyResults;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -90,9 +91,13 @@ public class Survey extends BaseEntity {
     public void addSurveyResults(List<SurveyResult> surveyResults) {
         this.surveyResults = surveyResults;
     }
-
+  
     public void addSurveyTarget(SurveyTarget surveyTarget) {
         if (this.surveyTargets == null) this.surveyTargets = new ArrayList<>();
         this.surveyTargets.add(surveyTarget);
+    }
+  
+    public void addHeadCount() {
+        this.headCount += 1;
     }
 }

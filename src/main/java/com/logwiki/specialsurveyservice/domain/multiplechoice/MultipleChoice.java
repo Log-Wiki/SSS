@@ -21,6 +21,7 @@ public class MultipleChoice {
     private Long linkNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @Builder
