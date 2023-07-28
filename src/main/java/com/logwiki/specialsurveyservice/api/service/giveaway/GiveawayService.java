@@ -4,6 +4,9 @@ import com.logwiki.specialsurveyservice.api.controller.giveaway.request.Giveaway
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,5 +60,16 @@ public class GiveawayService {
 
         Giveaway updatedGiveaway = giveaway.update(giveawayRequest);
         return GiveawayResponse.of(updatedGiveaway);
+    }
+
+    public GiveawayResponse getRepGiveaway(Survey survey) {
+        Giveaway repGiveaway = new Giveaway(GiveawayType.COFFEE,"dummyCoffee",7);
+        List<SurveyGiveaway> surveyGiveaways = survey.getSurveyGiveaways();
+        for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
+            if(surveyGiveaway.getGiveaway().getPrice() > repGiveaway.getPrice()){
+                repGiveaway = surveyGiveaway.getGiveaway();
+            }
+        }
+        return GiveawayResponse.of(repGiveaway);
     }
 }

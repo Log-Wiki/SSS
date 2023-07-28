@@ -37,6 +37,10 @@ insert into account_code (type)
 values ('FIFTIES');
 insert into account_code (type)
 values ('SIXTIES');
+insert into giveaway (name, price)
+values ('컴포즈커피' , 1300);
+insert into giveaway (name, price)
+values ('BBQ후라이드치킨' , 20000);
 
 
 insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT)

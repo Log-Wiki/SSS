@@ -63,4 +63,13 @@ public class SurveyService {
                                                 1000))))
                 .collect(Collectors.toList());
     }
+
+    public int getSurveyGiveawayCount(Survey survey) {
+        List<SurveyGiveaway> surveyGiveaways = survey.getSurveyGiveaways();
+        int giveawayNum = 0;
+        for (SurveyGiveaway sg : surveyGiveaways) {
+            giveawayNum += sg.getCount();
+        }
+        return  giveawayNum;
+    }
 }
