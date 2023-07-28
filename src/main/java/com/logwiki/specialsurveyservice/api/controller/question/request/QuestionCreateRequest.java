@@ -44,10 +44,10 @@ public class QuestionCreateRequest {
 
     public QuestionCreateServiceRequest toServiceRequest() {
         if (type == QuestionCategoryType.SHORT_FORM && multipleChoices != null) {
-            throw new BaseException("주관식은 보기를 가질수 없습니다.", 2001);
+            throw new BaseException("주관식은 보기를 가질수 없습니다.", 3008);
         }
         if (type == QuestionCategoryType.MULTIPLE_CHOICE && multipleChoices == null) {
-            throw new BaseException("객관식은 보기를 가져야합니다.", 2002);
+            throw new BaseException("객관식은 보기를 가져야합니다.", 3009);
         }
         if (multipleChoices != null) {
             return QuestionCreateServiceRequest.builder()

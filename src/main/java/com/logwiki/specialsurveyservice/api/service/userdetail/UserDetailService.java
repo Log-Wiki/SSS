@@ -3,7 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.userdetail;
 import com.logwiki.specialsurveyservice.api.service.userdetail.response.UserDetailResponse;
 import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
-import com.logwiki.specialsurveyservice.exception.account.NotFoundAccountException;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ public class UserDetailService {
         return UserDetailResponse.from(
                 SecurityUtil.getCurrentUsername()
                         .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
-                        .orElseThrow(() -> new NotFoundAccountException("Member not found"))
+                        .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000))
         );
     }
 
