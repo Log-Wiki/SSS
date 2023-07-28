@@ -21,8 +21,8 @@ public class QuestionAnswerCreateRequest {
 
     @Builder
     public QuestionAnswerCreateRequest(Long questionId, Long multipleChoiceAnswer,
-            String shorFormAnswer,
-            Long questionNumber) {
+                                       String shorFormAnswer,
+                                       Long questionNumber) {
         this.questionId = questionId;
         this.multipleChoiceAnswer = multipleChoiceAnswer;
         this.shorFormAnswer = shorFormAnswer;
@@ -30,9 +30,9 @@ public class QuestionAnswerCreateRequest {
 
     public QuestionAnswerCreateServiceRequest toServiceRequest() {
         if (multipleChoiceAnswer != null && shorFormAnswer != null) {
-            throw new BaseException("객관식 또는 주관식 답변 중 하나만 가질 수 없습니다.", 1000);
+            throw new BaseException("객관식 또는 주관식 답변 중 하나만 가질 수 없습니다.", 3006);
         } else if (shorFormAnswer == null && multipleChoiceAnswer == null) {
-            throw new BaseException("주관식 또는 객관식 답변이 필요합니다.", 1000);
+            throw new BaseException("주관식 또는 객관식 답변이 필요합니다.", 3007);
         }
         return QuestionAnswerCreateServiceRequest.builder()
                 .multipleChoiceAnswer(multipleChoiceAnswer)

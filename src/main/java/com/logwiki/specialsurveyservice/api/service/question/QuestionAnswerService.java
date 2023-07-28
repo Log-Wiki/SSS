@@ -16,11 +16,12 @@ import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +42,9 @@ public class QuestionAnswerService {
             List<QuestionAnswerCreateServiceRequest> dto) {
 
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
-                .orElseThrow(() -> new BaseException("없는 유저입니다.", 1001));
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
         List<Question> questions = questionRepository.findBySurveyId(surveyId).orElseThrow(
-                () -> new BaseException("없는 설문입니다.", 2005));
+                () -> new BaseException("없는 설문입니다.", 3005));
 
         List<AccountCodeType> accountGenderAgeType = new ArrayList<>();
         accountGenderAgeType.add(account.getGender());
@@ -53,7 +54,7 @@ public class QuestionAnswerService {
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
         if (questions.size() != dto.size()) {
-            throw new BaseException("모든 문항에 답변을 해야합니다.", 3007);
+            throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
         }
 
         for (Question question : questions) {
@@ -68,7 +69,7 @@ public class QuestionAnswerService {
                 }
             }
             if (notFoundQuestion) {
-                throw new BaseException("없는 문항에 답변을 할 수 없습니다.", 3000);
+                throw new BaseException("없는 문항에 답변을 할 수 없습니다.", 3002);
             }
         }
 
@@ -87,7 +88,7 @@ public class QuestionAnswerService {
             if (accountCodeTypes.contains(accountCodeType)) {
                 continue;
             }
-            throw new BaseException("설문 대상자가 아닙니다.", 3002);
+            throw new BaseException("설문 대상자가 아닙니다.", 3003);
         }
     }
 }

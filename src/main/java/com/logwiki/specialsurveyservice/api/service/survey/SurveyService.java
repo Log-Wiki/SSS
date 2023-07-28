@@ -19,10 +19,11 @@ import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetReposito
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class SurveyService {
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
-                .orElseThrow(() -> new BaseException("유저를 찾지못했습니다.", 1000));
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
 
         Survey survey = dto.toEntity(account.getId());
 
@@ -74,14 +75,14 @@ public class SurveyService {
     }
 
     private List<SurveyGiveaway> getSurveyGiveaways(Survey survey,
-            List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests) {
+                                                    List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests) {
 
         return giveawayAssignServiceRequests.stream()
                 .map(giveaway -> SurveyGiveaway.create(giveaway.getCount(), survey,
                         giveawayRepository.findById(giveaway.getId())
                                 .orElseThrow(
                                         () -> new BaseException("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.",
-                                                1000))))
+                                                5003))))
                 .collect(Collectors.toList());
     }
 }
