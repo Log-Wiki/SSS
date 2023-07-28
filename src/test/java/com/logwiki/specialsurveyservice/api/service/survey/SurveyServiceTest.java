@@ -10,6 +10,7 @@ import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCre
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
@@ -24,7 +25,6 @@ import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,15 +51,16 @@ class SurveyServiceTest extends IntegrationTestSupport {
     GiveawayService giveawayService;
     @Autowired
     AuthorityRepository authorityRepository;
-    @Mock
+    @Autowired
     private AccountCodeRepository accountCodeRepository;
 
     @BeforeEach
     void setUp() {
         setAuthority();
+        setAccountCode();
     }
 
-    @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록을 이용하여 설문을 등록한다.")
+    @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록, 설문 대상자를 이용하여 설문을 등록한다.")
     @Test
     void addSurvey() {
         // given
@@ -138,11 +139,16 @@ class SurveyServiceTest extends IntegrationTestSupport {
         String title = "당신은 어떤 과일을 좋아하나요?";
         SurveyCategoryType surveyCategoryType = SurveyCategoryType.INSTANT_WIN;
         int closedHeadCount = 100;
-        List<Long> targets = new ArrayList<>();
+        LocalDateTime startTime = LocalDateTime.of(2023, 7, 28, 0, 0);
+        LocalDateTime endTime = LocalDateTime.of(2023, 7, 30, 0, 0);
+        List<AccountCodeType> targets = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN,
+                AccountCodeType.UNDER_TEENS, AccountCodeType.TEENS, AccountCodeType.TWENTIES,
+                AccountCodeType.THIRTIES, AccountCodeType.FORTIES, AccountCodeType.FIFTIES,
+                AccountCodeType.SIXTIES);
         SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
                 .title(title)
-                .startTime(LocalDateTime.of(2023, 7, 28, 0, 0))
-                .endTime(LocalDateTime.of(2023, 7, 30, 0, 0))
+                .startTime(startTime)
+                .endTime(endTime)
                 .headCount(0)
                 .surveyTarget(targets)
                 .closedHeadCount(closedHeadCount)
@@ -156,14 +162,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         // then
         assertThat(saveSurvey).isNotNull();
-//        assertThat(saveSurvey).extracting("title", "closedHeadCount")
-//                .contains(title, closedHeadCount);
-//
-//        assertThat(saveSurvey.getQuestions().size()).isEqualTo(questionCreateServiceRequests.size());
-//        assertThat(saveSurvey.getSurveyGiveaways().size()).isEqualTo(giveawayAssignServiceRequests.size());
-//        assertThat(saveSurvey.getTargetNumbers().size()).isEqualTo(giveawayAssignServiceRequests.stream()
-//                .mapToInt(GiveawayAssignServiceRequest -> giveawayAssignServiceRequest.getCount())
-//                .sum());
+        assertThat(saveSurvey).extracting("title", "startTime", "endTime")
+                .contains(title, startTime, endTime);
     }
 
     @DisplayName("설문을 제작할 때는 등록된 당첨 상품을 사용해야 한다.")
@@ -270,5 +270,35 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
 
         authorityRepository.save(userAuthority);
+    }
+
+    private void setAccountCode() {
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.MAN)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.WOMAN)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.UNDER_TEENS)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.TEENS)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.TWENTIES)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.THIRTIES)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.FORTIES)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.FIFTIES)
+                .build());
+        accountCodeRepository.save(AccountCode.builder()
+                .type(AccountCodeType.SIXTIES)
+                .build());
     }
 }
