@@ -20,9 +20,11 @@ public class SurveyGiveaway {
     private int count;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "giveaway_id")
     private Giveaway giveaway;
 
     @Builder
