@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountCodeRepository extends JpaRepository<AccountCode, Long> {
 
+    AccountCode findAccountCodeByType(AccountCodeType accountCodeType);
 }
