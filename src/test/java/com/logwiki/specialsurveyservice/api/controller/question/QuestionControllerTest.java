@@ -163,7 +163,6 @@ class QuestionControllerTest extends ControllerTestSupport {
         questionAnswerResponses.add(questionAnswerResponse);
 
         QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
-                .questionId(1L)
                 .build();
         List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
         answers.add(questionAnswerCreateRequest);
@@ -185,7 +184,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.status").value(3007));
+                .andExpect(jsonPath("$.apiError.status").value(1000));
     }
 
 
