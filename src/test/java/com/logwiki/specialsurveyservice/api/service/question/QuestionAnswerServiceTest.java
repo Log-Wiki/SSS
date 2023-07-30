@@ -137,6 +137,61 @@ class QuestionAnswerServiceTest {
         });
     }
 
+    @DisplayName("설문 답변은 대상자만 가능하다.")
+    @Test
+    void essentialIsSurveyTarget() {
+        // given
+
+        Account account = getAccount();
+
+        List<QuestionAnswerCreateServiceRequest> dtoList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            QuestionAnswerCreateServiceRequest dto = QuestionAnswerCreateServiceRequest.builder()
+                    .questionId(1L)
+                    .multipleChoiceAnswer(1L)
+                    .build();
+            dtoList.add(dto);
+        }
+        List<Question> questions = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            Question question = Question.builder()
+                    .questionNumber(Long.parseLong(String.valueOf(i)))
+                    .content("문제" + String.valueOf(i))
+                    .type(QuestionCategoryType.MULTIPLE_CHOICE)
+                    .multipleChoice(new ArrayList<>())
+                    .build();
+            questions.add(question);
+        }
+
+        List<SurveyTarget> surveyTargets = new ArrayList<>();
+        AccountCode accountCode1 = AccountCode.builder()
+                .type(AccountCodeType.MAN)
+                .build();
+        SurveyTarget surveyTarget1 = SurveyTarget.builder()
+                .accountCode(accountCode1)
+                .build();
+        surveyTargets.add(surveyTarget1);
+
+
+        LocalDateTime nowDate = LocalDateTime.now();
+        Long surveyId = 1L;
+        String useEmail = "user@naver.com";
+
+        // when
+        when(questionRepository.findBySurveyId(any()))
+                .thenReturn(Optional.of(questions));
+        when(accountRepository.findOneWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(account));
+        when(surveyTargetRepository.findSurveyTargetBySurvey_Id(any()))
+                .thenReturn(surveyTargets);
+
+        // then
+        Assertions.assertThrows(BaseException.class, () -> {
+            questionAnswerService.addQuestionAnswer(nowDate, surveyId
+                    , useEmail, dtoList);
+        });
+    }
+
     private Account getAccount() {
         Authority authority = Authority.builder()
                 .type(AuthorityType.ROLE_USER)
