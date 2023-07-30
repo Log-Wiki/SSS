@@ -50,7 +50,10 @@ public class QuestionAnswerService {
         accountGenderAgeType.add(account.getGender());
         accountGenderAgeType.add(account.getAge());
 
-        isTarget(accountGenderAgeType, surveyId);
+        if (isNotTarget(accountGenderAgeType, surveyId)) {
+            throw new BaseException("설문 대상자가 아닙니다.", 3003);
+        }
+        
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
         if (questions.size() > dto.size()) {
@@ -78,7 +81,7 @@ public class QuestionAnswerService {
         return result;
     }
 
-    private void isTarget(List<AccountCodeType> accountGenderAgeType, Long surveyId) {
+    private boolean isNotTarget(List<AccountCodeType> accountGenderAgeType, Long surveyId) {
         List<SurveyTarget> surveyTargets = surveyTargetRepository.findSurveyTargetBySurvey_Id(surveyId);
         List<AccountCodeType> accountCodeTypes = new ArrayList<>();
         for (SurveyTarget surveyTarget : surveyTargets) {
@@ -88,7 +91,8 @@ public class QuestionAnswerService {
             if (accountCodeTypes.contains(accountCodeType)) {
                 continue;
             }
-            throw new BaseException("설문 대상자가 아닙니다.", 3003);
+            return true;
         }
+        return false;
     }
 }
