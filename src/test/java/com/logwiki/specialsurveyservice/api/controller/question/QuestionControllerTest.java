@@ -5,6 +5,7 @@ import com.logwiki.specialsurveyservice.api.controller.question.request.Question
 import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionAnswersCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerResponse;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -23,168 +24,182 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class QuestionControllerTest extends ControllerTestSupport {
 
-    @DisplayName("설문 번호와 설문 답변을 통해 설문에 응답을 한다.")
-    @WithMockUser
-    @Test
-    void answerSurvey() throws Exception {
-        // given
-        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
-        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
-                .id(1L)
-                .multipleChoiceAnswer(3L)
-                .writer(1L)
-                .writeDate(LocalDateTime.now())
-                .build();
-        questionAnswerResponses.add(questionAnswerResponse);
+    @Nested
+    @DisplayName("설문 응답 테스트")
+    class QuestionAnswerTest {
+        @Nested
+        @DisplayName("설문 응답 성공 테스트")
+        class success {
+            @DisplayName("설문 번호와 설문 답변을 통해 설문에 응답을 한다.")
+            @WithMockUser
+            @Test
+            void answerSurvey() throws Exception {
+                // given
+                List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+                QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                        .id(1L)
+                        .multipleChoiceAnswer(3L)
+                        .writer(1L)
+                        .writeDate(LocalDateTime.now())
+                        .build();
+                questionAnswerResponses.add(questionAnswerResponse);
 
-        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
-                .questionId(1L)
-                .multipleChoiceAnswer(3L)
-                .build();
-        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
-        answers.add(questionAnswerCreateRequest);
-        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
-                .answers(answers)
-                .build();
-        long surveyId = 1L;
+                QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                        .questionId(1L)
+                        .multipleChoiceAnswer(3L)
+                        .build();
+                List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+                answers.add(questionAnswerCreateRequest);
+                QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                        .answers(answers)
+                        .build();
+                long surveyId = 1L;
 
-        // when // then
-        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+                // when // then
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
 
-        mockMvc.perform(
-                        post("/api/question/answers")
-                                .param("surveyId", Long.toString(surveyId))
-                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(csrf())
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value("true"))
-                .andExpect(jsonPath("$.response[0].id").value(1))
-                .andExpect(jsonPath("$.response[0].multipleChoiceAnswer").value(3));
-    }
+                mockMvc.perform(
+                                post("/api/question/answers")
+                                        .param("surveyId", Long.toString(surveyId))
+                                        .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(csrf())
+                        )
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value("true"))
+                        .andExpect(jsonPath("$.response[0].id").value(1))
+                        .andExpect(jsonPath("$.response[0].multipleChoiceAnswer").value(3));
+            }
 
-    @DisplayName("설문에 답변이 없으면 실패를 반환한다.")
-    @WithMockUser
-    @Test
-    void notContainAnswer() throws Exception {
-        // given
-        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
-        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
-                .id(1L)
-                .multipleChoiceAnswer(3L)
-                .writer(1L)
-                .writeDate(LocalDateTime.now())
-                .build();
-        questionAnswerResponses.add(questionAnswerResponse);
+        }
 
-        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
-                .questionId(1L)
-                .build();
-        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
-        answers.add(questionAnswerCreateRequest);
-        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
-                .answers(answers)
-                .build();
-        long surveyId = 1L;
+        @Nested
+        @DisplayName("설문 응답 실패 테스트")
+        class fail {
 
-        // when // then
-        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+            @DisplayName("설문에 답변이 없으면 실패를 반환한다.")
+            @WithMockUser
+            @Test
+            void notContainAnswer() throws Exception {
+                // given
+                List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+                QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                        .id(1L)
+                        .multipleChoiceAnswer(3L)
+                        .writer(1L)
+                        .writeDate(LocalDateTime.now())
+                        .build();
+                questionAnswerResponses.add(questionAnswerResponse);
 
-        mockMvc.perform(
-                        post("/api/question/answers")
-                                .param("surveyId", Long.toString(surveyId))
-                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(csrf())
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.status").value(3007));
-    }
+                QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                        .questionId(1L)
+                        .build();
+                List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+                answers.add(questionAnswerCreateRequest);
+                QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                        .answers(answers)
+                        .build();
+                long surveyId = 1L;
 
-    @DisplayName("한 문항에 주관식과 객관식 모두 답변을하면 실패를 반환한다.")
-    @WithMockUser
-    @Test
-    void canNotAnswerShorFormMultipleChoiceSameTime() throws Exception {
-        // given
-        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
-        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
-                .id(1L)
-                .multipleChoiceAnswer(3L)
-                .writer(1L)
-                .writeDate(LocalDateTime.now())
-                .build();
-        questionAnswerResponses.add(questionAnswerResponse);
+                // when // then
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
 
-        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
-                .questionId(1L)
-                .multipleChoiceAnswer(3L)
-                .shorFormAnswer("answer")
-                .build();
-        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
-        answers.add(questionAnswerCreateRequest);
-        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
-                .answers(answers)
-                .build();
-        long surveyId = 1L;
+                mockMvc.perform(
+                                post("/api/question/answers")
+                                        .param("surveyId", Long.toString(surveyId))
+                                        .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(csrf())
+                        )
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value("false"))
+                        .andExpect(jsonPath("$.apiError.status").value(3007));
+            }
 
-        // when // then
-        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+            @DisplayName("한 문항에 주관식과 객관식 모두 답변을하면 실패를 반환한다.")
+            @WithMockUser
+            @Test
+            void canNotAnswerShorFormMultipleChoiceSameTime() throws Exception {
+                // given
+                List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+                QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                        .id(1L)
+                        .multipleChoiceAnswer(3L)
+                        .writer(1L)
+                        .writeDate(LocalDateTime.now())
+                        .build();
+                questionAnswerResponses.add(questionAnswerResponse);
 
-        mockMvc.perform(
-                        post("/api/question/answers")
-                                .param("surveyId", Long.toString(surveyId))
-                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(csrf())
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.status").value(3006));
+                QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                        .questionId(1L)
+                        .multipleChoiceAnswer(3L)
+                        .shorFormAnswer("answer")
+                        .build();
+                List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+                answers.add(questionAnswerCreateRequest);
+                QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                        .answers(answers)
+                        .build();
+                long surveyId = 1L;
 
-    }
+                // when // then
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
 
-    @DisplayName("문항 답변에 문제번호는 필수다.")
-    @WithMockUser
-    @Test
-    void needQuestionNumber() throws Exception {
-        // given
-        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
-        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
-                .id(1L)
-                .multipleChoiceAnswer(3L)
-                .writer(1L)
-                .writeDate(LocalDateTime.now())
-                .build();
-        questionAnswerResponses.add(questionAnswerResponse);
+                mockMvc.perform(
+                                post("/api/question/answers")
+                                        .param("surveyId", Long.toString(surveyId))
+                                        .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(csrf())
+                        )
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value("false"))
+                        .andExpect(jsonPath("$.apiError.status").value(3006));
 
-        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
-                .build();
-        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
-        answers.add(questionAnswerCreateRequest);
-        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
-                .answers(answers)
-                .build();
-        long surveyId = 1L;
+            }
 
-        // when // then
-        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+            @DisplayName("문항 답변에 문제번호는 필수다.")
+            @WithMockUser
+            @Test
+            void needQuestionNumber() throws Exception {
+                // given
+                List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+                QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                        .id(1L)
+                        .multipleChoiceAnswer(3L)
+                        .writer(1L)
+                        .writeDate(LocalDateTime.now())
+                        .build();
+                questionAnswerResponses.add(questionAnswerResponse);
 
-        mockMvc.perform(
-                        post("/api/question/answers")
-                                .param("surveyId", Long.toString(surveyId))
-                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .with(csrf())
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value("false"))
-                .andExpect(jsonPath("$.apiError.status").value(1000));
+                QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                        .build();
+                List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+                answers.add(questionAnswerCreateRequest);
+                QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                        .answers(answers)
+                        .build();
+                long surveyId = 1L;
+
+                // when // then
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+
+                mockMvc.perform(
+                                post("/api/question/answers")
+                                        .param("surveyId", Long.toString(surveyId))
+                                        .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .with(csrf())
+                        )
+                        .andDo(print())
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.success").value("false"))
+                        .andExpect(jsonPath("$.apiError.status").value(1000));
+            }
+        }
     }
 
 
