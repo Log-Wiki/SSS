@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class QuestionAnswerServiceTest {
 
+    private static final String EMAIL = "duswo0624@naver.com";
     @InjectMocks
     private QuestionAnswerService questionAnswerService;
 
@@ -80,5 +81,53 @@ class QuestionAnswerServiceTest {
             questionAnswerService.addQuestionAnswer(nowDate, surveyId
                     , useEmail, dtoList);
         });
+    }
+
+    @DisplayName("모든 질문에 답을하지 않을경우 에러를 반환한다.")
+    @Test
+    void needAllAnswer() {
+        // given
+
+        Account account = getAccount();
+
+        List<QuestionAnswerCreateServiceRequest> dtoList = new ArrayList<>();
+        QuestionAnswerCreateServiceRequest dto = QuestionAnswerCreateServiceRequest.builder()
+                .questionId(1L)
+                .multipleChoiceAnswer(1L)
+                .build();
+        dtoList.add(dto);
+        
+        LocalDateTime nowDate = LocalDateTime.now();
+        Long surveyId = 1L;
+        String useEmail = "user@naver.com";
+
+        // when
+        when(questionRepository.findBySurveyId(any()))
+                .thenReturn(Optional.ofNullable(null));
+        when(accountRepository.findOneWithAuthoritiesByEmail(any()))
+                .thenReturn(Optional.ofNullable(account));
+
+        // then
+        Assertions.assertThrows(BaseException.class, () -> {
+            questionAnswerService.addQuestionAnswer(nowDate, surveyId
+                    , useEmail, dtoList);
+        });
+    }
+
+    private Account getAccount() {
+        Authority authority = Authority.builder()
+                .type(AuthorityType.ROLE_USER)
+                .build();
+        List<Authority> authorities = List.of(authority);
+        return Account.create(
+                EMAIL,
+                "1234",
+                AccountCodeType.MAN,
+                AccountCodeType.TWENTIES,
+                "최연재",
+                "010-1234-5678",
+                LocalDate.of(1997, 6, 24),
+                authorities
+        );
     }
 }
