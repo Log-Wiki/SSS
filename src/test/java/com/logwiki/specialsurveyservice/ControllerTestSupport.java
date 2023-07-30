@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.controller.account.AccountController;
 import com.logwiki.specialsurveyservice.api.controller.auth.AuthController;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.GiveawayController;
+import com.logwiki.specialsurveyservice.api.controller.question.QuestionController;
 import com.logwiki.specialsurveyservice.api.controller.userdetail.UserDetailController;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
+import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
+import com.logwiki.specialsurveyservice.api.service.question.QuestionService;
 import com.logwiki.specialsurveyservice.api.service.userdetail.UserDetailService;
 import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +23,38 @@ import org.springframework.test.web.servlet.MockMvc;
         AccountController.class,
         AuthController.class,
         UserDetailController.class,
-        GiveawayController.class
+        GiveawayController.class,
+        QuestionController.class
 })
 public abstract class ControllerTestSupport {
 
-  @Autowired
-  protected MockMvc mockMvc;
+    @Autowired
+    protected MockMvc mockMvc;
 
-  @Autowired
-  protected ObjectMapper objectMapper;
+    @Autowired
+    protected ObjectMapper objectMapper;
 
-  @MockBean
-  protected AuthenticationManagerBuilder authenticationManagerBuilder;
+    @MockBean
+    protected AuthenticationManagerBuilder authenticationManagerBuilder;
 
-  @MockBean
-  protected AccountService accountService;
+    @MockBean
+    protected AccountService accountService;
 
-  @MockBean
-  protected TokenProvider tokenProvider;
+    @MockBean
+    protected TokenProvider tokenProvider;
 
-  @MockBean
-  protected AuthService authService;
+    @MockBean
+    protected AuthService authService;
 
-  @MockBean
-  protected UserDetailService userDetailService;
+    @MockBean
+    protected UserDetailService userDetailService;
 
-  @MockBean
-  protected GiveawayService giveawayService;
+    @MockBean
+    protected GiveawayService giveawayService;
+
+    @MockBean
+    protected QuestionAnswerService questionAnswerService;
+    
+    @MockBean
+    protected QuestionService questionService;
 }
