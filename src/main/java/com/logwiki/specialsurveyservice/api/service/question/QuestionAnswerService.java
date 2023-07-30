@@ -53,7 +53,7 @@ public class QuestionAnswerService {
         isTarget(accountGenderAgeType, surveyId);
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
-        if (questions.size() != dto.size()) {
+        if (questions.size() > dto.size()) {
             throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
         }
 
