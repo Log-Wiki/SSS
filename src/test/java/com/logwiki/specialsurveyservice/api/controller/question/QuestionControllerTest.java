@@ -63,4 +63,84 @@ class QuestionControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value("true"));
     }
 
+    @DisplayName("설문에 답변이 없으면 실패를 반환한다.")
+    @WithMockUser
+    @Test
+    void notContainAnswer() throws Exception {
+        // given
+        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                .id(1L)
+                .multipleChoiceAnswer(3L)
+                .writer(1L)
+                .writeDate(LocalDateTime.now())
+                .build();
+        questionAnswerResponses.add(questionAnswerResponse);
+
+        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                .questionId(1L)
+                .build();
+        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+        answers.add(questionAnswerCreateRequest);
+        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                .answers(answers)
+                .build();
+        long surveyId = 1L;
+
+        // when // then
+        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+
+        mockMvc.perform(
+                        post("/api/question/answers")
+                                .param("surveyId", Long.toString(surveyId))
+                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"));
+    }
+
+    @DisplayName("한 문항에 주관식과 객관식 모두 답변을하면 실패를 반환한다.")
+    @WithMockUser
+    @Test
+    void canNotAnswerShorFormMultipleChoiceSameTime() throws Exception {
+        // given
+        List<QuestionAnswerResponse> questionAnswerResponses = new ArrayList<>();
+        QuestionAnswerResponse questionAnswerResponse = QuestionAnswerResponse.builder()
+                .id(1L)
+                .multipleChoiceAnswer(3L)
+                .writer(1L)
+                .writeDate(LocalDateTime.now())
+                .build();
+        questionAnswerResponses.add(questionAnswerResponse);
+
+        QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
+                .questionId(1L)
+                .multipleChoiceAnswer(3L)
+                .shorFormAnswer("answer")
+                .build();
+        List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
+        answers.add(questionAnswerCreateRequest);
+        QuestionAnswersCreateRequest questionAnswersCreateRequest = QuestionAnswersCreateRequest.builder()
+                .answers(answers)
+                .build();
+        long surveyId = 1L;
+
+        // when // then
+        when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+
+        mockMvc.perform(
+                        post("/api/question/answers")
+                                .param("surveyId", Long.toString(surveyId))
+                                .content(objectMapper.writeValueAsString(questionAnswersCreateRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("false"));
+    }
+
 }
