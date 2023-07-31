@@ -27,13 +27,13 @@ public class RegistOrderService {
     for(OrderCreateRequest orderCreateRequest : request.getGiveaways()){
       Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(orderCreateRequest.getGiveawayName());
       if(giveaway.isEmpty()) {
-        throw new BaseException("주문 상품이 존재하지 않습니다." , 3565);
+        throw new BaseException("주문 상품이 존재하지 않습니다." , 4000);
       }
       orderAmount += giveaway.get().getPrice() * orderCreateRequest.getGiveawayNumber();
     }
 
     if(orderAmount == 0) {
-      throw new BaseException("주문 금액이 0원입니다.", 3566);
+      throw new BaseException("주문 금액이 0원입니다.", 4001);
     }
 
     Orders order = Orders.create(
