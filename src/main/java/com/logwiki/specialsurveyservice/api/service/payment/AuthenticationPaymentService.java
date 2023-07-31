@@ -27,21 +27,21 @@ public class AuthenticationPaymentService {
         Orders order = orderRepository.findOneByOrderId(request.getOrderId()).orElse(null);
 
         if (order == null) {
-            throw new BaseException("주문 정보가 없는 결제인증 요청입니다." , 2000);
+            throw new BaseException("주문 정보가 없는 결제인증 요청입니다." , 4002);
         }
 
         IamportResponse<Payment> iamportResponse;
         try {
             iamportResponse = iamportClientApi.paymentByImpUid(request.getImp_uid());
         } catch (IamportResponseException e) {
-            throw new BaseException("iamport 응답 예외입니다." , 2001);
+            throw new BaseException("iamport 응답 예외입니다." , 4002);
         } catch (IOException e) {
-            throw new BaseException("iamport IO 예외입니다." , 2002);
+            throw new BaseException("iamport IO 예외입니다." , 4003);
         }
 
 
         if (iamportResponse.getResponse().getAmount().intValue() != order.getOrderAmount()) {
-            throw new BaseException("주문 금액과 결제금액이 다릅니다.", 2003);
+            throw new BaseException("주문 금액과 결제금액이 다릅니다.", 4004);
         }
 
         return PaymentResponse.from(iamportResponse.getResponse());
