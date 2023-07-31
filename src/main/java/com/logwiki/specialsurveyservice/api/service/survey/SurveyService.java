@@ -92,7 +92,6 @@ public class SurveyService {
                 .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
                 .getId();
 
-        System.out.println("확인 : " + genderId + ", " + ageId);
         List<Survey> surveys = surveyRepository.findRecommendNormal(genderId, ageId);
         return surveys.stream()
                 .map(survey -> SurveyResponse.from(survey))
