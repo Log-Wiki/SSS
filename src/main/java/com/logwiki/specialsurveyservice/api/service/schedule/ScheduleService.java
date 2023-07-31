@@ -15,6 +15,7 @@ import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -26,10 +27,24 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final Scheduler scheduler;
-    
+
     private final ScheduleRepository scheduleRepository;
     private static final String START_SURVEY = "start-survey";
     private static final String END_SURVEY = "end-survey";
+
+    @Transactional
+    public void addSurveySchedule(Long surveyId, LocalDateTime startTime, LocalDateTime endTime) throws SchedulerException {
+        ScheduleCreateRequest startSurveySchedule = ScheduleCreateRequest.builder()
+                .surveyId(surveyId)
+                .startTime(startTime)
+                .build();
+        ScheduleCreateRequest endSurveySchedule = ScheduleCreateRequest.builder()
+                .surveyId(surveyId)
+                .startTime(endTime)
+                .build();
+        addStartSurveySchedule(startSurveySchedule);
+        addEndSurveySchedule(endSurveySchedule);
+    }
 
     @Transactional
     public ScheduleResponse addStartSurveySchedule(ScheduleCreateRequest dto) throws SchedulerException {

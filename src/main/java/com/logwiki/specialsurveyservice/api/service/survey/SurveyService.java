@@ -1,8 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.survey;
 
 
-import com.logwiki.specialsurveyservice.api.controller.schedule.request.ScheduleCreateRequest;
-import com.logwiki.specialsurveyservice.api.service.schedule.ScheduleService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
@@ -42,9 +40,7 @@ public class SurveyService {
     private final TargetNumberService targetNumberService;
 
     private final AccountCodeRepository accountCodeRepository;
-
-    private final ScheduleService scheduleService;
-
+    
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) throws SchedulerException {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
@@ -75,16 +71,6 @@ public class SurveyService {
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
 
-        ScheduleCreateRequest startSurveySchedule = ScheduleCreateRequest.builder()
-                .surveyId(survey.getId())
-                .startTime(survey.getStartTime())
-                .build();
-        ScheduleCreateRequest endSurveySchedule = ScheduleCreateRequest.builder()
-                .surveyId(survey.getId())
-                .startTime(survey.getEndTime())
-                .build();
-        scheduleService.addStartSurveySchedule(startSurveySchedule);
-        scheduleService.addEndSurveySchedule(endSurveySchedule);
 
         return SurveyResponse.from(survey);
     }
@@ -100,5 +86,5 @@ public class SurveyService {
                                                 5003))))
                 .collect(Collectors.toList());
     }
-    
+
 }
