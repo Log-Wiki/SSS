@@ -29,8 +29,7 @@ public class SurveyController {
     }
 
     @GetMapping("/survey/recommend-normal")
-    public ApiResponse<List<SurveyResponse>> getRecommendSurveyForUser() {
-        return ApiUtils.success(surveyService.getNormalRecommend());
+    public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendNormalSurvey());
     }
-
 }
