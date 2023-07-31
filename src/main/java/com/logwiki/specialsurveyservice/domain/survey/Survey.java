@@ -38,7 +38,7 @@ public class Survey extends BaseEntity {
 
     private Long writer;
 
-    private boolean closed = true;
+    private boolean closed;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "survey_category_id")
