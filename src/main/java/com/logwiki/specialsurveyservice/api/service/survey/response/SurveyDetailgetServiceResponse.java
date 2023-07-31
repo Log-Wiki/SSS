@@ -1,8 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.survey.response;
 
-import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyResponseResult;
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
-import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class SurveyDetailgetServiceResponse {
     @NotNull(message = "설문 상세정보의 설문카테고리타입은 필수입니다.")
     private final SurveyCategoryType surveyCategoryType;
     @NotNull(message = "설문 상세정보의 상품리스트는 필수입니다.")
-    private final List<Giveaway> giveaways;
+    private final List<String> giveawayNames;
     @NotNull(message = "설문 상세정보의 당청확률 필수입니다.")
     private final double winRate;
     @NotNull(message = "설문 상세정보의 질문 문항수 필수입니다.")
@@ -38,12 +37,12 @@ public class SurveyDetailgetServiceResponse {
     @NotNull(message = "설문 상세정보의 예상시간 필수입니다.")
     private final double estimateTime;
     @NotNull(message = "설문 상세정보의 응답결과내역은 필수입니다.")
-    private final List<SurveyResponseResult> surveyResponseResults;
+    private final List<SurveyAnswerResponse> surveyResponseResults;
 
     @Builder
     public SurveyDetailgetServiceResponse(String title, LocalDateTime startTime , LocalDateTime endTime,
             int headCount , int closedHeadCount , Long writer, String writerName , SurveyCategoryType surveyCategoryType,
-            List<Giveaway> giveaways , double winRate , int questionCount , double estimateTime , List<SurveyResponseResult>
+            List<String> giveawayNames , double winRate , int questionCount , double estimateTime , List<SurveyAnswerResponse>
             surveyResponseResults) {
         this.title = title;
         this.startTime = startTime;
@@ -53,7 +52,7 @@ public class SurveyDetailgetServiceResponse {
         this.writer = writer;
         this.writerName = writerName;
         this.surveyCategoryType = surveyCategoryType;
-        this.giveaways = giveaways;
+        this.giveawayNames = giveawayNames;
         this.winRate = winRate;
         this.questionCount = questionCount;
         this.estimateTime = estimateTime;

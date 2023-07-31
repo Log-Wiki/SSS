@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.survey;
 
 
-import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyResponseResult;
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
@@ -14,7 +14,6 @@ import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
-import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
@@ -133,7 +132,7 @@ public class SurveyService {
             throw new BaseException("없는 설문입니다." , 3005);
         }
         Survey targetSurvey = targetSurveyOptional.get();
-        List<SurveyResponseResult> surveyResponseResults = new ArrayList<>();
+        List<SurveyAnswerResponse> surveyResponseResults = new ArrayList<>();
 
         String repGiveawayName = giveawayService.getRepGiveaway(targetSurvey).getName();
         if(targetSurvey.getSurveyResults() != null) {
@@ -149,7 +148,7 @@ public class SurveyService {
                     giveawayName = repGiveawayName;
                 }
 
-                surveyResponseResults.add(new SurveyResponseResult(
+                surveyResponseResults.add(new SurveyAnswerResponse(
                                 surveyResult.getEndTime()
                                 , surveyResult.getAccount().getName()
                                 , giveawayName
@@ -162,9 +161,9 @@ public class SurveyService {
         double winRate = this.getSurveyWinRate(targetSurvey);
 
         List<SurveyGiveaway> surveyGiveaways = targetSurvey.getSurveyGiveaways();
-        List<Giveaway> giveaways = new ArrayList<>();
+        List<String> giveawayNames = new ArrayList<>();
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
-            giveaways.add(surveyGiveaway.getGiveaway());
+            giveawayNames.add(surveyGiveaway.getGiveaway().getName());
         }
         return SurveyDetailgetServiceResponse.builder()
                 .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
@@ -179,7 +178,7 @@ public class SurveyService {
                 .winRate(winRate)
                 .estimateTime(0)
                 .questionCount(targetSurvey.getQuestions().size())
-                .giveaways(giveaways)
+                .giveawayNames(giveawayNames)
                 .build();
     }
 }
