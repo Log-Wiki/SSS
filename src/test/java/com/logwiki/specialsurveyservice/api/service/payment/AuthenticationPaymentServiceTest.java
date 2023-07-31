@@ -35,8 +35,8 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
-    private static IamportClient iamportClientApi = new IamportClient(IamportApiConstant.IamportApiKey,
-            IamportApiConstant.IamportApiSecretKey);
+    private static IamportClient iamportClientApi = new IamportClient(IamportApiConstant.IamportApiKey.getText(),
+            IamportApiConstant.IamportApiSecretKey.getText());
 
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test
