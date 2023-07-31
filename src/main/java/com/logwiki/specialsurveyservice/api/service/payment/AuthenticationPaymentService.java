@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthenticationPaymentService {
     private final OrdersRepository orderRepository;
-
+    private final static Boolean orderSuccess = true;
     @Transactional
     public PaymentResponse authentication(PaymentAuthenticationServiceRequest request,
             IamportClient iamportClientApi) {
@@ -43,7 +43,8 @@ public class AuthenticationPaymentService {
         if (iamportResponse.getResponse().getAmount().intValue() != order.getOrderAmount()) {
             throw new BaseException("주문 금액과 결제금액이 다릅니다.", 4004);
         }
-
+        Orders successOrder = new Orders(order.getOrderId() , order.getOrderAmount() , orderSuccess);
+        orderRepository.save(successOrder);
         return PaymentResponse.from(iamportResponse.getResponse());
     }
 
