@@ -33,7 +33,6 @@ public class StartSurveyJob implements Job {
         Schedule schedule = scheduleRepository.findScheduleByJobGroupAndJobName(jobKey.getGroup(), jobKey.getName())
                 .orElseThrow();
         schedule.endSchedule();
-
-        System.out.println("설문 아이디 = " + surveyId);
+        
     }
 }
