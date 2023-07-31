@@ -20,6 +20,8 @@ import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,11 +55,14 @@ class SurveyServiceTest extends IntegrationTestSupport {
     AuthorityRepository authorityRepository;
     @Autowired
     private AccountCodeRepository accountCodeRepository;
+    @Autowired
+    private SurveyCategoryRepository surveyCategoryRepository;
 
     @BeforeEach
     void setUp() {
         setAuthority();
         setAccountCode();
+        setSurveyCategory();
     }
 
     @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록, 설문 대상자를 이용하여 설문을 등록한다.")
@@ -356,5 +361,14 @@ class SurveyServiceTest extends IntegrationTestSupport {
                     .type(accountCodeType)
                     .build());
         }
+    }
+
+    private void setSurveyCategory() {
+        surveyCategoryRepository.save(SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build());
+        surveyCategoryRepository.save(SurveyCategory.builder()
+                .type(SurveyCategoryType.INSTANT_WIN)
+                .build());
     }
 }
