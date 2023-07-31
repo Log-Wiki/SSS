@@ -39,8 +39,8 @@ insert into account_code (type)
 values ('SIXTIES');
 
 
-insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT)
-values ('설문1', 100, 200);
+insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT, closed)
+values ('설문1', 100, 200, false);
 
 insert into question(content, survey_id)
 values ('문항1', 1);
