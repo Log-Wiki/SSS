@@ -38,6 +38,8 @@ public class Survey extends BaseEntity {
 
     private Long writer;
 
+    private boolean closed = true;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "survey_category_id")
     private SurveyCategory surveyCategory;
@@ -68,6 +70,7 @@ public class Survey extends BaseEntity {
         this.closedHeadCount = closedHeadCount;
         this.surveyCategory = type;
         this.writer = writer;
+        this.closed = true;
         this.questions = questions;
         this.surveyTargets = surveyTargets;
     }
@@ -99,5 +102,15 @@ public class Survey extends BaseEntity {
   
     public void addHeadCount() {
         this.headCount += 1;
+        if(this.headCount == closedHeadCount)
+            closed = true;
+    }
+
+    public void toOpen() {
+        this.closed = false;
+    }
+
+    public void toClose() {
+        this.closed = true;
     }
 }
