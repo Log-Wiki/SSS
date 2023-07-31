@@ -1,5 +1,8 @@
 package com.logwiki.specialsurveyservice.api.controller.payment;
 
+import static com.logwiki.specialsurveyservice.domain.payment.IamportApiKey.IamportApiKey;
+import static com.logwiki.specialsurveyservice.domain.payment.IamportApiKey.IamportApiSecretKey;
+
 import com.logwiki.specialsurveyservice.api.controller.payment.request.PaymentAuthenticationRequest;
 import com.logwiki.specialsurveyservice.api.service.payment.AuthenticationPaymentService;
 import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResponse;
@@ -19,11 +22,10 @@ public class PaymentController {
 
     private final AuthenticationPaymentService authenticationPaymentService;
     private final IamportClient iamportClientApi;
-
     public PaymentController(AuthenticationPaymentService authenticationPaymentService) {
         this.authenticationPaymentService = authenticationPaymentService;
-        this.iamportClientApi = new IamportClient("7343166512186774"
-                ,"AFgMzlcN1niQMqo4QjGlV7hyBuQOmuKFnKHqtHRzeCme37sbo6b8zKRhfAMtQKzX5BgPSrbE0pfdAEDK");
+        this.iamportClientApi = new IamportClient(IamportApiKey
+                , IamportApiSecretKey);
     }
 
     @PostMapping("/payment/authentication")
