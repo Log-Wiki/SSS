@@ -13,6 +13,7 @@ import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResp
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.siot.IamportRestClient.IamportClient;
 import java.util.ArrayList;
@@ -34,8 +35,8 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
-    private static IamportClient iamportClientApi = new IamportClient("7343166512186774"
-            ,"AFgMzlcN1niQMqo4QjGlV7hyBuQOmuKFnKHqtHRzeCme37sbo6b8zKRhfAMtQKzX5BgPSrbE0pfdAEDK");
+    private static IamportClient iamportClientApi = new IamportClient(IamportApiConstant.IamportApiKey,
+            IamportApiConstant.IamportApiSecretKey);
 
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test

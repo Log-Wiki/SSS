@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.controller.payment;
 
-import static com.logwiki.specialsurveyservice.domain.payment.IamportApiKey.IamportApiKey;
-import static com.logwiki.specialsurveyservice.domain.payment.IamportApiKey.IamportApiSecretKey;
+import static com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant.IamportApiKey;
+import static com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant.IamportApiSecretKey;
 
 import com.logwiki.specialsurveyservice.api.controller.payment.request.PaymentAuthenticationRequest;
 import com.logwiki.specialsurveyservice.api.service.payment.AuthenticationPaymentService;
