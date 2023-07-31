@@ -112,42 +112,32 @@ public class SurveyService {
 
     public double getSurveyWinRate(Survey survey) {
         int giveawayNum = this.getSurveyGiveawayCount(survey);
-        double percentage;
-        log.info("설문 카테고리 보기");
-        log.info(String.valueOf(survey.getSurveyCategory().getType()));
-        log.info(String.valueOf(SurveyCategoryType.NORMAL));
+        double winRate;
         if(survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
-            log.info("선물숫자 " + giveawayNum);
-            log.info("현재설문인원 " + survey.getHeadCount());
             if (giveawayNum >= survey.getHeadCount()) {
-                percentage = 100.0;
+                winRate = 100.0;
             } else {
-                percentage = (double)giveawayNum / survey.getHeadCount();
+                winRate = (double)giveawayNum / survey.getHeadCount();
             }
         }
         else {
-            log.info("선물숫자 " + giveawayNum);
-            log.info("마감설문인원 " + survey.getClosedHeadCount());
-            percentage = (double)giveawayNum / survey.getClosedHeadCount();
+            winRate = (double)giveawayNum / survey.getClosedHeadCount();
         }
 
-        return  percentage;
+        return  winRate;
     }
 
     public SurveyDetailgetServiceResponse getSurveyDetail(Long surveyId) {
-        log.info("설문ID : {}" , surveyId);
         Optional<Survey> targetSurveyOptional =  surveyRepository.findById(surveyId);
         if(targetSurveyOptional.isEmpty()) {
-            throw new BaseException("해당 설문이 존재하지 않습니다." , 3666);
+            throw new BaseException("없는 설문입니다." , 3005);
         }
         Survey targetSurvey = targetSurveyOptional.get();
-        log.info("타겟 " + targetSurvey.getId());
         List<SurveyResponseResult> surveyResponseResults = new ArrayList<>();
 
         String repGiveawayName = giveawayService.getRepGiveaway(targetSurvey).getName();
         if(targetSurvey.getSurveyResults() != null) {
             for (SurveyResult surveyResult : targetSurvey.getSurveyResults()) {
-                log.info("설문결과 : {}", surveyResult.getAccount().getName());
                 String giveawayName;
                 boolean isWin = false;
                 Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
@@ -176,7 +166,6 @@ public class SurveyService {
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
             giveaways.add(surveyGiveaway.getGiveaway());
         }
-        log.info(targetSurvey.getSurveyCategory().toString());
         return SurveyDetailgetServiceResponse.builder()
                 .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
                 .title(targetSurvey.getTitle())
