@@ -23,6 +23,7 @@ import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -90,24 +91,25 @@ public class SurveyService {
     }
 
     public List<SurveyResponse> getRecommendNormalSurvey() {
-        Account account = SecurityUtil.getCurrentUsername()
-                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
-        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
-                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
-                .getId();
-        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
-                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
-                .getId();
+        List<Survey> surveys = getRecommendSurveys(SurveyCategoryType.NORMAL);
 
-        List<Survey> surveys = surveyRepository.findRecommendNormalSurvey(SurveyCategoryType.NORMAL.toString(),
-                genderId, ageId);
+        sortByEndTime(surveys);
         return surveys.stream()
-                .map(survey -> SurveyResponse.from(survey))
+                .map(SurveyResponse::from)
                 .collect(Collectors.toList());
     }
 
     public List<SurveyResponse> getRecommendInstantSurvey() {
+        List<Survey> surveys = getRecommendSurveys(SurveyCategoryType.INSTANT_WIN);
+
+        sortByWinningPercent(surveys);
+
+        return surveys.stream()
+                .map(SurveyResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    private List<Survey> getRecommendSurveys(SurveyCategoryType surveyCategoryType) {
         Account account = SecurityUtil.getCurrentUsername()
                 .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
@@ -118,9 +120,19 @@ public class SurveyService {
                 .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
                 .getId();
 
-        List<Survey> surveys = surveyRepository.findRecommendInstantSurvey(SurveyCategoryType.INSTANT_WIN.toString(),
+        return surveyRepository.findRecommendSurvey(surveyCategoryType.toString(),
                 genderId, ageId);
+    }
 
+    private static void sortByEndTime(List<Survey> surveys) {
+        surveys.sort((survey1, survey2) -> {
+            LocalDateTime survey1EndTime = survey1.getEndTime();
+            LocalDateTime survey2EndTime = survey2.getEndTime();
+            return survey1EndTime.compareTo(survey2EndTime);
+        });
+    }
+
+    private static void sortByWinningPercent(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
             int survey1GiveawayCount = survey1.getSurveyGiveaways().stream()
                     .mapToInt(SurveyGiveaway::getCount)
@@ -134,9 +146,5 @@ public class SurveyService {
                     (float) survey2GiveawayCount / survey2.getClosedHeadCount();
             return Float.compare(survey2WinningPercent, survey1WinningPercent);
         });
-
-        return surveys.stream()
-                .map(survey -> SurveyResponse.from(survey))
-                .collect(Collectors.toList());
     }
 }
