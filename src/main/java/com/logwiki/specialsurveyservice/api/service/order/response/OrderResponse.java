@@ -32,6 +32,6 @@ public class OrderResponse {
     public static OrderResponse from(Orders order) {
         return OrderResponse.builder().orderId(order.getOrderId())
                 .orderAmount(order.getOrderAmount()).isVerificated(order.getIsVerificated()).storeId(
-                        IamportApiConstant.StoreKey).build();
+                        IamportApiConstant.StoreKey.getText()).build();
     }
 }
