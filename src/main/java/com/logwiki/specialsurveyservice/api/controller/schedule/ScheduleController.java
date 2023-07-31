@@ -16,12 +16,20 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping("/schedule")
-    public ApiResponse<?> surveyAdd(@RequestBody ScheduleCreateRequest dto) throws Exception {
+    @PostMapping("/schedule/start")
+    public ApiResponse<?> surveyStartAdd(@RequestBody ScheduleCreateRequest dto) throws Exception {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneMinuteLater = now.plusSeconds(5);
         dto.setStartTime(oneMinuteLater);
         return ApiUtils.success(scheduleService.addStartSurveySchedule(dto));
+    }
+
+    @PostMapping("/schedule/end")
+    public ApiResponse<?> surveyEndAdd(@RequestBody ScheduleCreateRequest dto) throws Exception {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime oneMinuteLater = now.plusSeconds(5);
+        dto.setStartTime(oneMinuteLater);
+        return ApiUtils.success(scheduleService.addEndSurveySchedule(dto));
     }
 
     @GetMapping("/schedule")
@@ -29,4 +37,10 @@ public class ScheduleController {
         scheduleService.printAllJobs();
         return ApiUtils.success("success");
     }
+
+    @GetMapping("/schedule/{surveyId}")
+    public ApiResponse<?> surveyScheduleGet(@PathVariable Long surveyId) throws Exception {
+        return ApiUtils.success(scheduleService.getSchedulesBySurveyId(surveyId));
+    }
+
 }

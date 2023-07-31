@@ -1,7 +1,9 @@
 package com.logwiki.specialsurveyservice.api.service.schedule;
 
 import com.logwiki.specialsurveyservice.api.controller.schedule.request.ScheduleCreateRequest;
+import com.logwiki.specialsurveyservice.api.service.schedule.job.EndSurveyJob;
 import com.logwiki.specialsurveyservice.api.service.schedule.job.StartSurveyJob;
+import com.logwiki.specialsurveyservice.api.service.schedule.response.ScheduleResponse;
 import com.logwiki.specialsurveyservice.domain.schedule.Schedule;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleRepository;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleRunType;
@@ -17,6 +19,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +31,8 @@ public class ScheduleService {
     private static final String END_SURVEY = "end-survey";
 
     @Transactional
-    public String addStartSurveySchedule(ScheduleCreateRequest dto) throws SchedulerException {
-        JobDetail jobDetail = buildJobDetailByDto(dto, START_SURVEY);
+    public ScheduleResponse addStartSurveySchedule(ScheduleCreateRequest dto) throws SchedulerException {
+        JobDetail jobDetail = buildJobDetailStartSurvey(dto, START_SURVEY);
 
         JobKey jobKey = jobDetail.getKey();
         String name = jobKey.getName();
@@ -48,14 +51,58 @@ public class ScheduleService {
                 .jobName(name).build();
 
         scheduleRepository.save(schedule);
-        return "";
+        return ScheduleResponse.from(schedule);
     }
 
-    // 요청으로 생성하기
-    private JobDetail buildJobDetailByDto(ScheduleCreateRequest dto, String groupName) {
+    @Transactional
+    public ScheduleResponse addEndSurveySchedule(ScheduleCreateRequest dto) throws SchedulerException {
+        JobDetail jobDetail = buildJobDetailEndSurvey(dto, END_SURVEY);
+
+        JobKey jobKey = jobDetail.getKey();
+        String name = jobKey.getName();
+        String group = jobKey.getGroup();
+
+        Date date = Date.from(dto.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
+
+        Trigger trigger = buildOneTimeJobTrigger(jobDetail, date, END_SURVEY);
+        scheduler.scheduleJob(jobDetail, trigger);
+        Schedule schedule = Schedule.builder()
+                .type(ScheduleType.END_SURVEY)
+                .run(ScheduleRunType.BEFORE_RUN)
+                .startTime(dto.getStartTime())
+                .surveyId(dto.getSurveyId())
+                .jobGroup(group)
+                .jobName(name).build();
+
+        scheduleRepository.save(schedule);
+        return ScheduleResponse.from(schedule);
+    }
+
+    @Transactional
+    public List<ScheduleResponse> getSchedulesBySurveyId(Long surveyId) {
+        return scheduleRepository.findScheduleBySurveyId(surveyId)
+                .orElseThrow(() -> new BaseException("등록된 스케줄러가 없습니다.", 6000))
+                .stream()
+                .map(ScheduleResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    // 설문 시작 JobDetail 작성
+    private JobDetail buildJobDetailStartSurvey(ScheduleCreateRequest dto, String groupName) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("surveyId", dto.getSurveyId());
         return JobBuilder.newJob(StartSurveyJob.class)
+                .withIdentity(UUID.randomUUID().toString(), groupName)
+                .withDescription("생성된 JOB" + String.valueOf(dto.getSurveyId()))
+                .usingJobData(jobDataMap)
+                .build();
+    }
+
+    // 설문 끝 JobDetail 작성
+    private JobDetail buildJobDetailEndSurvey(ScheduleCreateRequest dto, String groupName) {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("surveyId", dto.getSurveyId());
+        return JobBuilder.newJob(EndSurveyJob.class)
                 .withIdentity(UUID.randomUUID().toString(), groupName)
                 .withDescription("생성된 JOB" + String.valueOf(dto.getSurveyId()))
                 .usingJobData(jobDataMap)
