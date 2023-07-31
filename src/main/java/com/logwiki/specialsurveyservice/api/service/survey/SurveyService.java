@@ -15,6 +15,9 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
@@ -36,6 +39,7 @@ public class SurveyService {
     private final GiveawayRepository giveawayRepository;
     private final TargetNumberService targetNumberService;
     private final AccountCodeRepository accountCodeRepository;
+    private final SurveyCategoryRepository surveyCategoryRepository;
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -54,6 +58,10 @@ public class SurveyService {
                     .build();
             survey.addSurveyTarget(surveyTarget);
         }
+
+        SurveyCategory surveyCategoryByType = surveyCategoryRepository.findSurveyCategoryByType(
+                dto.getType());
+        survey.addSurveyCategory(surveyCategoryByType);
 
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = dto.getGiveaways();
         List<SurveyGiveaway> surveyGiveaways = getSurveyGiveaways(survey,
@@ -81,7 +89,7 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<SurveyResponse> getNormalRecommend() {
+    public List<SurveyResponse> getRecommendNormalSurvey() {
         Account account = SecurityUtil.getCurrentUsername()
                 .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
@@ -92,7 +100,8 @@ public class SurveyService {
                 .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
                 .getId();
 
-        List<Survey> surveys = surveyRepository.findRecommendNormal(genderId, ageId);
+        List<Survey> surveys = surveyRepository.findRecommendNormalSurvey(SurveyCategoryType.NORMAL.toString(),
+                genderId, ageId);
         return surveys.stream()
                 .map(survey -> SurveyResponse.from(survey))
                 .collect(Collectors.toList());
