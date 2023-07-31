@@ -70,7 +70,7 @@ public class Survey extends BaseEntity {
         this.closedHeadCount = closedHeadCount;
         this.surveyCategory = type;
         this.writer = writer;
-        this.closed = true;
+        this.closed = false;
         this.questions = questions;
         this.surveyTargets = surveyTargets;
     }
