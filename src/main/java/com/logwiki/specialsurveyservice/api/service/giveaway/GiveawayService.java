@@ -67,7 +67,7 @@ public class GiveawayService {
     public GiveawayResponse getRepGiveaway(Survey survey) {
         List<SurveyGiveaway> surveyGiveaways = survey.getSurveyGiveaways();
         if(surveyGiveaways.size() == 0) {
-            throw new BaseException("설문조사의 상품이 하나도 조회되지 않습니다." , 3008);
+            throw new BaseException("설문조사의 상품이 하나도 조회되지 않습니다." , 5005);
         }
         Giveaway repGiveaway = surveyGiveaways.get(0).getGiveaway();
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
