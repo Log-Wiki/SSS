@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Data
 public class OrderProductElement {
-    @NotNull
+    @NotNull(message = "경품 이름은 필수입니다.")
     private String giveawayName;
-    @NotNull
+    @NotNull(message = "경품 숫자는 필수입니다.")
     private Integer giveawayNumber;
 }
