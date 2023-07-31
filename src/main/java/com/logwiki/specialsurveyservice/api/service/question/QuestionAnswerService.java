@@ -40,23 +40,57 @@ public class QuestionAnswerService {
             Long surveyId,
             String userEmail,
             List<QuestionAnswerCreateServiceRequest> dto) {
+        Account account = findAccountByEmail(userEmail);
+        List<Question> questions = findQuestionsBySurveyId(surveyId);
+        
+        checkIsTarget(account, surveyId);
+        checkAnsweredAllQuestions(questions, dto);
 
-        Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
+        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
+        return saveQuestionAnswer(writeDate, account, questions, dto);
+    }
+
+    private Account findAccountByEmail(String userEmail) {
+        return accountRepository.findOneWithAuthoritiesByEmail(userEmail)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
-        List<Question> questions = questionRepository.findBySurveyId(surveyId).orElseThrow(
-                () -> new BaseException("없는 설문입니다.", 3005));
+    }
 
+    private List<Question> findQuestionsBySurveyId(Long surveyId) {
+        return questionRepository.findBySurveyId(surveyId).orElseThrow(
+                () -> new BaseException("없는 설문입니다.", 3005));
+    }
+
+    private void checkIsTarget(Account account, Long surveyId) {
         List<AccountCodeType> accountGenderAgeType = new ArrayList<>();
         accountGenderAgeType.add(account.getGender());
         accountGenderAgeType.add(account.getAge());
 
-        isTarget(accountGenderAgeType, surveyId);
-        List<QuestionAnswerResponse> result = new ArrayList<>();
+        List<SurveyTarget> surveyTargets = surveyTargetRepository.findSurveyTargetBySurvey_Id(surveyId);
+        List<AccountCodeType> accountCodeTypes = new ArrayList<>();
+        for (SurveyTarget surveyTarget : surveyTargets) {
+            accountCodeTypes.add(surveyTarget.getAccountCode().getType());
+        }
+        for (AccountCodeType accountCodeType : accountGenderAgeType) {
+            if (accountCodeTypes.contains(accountCodeType)) {
+                continue;
+            }
+            throw new BaseException("설문 대상자가 아닙니다.", 3003);
+        }
+    }
 
-        if (questions.size() != dto.size()) {
+    private void checkAnsweredAllQuestions(List<Question> questions, List<QuestionAnswerCreateServiceRequest> dto) {
+        if (questions.size() > dto.size()) {
             throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
         }
+    }
 
+    private List<QuestionAnswerResponse> saveQuestionAnswer(
+            LocalDateTime writeDate,
+            Account account,
+            List<Question> questions,
+            List<QuestionAnswerCreateServiceRequest> dto) {
+
+        List<QuestionAnswerResponse> result = new ArrayList<>();
         for (Question question : questions) {
             boolean notFoundQuestion = true;
             for (QuestionAnswerCreateServiceRequest answer : dto) {
@@ -72,23 +106,6 @@ public class QuestionAnswerService {
                 throw new BaseException("없는 문항에 답변을 할 수 없습니다.", 3002);
             }
         }
-
-        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
-
         return result;
-    }
-
-    private void isTarget(List<AccountCodeType> accountGenderAgeType, Long surveyId) {
-        List<SurveyTarget> surveyTargets = surveyTargetRepository.findSurveyTargetBySurvey_Id(surveyId);
-        List<AccountCodeType> accountCodeTypes = new ArrayList<>();
-        for (SurveyTarget surveyTarget : surveyTargets) {
-            accountCodeTypes.add(surveyTarget.getAccountCode().getType());
-        }
-        for (AccountCodeType accountCodeType : accountGenderAgeType) {
-            if (accountCodeTypes.contains(accountCodeType)) {
-                continue;
-            }
-            throw new BaseException("설문 대상자가 아닙니다.", 3003);
-        }
     }
 }
