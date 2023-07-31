@@ -5,7 +5,7 @@ import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswer
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailgetServiceResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
@@ -51,6 +51,7 @@ public class SurveyService {
 
     private final TargetNumberRepository targetNumberRepository;
 
+    private static final double MAXPROBABILITY = 100.0;
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -128,7 +129,7 @@ public class SurveyService {
         double winRate;
         if(survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
             if (giveawayNum >= survey.getHeadCount()) {
-                winRate = 100.0;
+                winRate = MAXPROBABILITY;
             } else {
                 winRate = (double)giveawayNum / survey.getHeadCount();
             }
@@ -140,7 +141,7 @@ public class SurveyService {
         return  winRate;
     }
 
-    public SurveyDetailgetServiceResponse getSurveyDetail(Long surveyId) {
+    public SurveyDetailResponse getSurveyDetail(Long surveyId) {
         Optional<Survey> targetSurveyOptional =  surveyRepository.findById(surveyId);
         if(targetSurveyOptional.isEmpty()) {
             throw new BaseException("없는 설문입니다." , 3005);
@@ -179,20 +180,10 @@ public class SurveyService {
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
             giveawayNames.add(surveyGiveaway.getGiveaway().getName());
         }
-        return SurveyDetailgetServiceResponse.builder()
-                .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
-                .title(targetSurvey.getTitle())
-                .headCount(targetSurvey.getHeadCount())
-                .closedHeadCount(targetSurvey.getClosedHeadCount())
-                .surveyResponseResults(surveyResponseResults)
-                .startTime(targetSurvey.getStartTime())
-                .endTime(targetSurvey.getEndTime())
-                .writer(targetSurvey.getWriter())
-                .writerName(accountRepository.getReferenceById(targetSurvey.getWriter()).getName())
-                .winRate(winRate)
-                .estimateTime(0)
-                .questionCount(targetSurvey.getQuestions().size())
-                .giveawayNames(giveawayNames)
-                .build();
+        Optional<Account> writerAccount =  accountRepository.findById(targetSurvey.getWriter());
+        if(writerAccount.isEmpty()){
+            throw new BaseException("설문 작성자가 존재하지 않습니다.", 3013);
+        }
+        return SurveyDetailResponse.of(targetSurvey,surveyResponseResults,winRate,giveawayNames,writerAccount.get().getName());
     }
 }

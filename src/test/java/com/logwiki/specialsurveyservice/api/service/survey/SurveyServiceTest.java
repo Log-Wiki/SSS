@@ -9,7 +9,7 @@ import com.logwiki.specialsurveyservice.api.service.question.request.MultipleCho
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailgetServiceResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
@@ -447,7 +447,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         SurveyResponse saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
         // when
-        SurveyDetailgetServiceResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
+        SurveyDetailResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
         // then
         assertThat(response).isNotNull();
         assertThat(response.getSurveyCategoryType()).isEqualTo(surveyCategoryType);
