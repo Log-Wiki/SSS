@@ -19,9 +19,11 @@ public class Schedule {
 
     @Enumerated(EnumType.STRING)
     private ScheduleType type;
-    
+
     @Enumerated(EnumType.STRING)
     private ScheduleRunType run;
+
+    private LocalDateTime startTime;
 
     private LocalDateTime endTime;
 
@@ -33,12 +35,18 @@ public class Schedule {
 
     @Builder
     public Schedule(ScheduleType type, ScheduleRunType run, LocalDateTime endTime, Long surveyId,
-            String jobName, String jobGroup) {
+            LocalDateTime startTime, String jobName, String jobGroup) {
         this.type = type;
         this.run = run;
+        this.startTime = startTime;
         this.endTime = endTime;
         this.surveyId = surveyId;
         this.jobName = jobName;
         this.jobGroup = jobGroup;
+    }
+
+    public void endSchedule() {
+        this.endTime = LocalDateTime.now();
+        this.run = ScheduleRunType.AFTER_RUN;
     }
 }
