@@ -22,9 +22,6 @@ public class OrderResponse {
 
     public static OrderResponse from(Orders order) {
         log.info(order.getOrderId() + " " + order.getOrderAmount());
-        if (order == null) {
-            return null;
-        }
 
         return OrderResponse.builder().orderId(order.getOrderId())
                 .orderAmount(order.getOrderAmount()).isSuccess(order.getIsSuccess()).build();
