@@ -176,8 +176,9 @@ public class SurveyService {
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
             giveaways.add(surveyGiveaway.getGiveaway());
         }
+        log.info(targetSurvey.getSurveyCategory().toString());
         return SurveyDetailgetServiceResponse.builder()
-                .surveyCategory(targetSurvey.getSurveyCategory())
+                .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
                 .title(targetSurvey.getTitle())
                 .headCount(targetSurvey.getHeadCount())
                 .closedHeadCount(targetSurvey.getClosedHeadCount())

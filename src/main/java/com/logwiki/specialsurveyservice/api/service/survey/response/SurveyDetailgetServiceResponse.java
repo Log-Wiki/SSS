@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.survey.response;
 import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyResponseResult;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class SurveyDetailgetServiceResponse {
 
     private final String writerName;
 
-    private final SurveyCategory surveyCategory;
+    private final SurveyCategoryType surveyCategoryType;
 
     private final List<Giveaway> giveaways;
 
@@ -39,7 +40,7 @@ public class SurveyDetailgetServiceResponse {
 
     @Builder
     public SurveyDetailgetServiceResponse(String title, LocalDateTime startTime , LocalDateTime endTime,
-            int headCount , int closedHeadCount , Long writer, String writerName , SurveyCategory surveyCategory,
+            int headCount , int closedHeadCount , Long writer, String writerName , SurveyCategoryType surveyCategoryType,
             List<Giveaway> giveaways , double winRate , int questionCount , double estimateTime , List<SurveyResponseResult>
             surveyResponseResults) {
         this.title = title;
@@ -49,7 +50,7 @@ public class SurveyDetailgetServiceResponse {
         this.closedHeadCount = closedHeadCount;
         this.writer = writer;
         this.writerName = writerName;
-        this.surveyCategory = surveyCategory;
+        this.surveyCategoryType = surveyCategoryType;
         this.giveaways = giveaways;
         this.winRate = winRate;
         this.questionCount = questionCount;
