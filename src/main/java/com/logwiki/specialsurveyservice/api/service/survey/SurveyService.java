@@ -6,6 +6,7 @@ import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateS
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
@@ -31,15 +32,10 @@ import java.util.stream.Collectors;
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
-
     private final AccountRepository accountRepository;
-
     private final GiveawayRepository giveawayRepository;
-
     private final TargetNumberService targetNumberService;
-
     private final AccountCodeRepository accountCodeRepository;
-
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -82,6 +78,24 @@ public class SurveyService {
                                 .orElseThrow(
                                         () -> new BaseException("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.",
                                                 5003))))
+                .collect(Collectors.toList());
+    }
+
+    public List<SurveyResponse> getNormalRecommend() {
+        Account account = SecurityUtil.getCurrentUsername()
+                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
+                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
+                .getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
+                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
+                .getId();
+
+        System.out.println("확인 : " + genderId + ", " + ageId);
+        List<Survey> surveys = surveyRepository.findRecommendNormal(genderId, ageId);
+        return surveys.stream()
+                .map(survey -> SurveyResponse.from(survey))
                 .collect(Collectors.toList());
     }
 }
