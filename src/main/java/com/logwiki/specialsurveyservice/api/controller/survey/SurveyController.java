@@ -32,4 +32,9 @@ public class SurveyController {
     public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendNormalSurvey());
     }
+
+    @GetMapping("/survey/recommend-instant")
+    public ApiResponse<List<SurveyResponse>> getRecommendInstantSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendInstantSurvey());
+    }
 }

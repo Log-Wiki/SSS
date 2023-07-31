@@ -106,4 +106,37 @@ public class SurveyService {
                 .map(survey -> SurveyResponse.from(survey))
                 .collect(Collectors.toList());
     }
+
+    public List<SurveyResponse> getRecommendInstantSurvey() {
+        Account account = SecurityUtil.getCurrentUsername()
+                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
+                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
+                .getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
+                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
+                .getId();
+
+        List<Survey> surveys = surveyRepository.findRecommendInstantSurvey(SurveyCategoryType.INSTANT_WIN.toString(),
+                genderId, ageId);
+
+        surveys.sort((survey1, survey2) -> {
+            int survey1GiveawayCount = survey1.getSurveyGiveaways().stream()
+                    .mapToInt(SurveyGiveaway::getCount)
+                    .sum();
+            int survey2GiveawayCount = survey2.getSurveyGiveaways().stream()
+                    .mapToInt(SurveyGiveaway::getCount)
+                    .sum();
+            float survey1WinningPercent =
+                    (float) survey1GiveawayCount / survey1.getClosedHeadCount();
+            float survey2WinningPercent =
+                    (float) survey2GiveawayCount / survey2.getClosedHeadCount();
+            return Float.compare(survey2WinningPercent, survey1WinningPercent);
+        });
+
+        return surveys.stream()
+                .map(survey -> SurveyResponse.from(survey))
+                .collect(Collectors.toList());
+    }
 }
