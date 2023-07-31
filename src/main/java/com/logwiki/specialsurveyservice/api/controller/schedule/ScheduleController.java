@@ -43,4 +43,9 @@ public class ScheduleController {
         return ApiUtils.success(scheduleService.getSchedulesBySurveyId(surveyId));
     }
 
+    @GetMapping("/schedule/before-run")
+    public ApiResponse<?> scheduleBeforeRunGet() throws Exception {
+        return ApiUtils.success(scheduleService.getBeforeRunSchedule());
+    }
+
 }

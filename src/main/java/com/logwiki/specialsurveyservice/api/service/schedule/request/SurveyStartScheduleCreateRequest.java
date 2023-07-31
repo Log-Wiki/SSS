@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class SurveyStartScheduleCreateRequest {
 
     private Long surveyId;
-    
-    private LocalDateTime surveyStartTime;
+
+    private LocalDateTime startScheduleTime;
 
 }

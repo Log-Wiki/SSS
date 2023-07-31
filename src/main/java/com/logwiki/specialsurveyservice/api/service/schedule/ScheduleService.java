@@ -79,6 +79,15 @@ public class ScheduleService {
     }
 
     @Transactional
+    public List<ScheduleResponse> getBeforeRunSchedule() throws SchedulerException {
+        return scheduleRepository.findScheduleByRun(ScheduleRunType.BEFORE_RUN)
+                .orElseThrow(() -> new BaseException("동작전 스케줄러가 없습니다.", 6001))
+                .stream()
+                .map(ScheduleResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public List<ScheduleResponse> getSchedulesBySurveyId(Long surveyId) {
         return scheduleRepository.findScheduleBySurveyId(surveyId)
                 .orElseThrow(() -> new BaseException("등록된 스케줄러가 없습니다.", 6000))
