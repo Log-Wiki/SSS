@@ -7,6 +7,8 @@ import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,4 +26,10 @@ public class SurveyController {
         String userId = authentication.getName();
         return ApiUtils.success(surveyService.addSurvey(userId, dto.from()));
     }
+
+    @GetMapping("/survey/{surveyId}")
+    public ApiResponse<?> surveyDetail(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
+    }
+
 }

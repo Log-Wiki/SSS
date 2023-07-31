@@ -1,8 +1,11 @@
 package com.logwiki.specialsurveyservice.api.service.survey;
 
 
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyResponseResult;
+import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailgetServiceResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
@@ -11,20 +14,28 @@ import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
+import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -39,6 +50,10 @@ public class SurveyService {
     private final TargetNumberService targetNumberService;
 
     private final AccountCodeRepository accountCodeRepository;
+
+    private final GiveawayService giveawayService;
+
+    private final TargetNumberRepository targetNumberRepository;
 
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
@@ -83,5 +98,98 @@ public class SurveyService {
                                         () -> new BaseException("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.",
                                                 5003))))
                 .collect(Collectors.toList());
+    }
+
+
+    public int getSurveyGiveawayCount(Survey survey) {
+        List<SurveyGiveaway> surveyGiveaways = survey.getSurveyGiveaways();
+        int giveawayNum = 0;
+        for (SurveyGiveaway sg : surveyGiveaways) {
+            giveawayNum += sg.getCount();
+        }
+        return  giveawayNum;
+    }
+
+    public double getSurveyWinRate(Survey survey) {
+        int giveawayNum = this.getSurveyGiveawayCount(survey);
+        double percentage;
+        log.info("설문 카테고리 보기");
+        log.info(String.valueOf(survey.getSurveyCategory().getType()));
+        log.info(String.valueOf(SurveyCategoryType.NORMAL));
+        if(survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            log.info("선물숫자 " + giveawayNum);
+            log.info("현재설문인원 " + survey.getHeadCount());
+            if (giveawayNum >= survey.getHeadCount()) {
+                percentage = 100.0;
+            } else {
+                percentage = (double)giveawayNum / survey.getHeadCount();
+            }
+        }
+        else {
+            log.info("선물숫자 " + giveawayNum);
+            log.info("마감설문인원 " + survey.getClosedHeadCount());
+            percentage = (double)giveawayNum / survey.getClosedHeadCount();
+        }
+
+        return  percentage;
+    }
+
+    public SurveyDetailgetServiceResponse getSurveyDetail(Long surveyId) {
+        log.info("설문ID : {}" , surveyId);
+        Optional<Survey> targetSurveyOptional =  surveyRepository.findById(surveyId);
+        if(targetSurveyOptional.isEmpty()) {
+            throw new BaseException("해당 설문이 존재하지 않습니다." , 3666);
+        }
+        Survey targetSurvey = targetSurveyOptional.get();
+        log.info("타겟 " + targetSurvey.getId());
+        List<SurveyResponseResult> surveyResponseResults = new ArrayList<>();
+
+        String repGiveawayName = giveawayService.getRepGiveaway(targetSurvey).getName();
+        if(targetSurvey.getSurveyResults() != null) {
+            for (SurveyResult surveyResult : targetSurvey.getSurveyResults()) {
+                log.info("설문결과 : {}", surveyResult.getAccount().getName());
+                String giveawayName;
+                boolean isWin = false;
+                Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
+                        targetSurvey, surveyResult.getSubmitOrder());
+                if (tn.isPresent()) {
+                    isWin = true;
+                    giveawayName = tn.get().getGiveaway().getName();
+                } else {
+                    giveawayName = repGiveawayName;
+                }
+
+                surveyResponseResults.add(new SurveyResponseResult(
+                                surveyResult.getEndTime()
+                                , surveyResult.getAccount().getName()
+                                , giveawayName
+                                , isWin
+                        )
+                );
+            }
+        }
+
+        double winRate = this.getSurveyWinRate(targetSurvey);
+
+        List<SurveyGiveaway> surveyGiveaways = targetSurvey.getSurveyGiveaways();
+        List<Giveaway> giveaways = new ArrayList<>();
+        for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
+            giveaways.add(surveyGiveaway.getGiveaway());
+        }
+        return SurveyDetailgetServiceResponse.builder()
+                .surveyCategory(targetSurvey.getSurveyCategory())
+                .title(targetSurvey.getTitle())
+                .headCount(targetSurvey.getHeadCount())
+                .closedHeadCount(targetSurvey.getClosedHeadCount())
+                .surveyResponseResults(surveyResponseResults)
+                .startTime(targetSurvey.getStartTime())
+                .endTime(targetSurvey.getEndTime())
+                .writer(targetSurvey.getWriter())
+                .writerName(accountRepository.getReferenceById(targetSurvey.getWriter()).getName())
+                .winRate(winRate)
+                .estimateTime(0)
+                .questionCount(targetSurvey.getQuestions().size())
+                .giveaways(giveaways)
+                .build();
     }
 }
