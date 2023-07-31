@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final Scheduler scheduler;
+    
     private final ScheduleRepository scheduleRepository;
     private static final String START_SURVEY = "start-survey";
     private static final String END_SURVEY = "end-survey";
@@ -42,6 +43,7 @@ public class ScheduleService {
 
         Trigger trigger = buildOneTimeJobTrigger(jobDetail, date, START_SURVEY);
         scheduler.scheduleJob(jobDetail, trigger);
+
         Schedule schedule = Schedule.builder()
                 .type(ScheduleType.START_SURVEY)
                 .run(ScheduleRunType.BEFORE_RUN)

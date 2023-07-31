@@ -6,6 +6,7 @@ import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.quartz.SchedulerException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class SurveyController {
     private final SurveyService surveyService;
 
     @PostMapping("/survey")
-    public ApiResponse<?> surveyAdd(@Valid @RequestBody SurveyCreateRequest dto, Authentication authentication) {
+    public ApiResponse<?> surveyAdd(@Valid @RequestBody SurveyCreateRequest dto, Authentication authentication) throws SchedulerException {
         String userId = authentication.getName();
         return ApiUtils.success(surveyService.addSurvey(userId, dto.from()));
     }
