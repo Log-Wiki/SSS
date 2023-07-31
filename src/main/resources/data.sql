@@ -39,8 +39,8 @@ insert into account_code (type)
 values ('SIXTIES');
 
 
-insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT)
-values ('설문1', 100, 200);
+insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT, closed)
+values ('설문1', 100, 200, false);
 
 insert into question(content, survey_id)
 values ('문항1', 1);
@@ -50,4 +50,8 @@ insert into giveaway (price, name, giveaway_type, create_at, modified_at)
 values (4500, '스타벅스 아이스 아메리카노', 'COFFEE', now(), now());
 insert into giveaway (price, name, giveaway_type, create_at, modified_at)
 values (1500, '컴포즈 아이스 아메리카노', 'COFFEE', now(), now());
+insert into giveaway (price, name, giveaway_type, create_at, modified_at)
+values (20000, 'BBQ후라이드치킨', 'CHICKEN', now(), now());
+insert into giveaway (price, name, giveaway_type, create_at, modified_at)
+values (1300, '컴포즈커피', 'COFFEE', now(), now());
 

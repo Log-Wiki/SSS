@@ -61,6 +61,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .closedHeadCount(100)
                 .writer(1L)
                 .build();
+        survey.toOpen();
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(3)
@@ -109,6 +110,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .closedHeadCount(100)
                 .writer(1L)
                 .build();
+        survey.toOpen();
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(3)

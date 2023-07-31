@@ -18,20 +18,20 @@ public class Orders extends BaseEntity {
 
   private Integer orderAmount;
 
-  private Boolean isSuccess;
+  private Boolean isVerificated;
 
   @Builder
-  public Orders(String orderId , Integer orderAmount , Boolean isSuccess) {
+  public Orders(String orderId , Integer orderAmount , Boolean isVerificated) {
      this.orderId = orderId;
      this.orderAmount = orderAmount;
-     this.isSuccess = isSuccess;
+     this.isVerificated = isVerificated;
   }
 
-    public static Orders create(String orderId, Integer orderAmount , Boolean isSuccess) {
+    public static Orders create(String orderId, Integer orderAmount , Boolean isVerificated) {
         return Orders.builder()
                 .orderId(orderId)
                 .orderAmount(orderAmount)
-                .isSuccess(isSuccess)
+                .isVerificated(isVerificated)
                 .build();
     }
 }
