@@ -1,7 +1,9 @@
 package com.logwiki.specialsurveyservice.api.controller.orders.request;
 
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
+import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Builder;
@@ -12,9 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderCreateRequest {
 
-    @NotNull
+    @NotNull(message = "주문 상품은 필수 입니다.")
     private List<OrderProductElement> giveaways;
 
+    @Builder
+    private OrderCreateRequest(List<OrderProductElement> giveaways) {
+        this.giveaways = giveaways;
+    }
     @Builder
     public OrderCreateServiceRequest toServiceRequest(String userId , Long requestTime) {
         return OrderCreateServiceRequest.builder()
