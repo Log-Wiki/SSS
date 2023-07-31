@@ -49,7 +49,7 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
         // then
         assertThat(saveOrder).isNotNull();
         assertThat(saveOrder)
-                .extracting( "orderAmount", "isSuccess")
+                .extracting( "orderAmount", "isVerificated")
                 .contains( 43900 , false);
 
     }

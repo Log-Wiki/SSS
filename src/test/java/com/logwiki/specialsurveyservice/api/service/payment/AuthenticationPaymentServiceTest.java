@@ -54,7 +54,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
 
         // when
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
-        PaymentResponse paymentResponse = authenticationPaymentService.authentication(request1.toServiceRequest(),iamportClientApi);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi);
 
 
         // then
@@ -83,7 +83,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454493L , "imp_780428188220");
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authentication(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 정보가 없는 결제인증 요청입니다.");
 
@@ -108,7 +108,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authentication(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 금액과 결제금액이 다릅니다.");
 

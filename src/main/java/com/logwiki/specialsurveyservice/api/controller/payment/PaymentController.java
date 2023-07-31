@@ -32,7 +32,7 @@ public class PaymentController {
     public ApiResponse<PaymentResponse> authenticationPayment(
             @Valid @RequestBody PaymentAuthenticationRequest paymentAuthenticationRequest
     ) {
-        return ApiUtils.success(authenticationPaymentService.authentication(
+        return ApiUtils.success(authenticationPaymentService.authenticatePayment(
                 paymentAuthenticationRequest.toServiceRequest() , iamportClientApi));
     }
 }

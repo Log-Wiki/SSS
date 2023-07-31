@@ -26,6 +26,6 @@ public class OrderResponse {
 
     public static OrderResponse from(Orders order) {
         return OrderResponse.builder().orderId(order.getOrderId())
-                .orderAmount(order.getOrderAmount()).isVerificated(order.getIsSuccess()).build();
+                .orderAmount(order.getOrderAmount()).isVerificated(order.getIsVerificated()).build();
     }
 }

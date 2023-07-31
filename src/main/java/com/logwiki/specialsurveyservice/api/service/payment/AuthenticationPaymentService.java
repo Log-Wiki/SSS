@@ -21,7 +21,7 @@ public class AuthenticationPaymentService {
     private final OrdersRepository orderRepository;
     private final static Boolean orderSuccess = true;
     @Transactional
-    public PaymentResponse authentication(PaymentAuthenticationServiceRequest request,
+    public PaymentResponse authenticatePayment(PaymentAuthenticationServiceRequest request,
             IamportClient iamportClientApi) {
 
         Orders order = orderRepository.findOneByOrderId(request.getOrderId()).orElse(null);
@@ -32,7 +32,7 @@ public class AuthenticationPaymentService {
 
         IamportResponse<Payment> iamportResponse;
         try {
-            iamportResponse = iamportClientApi.paymentByImpUid(request.getImp_uid());
+            iamportResponse = iamportClientApi.paymentByImpUid(request.getImpUid());
         } catch (IamportResponseException e) {
             throw new BaseException("iamport 응답 예외입니다." , 4002);
         } catch (IOException e) {

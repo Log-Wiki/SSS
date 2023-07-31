@@ -14,19 +14,19 @@ public class PaymentAuthenticationRequest {
     private String orderId;
 
     @NotEmpty(message = "결제 ID는 필수입니다.")
-    private String imp_uid;
+    private String impUid;
 
 
     @Builder
-    public PaymentAuthenticationRequest(String orderId, String imp_uid) {
+    public PaymentAuthenticationRequest(String orderId, String impUid) {
         this.orderId = orderId;
-        this.imp_uid = imp_uid;
+        this.impUid = impUid;
     }
 
     public PaymentAuthenticationServiceRequest toServiceRequest() {
         return PaymentAuthenticationServiceRequest.builder()
                 .orderId(orderId)
-                .imp_uid(imp_uid)
+                .impUid(impUid)
                 .build();
     }
 }
