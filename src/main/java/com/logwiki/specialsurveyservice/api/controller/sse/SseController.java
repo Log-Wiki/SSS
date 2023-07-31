@@ -17,21 +17,15 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class SseController {
     private final SseConnectService sseConnectService;
 
+    private static final long Timeout = 10 * 60 * 1000L;
+    private static final int RandSize = 10000;
     public SseController(SseConnectService sseConnectService) {
         this.sseConnectService = sseConnectService;
     }
     @GetMapping(value = "/subscribe/{survey_id}" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect(@PathVariable Long survey_id) {
-        log.info("connect request");
-        SseEmitter sseEmitter = new SseEmitter(10 * 60 * 1000L);
-        sseEmitter = sseConnectService.subscribe((long) (Math.random()*10000), survey_id,sseEmitter);
+        SseEmitter sseEmitter = new SseEmitter(Timeout);
+        sseEmitter = sseConnectService.subscribe((long) (Math.random()*RandSize), survey_id,sseEmitter);
         return sseEmitter;
-    }
-
-    @GetMapping(value = "/updateTest", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public void updateTest(){
-        log.info("update");
-        sseConnectService.refreshSurveyFinisher(335L,new SurveyAnswerResponse(LocalDateTime.now(),"toki","소금빵",true));
-        sseConnectService.refreshSurveyProbability(335L,"67");
     }
 }

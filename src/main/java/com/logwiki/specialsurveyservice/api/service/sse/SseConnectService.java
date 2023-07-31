@@ -20,26 +20,23 @@ public class SseConnectService {
         this.emitterRepository = emitterRepository;
     }
 
-    public SseEmitter subscribe(Long login_id , Long survey_id,SseEmitter sseEmitter) {
-        String id = survey_id + "_" + login_id + "_" + System.currentTimeMillis();
+    public SseEmitter subscribe(Long randomNumber , Long survey_id,SseEmitter sseEmitter) {
+        String id = survey_id + "_" + randomNumber + "_" + System.currentTimeMillis();
         sseEmitter = emitterRepository.save(id , sseEmitter);
-        log.info("timeout setting : {}" , sseEmitter.getTimeout());
         try {
             sseEmitter.send(SseEmitter.event()
-                    .name("connectName1")
-                    .data("connectedMessage1" , MediaType.TEXT_EVENT_STREAM)
+                    .name("connectName")
+                    .data("connectedMessage" , MediaType.TEXT_EVENT_STREAM)
             );
         }
         catch (IOException e) {
-            throw new BaseException("Sse 구독 과정에서 IO 예외발생" , 2040);
+            throw new BaseException("Sse 구독 과정에서 IO 예외발생" , 7000);
         }
 
         sseEmitter.onCompletion(() -> {
-            log.info("SseEmitter Completion {}" , id);
             emitterRepository.deleteById(id);
         });
         sseEmitter.onTimeout(() -> {
-            log.info("SseEmitter Timeout {}" , id);
             emitterRepository.deleteById(id);
         });
         return sseEmitter;
@@ -48,14 +45,13 @@ public class SseConnectService {
     public void refreshSurveyProbability(Long survey_id , String data) {
         Map<String, SseEmitter> targets = emitterRepository.findAllStartWithById(String.valueOf(survey_id));
         targets.forEach((key , value) -> {
-            log.info(key);
             try {
                 value.send(SseEmitter.event()
                         .id(String.valueOf(survey_id))
                         .name("확률변동")
                         .data(data));
             } catch (IOException e) {
-                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 2041);
+                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 7001);
             }
         });
     }
