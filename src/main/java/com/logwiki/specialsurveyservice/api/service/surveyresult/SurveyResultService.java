@@ -30,7 +30,7 @@ public class SurveyResultService {
 
         int submitOrder = createSubmitOrderIn(surveyId);
 
-        if (survey.getClosedHeadCount() < submitOrder || writeDateTime.isAfter(survey.getEndTime())) {
+        if(survey.isClosed()){
             throw new BaseException("마감된 설문입니다.", 3011);
         }
         if (checkSurveyResult != null) {
