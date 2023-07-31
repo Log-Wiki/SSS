@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
-import com.logwiki.specialsurveyservice.api.controller.orders.request.OrderCreateRequest;
+import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.api.controller.payment.request.PaymentAuthenticationRequest;
 import com.logwiki.specialsurveyservice.api.service.order.RegistOrderService;
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
@@ -42,15 +42,15 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     void registOrder() {
         // given
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
-        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
-        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
         giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
                 .requestTime(1690416454492L).build();
-        OrderResponse saveOrder = registOrderService.regist(request);
+        OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // when
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
@@ -69,15 +69,15 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     void noOrderExist() {
         // given
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
-        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
-        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
         giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
                 .requestTime(1690416454492L).build();
-        OrderResponse saveOrder = registOrderService.regist(request);
+        OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454493L , "imp_780428188220");
@@ -94,15 +94,15 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     void notVaildInfo() {
         // given
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
-        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
-        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
         giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1200));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
                 .requestTime(1690416454492L).build();
-        OrderResponse saveOrder = registOrderService.regist(request);
+        OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
-import com.logwiki.specialsurveyservice.api.controller.orders.request.OrderCreateRequest;
+import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.order.RegistOrderService;
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
@@ -36,15 +36,15 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
         // given
 
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
-        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
-        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
         giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
         
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways).build();
         // when
-        OrderResponse saveOrder = registOrderService.regist(request);
+        OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // then
         assertThat(saveOrder).isNotNull();
@@ -60,13 +60,15 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
         // given
 
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",0));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",0));
         giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways).build();
         // when // then
-        assertThatThrownBy(() ->registOrderService.regist(request))
+        assertThatThrownBy(() ->registOrderService.createOrder(request))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 금액이 0원입니다.");
 
@@ -78,14 +80,14 @@ class RegistOrderServiceTest extends IntegrationTestSupport {
         // given
 
         String userId = "ksr4037@naver.com";
-        List<OrderCreateRequest> giveaways = new ArrayList<>();
-        giveaways.add(new OrderCreateRequest("컴포즈커피",3));
-        giveaways.add(new OrderCreateRequest("BBQ후라이드치킨",2));
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways).build();
         // when // then
-        assertThatThrownBy(() ->registOrderService.regist(request))
+        assertThatThrownBy(() ->registOrderService.createOrder(request))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 상품이 존재하지 않습니다.");
 
