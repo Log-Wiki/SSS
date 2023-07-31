@@ -65,7 +65,7 @@ public class SseConnectService {
                         .name("응답인원추가")
                         .data(data));
             } catch (IOException e) {
-                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 2041);
+                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 7001);
             }
         });
     }

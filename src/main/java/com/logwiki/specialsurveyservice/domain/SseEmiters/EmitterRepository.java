@@ -14,7 +14,6 @@ public class EmitterRepository {
 
     public SseEmitter save(String id , SseEmitter sseEmitter) {
         sseEmitterMap.put(id , sseEmitter);
-        log.info("repo size : {}", sseEmitterMap.size());
         return sseEmitter;
     }
 
