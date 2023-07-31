@@ -27,12 +27,11 @@ public class StartSurveyJob implements Job {
         Survey survey = surveyRepository.findById(surveyId).orElseThrow(() ->
                 new BaseException("없는 설문입니다.", 3005));
         survey.toOpen();
-        System.out.println(survey.getTitle());
 
         JobKey jobKey = context.getJobDetail().getKey();
         Schedule schedule = scheduleRepository.findScheduleByJobGroupAndJobName(jobKey.getGroup(), jobKey.getName())
                 .orElseThrow();
         schedule.endSchedule();
-        
+
     }
 }
