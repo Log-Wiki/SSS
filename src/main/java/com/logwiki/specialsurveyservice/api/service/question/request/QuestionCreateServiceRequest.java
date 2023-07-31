@@ -3,11 +3,12 @@ package com.logwiki.specialsurveyservice.api.service.question.request;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -36,16 +37,20 @@ public class QuestionCreateServiceRequest {
 
     public Question toEntity(Survey survey) {
         if (multipleChoices != null) {
-            return Question.builder()
+            Question question = Question.builder()
                     .questionNumber(questionNumber)
                     .content(content)
                     .survey(survey)
                     .imgAddress(imgAddress)
                     .type(type)
-                    .multipleChoice(multipleChoices.stream()
-                            .map(MultipleChoiceCreateServiceRequest::toEntity)
-                            .collect(Collectors.toList()))
                     .build();
+
+            question.addMultipleChoices(multipleChoices.stream()
+                    .map(multipleChoiceCreateServiceRequest -> {
+                        return multipleChoiceCreateServiceRequest.toEntity(question);
+                    }).collect(Collectors.toList()));
+
+            return question;
         }
         return Question.builder()
                 .questionNumber(questionNumber)
@@ -58,15 +63,19 @@ public class QuestionCreateServiceRequest {
 
     public Question toEntity() {
         if (multipleChoices != null) {
-            return Question.builder()
+            Question question = Question.builder()
                     .questionNumber(questionNumber)
                     .content(content)
                     .imgAddress(imgAddress)
                     .type(type)
-                    .multipleChoice(multipleChoices.stream()
-                            .map(MultipleChoiceCreateServiceRequest::toEntity)
-                            .collect(Collectors.toList()))
                     .build();
+
+            question.addMultipleChoices(multipleChoices.stream()
+                    .map(multipleChoiceCreateServiceRequest -> {
+                        return multipleChoiceCreateServiceRequest.toEntity(question);
+                    }).collect(Collectors.toList()));
+
+            return question;
         }
         return Question.builder()
                 .questionNumber(questionNumber)
