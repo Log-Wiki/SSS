@@ -447,9 +447,15 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         SurveyResponse saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
         // when
-        SurveyDetailgetServiceResponse sr = surveyService.getSurveyDetail(saveSurvey.getId());
+        SurveyDetailgetServiceResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
         // then
-        assertThat(sr).isNotNull();
+        assertThat(response).isNotNull();
+        assertThat(response.getSurveyCategoryType()).isEqualTo(surveyCategoryType);
+        assertThat(response.getTitle()).isEqualTo(title);
+        assertThat(response.getStartTime()).isEqualTo(startTime);
+        assertThat(response.getEndTime()).isEqualTo(endTime);
+        assertThat(response.getHeadCount()).isEqualTo(0);
+        assertThat(response.getClosedHeadCount()).isEqualTo(closedHeadCount);
     }
 
     private void setAccountCode() {
