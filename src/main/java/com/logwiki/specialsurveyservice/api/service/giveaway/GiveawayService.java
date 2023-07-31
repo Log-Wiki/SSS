@@ -4,6 +4,8 @@ import com.logwiki.specialsurveyservice.api.controller.giveaway.request.Giveaway
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -60,5 +62,20 @@ public class GiveawayService {
 
         Giveaway updatedGiveaway = giveaway.update(giveawayRequest);
         return GiveawayResponse.of(updatedGiveaway);
+    }
+
+    public GiveawayResponse getRepGiveaway(Survey survey) {
+        List<SurveyGiveaway> surveyGiveaways = survey.getSurveyGiveaways();
+        if(surveyGiveaways.size() == 0) {
+            throw new BaseException("설문조사의 상품이 하나도 조회되지 않습니다." , 3008);
+        }
+        Giveaway repGiveaway = surveyGiveaways.get(0).getGiveaway();
+        for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
+            if(surveyGiveaway.getGiveaway().getPrice() > repGiveaway.getPrice()){
+                repGiveaway = surveyGiveaway.getGiveaway();
+            }
+        }
+
+        return GiveawayResponse.of(repGiveaway);
     }
 }
