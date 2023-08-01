@@ -13,7 +13,6 @@ import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResp
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
-import com.logwiki.specialsurveyservice.domain.apiConstant.ApiConstant;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.siot.IamportRestClient.IamportClient;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -35,8 +35,12 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
-    private static IamportClient iamportClientApi = new IamportClient(ApiConstant.IamportApiKey.getText(),
-            ApiConstant.IamportApiSecretKey.getText());
+    private static String iamportAccessKey;
+
+    private static String iamportSecretKey;
+
+    private static IamportClient iamportClientApi = new IamportClient(iamportAccessKey,
+            iamportSecretKey);
 
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test
@@ -53,6 +57,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
                 .requestTime(1690416454492L).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
+        System.out.println("iamport " + iamportAccessKey + " secret" + iamportSecretKey);
         // when
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
         PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi);

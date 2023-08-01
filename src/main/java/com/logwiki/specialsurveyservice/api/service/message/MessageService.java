@@ -2,7 +2,6 @@ package com.logwiki.specialsurveyservice.api.service.message;
 
 import com.logwiki.specialsurveyservice.api.service.message.request.Message;
 import com.logwiki.specialsurveyservice.api.service.message.request.MessageSendServiceRequest;
-import com.logwiki.specialsurveyservice.domain.apiConstant.ApiConstant;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -16,6 +15,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.net.URL;
 
@@ -24,9 +24,12 @@ import java.net.URL;
 public class MessageService {
     private final static int SUCCESS = 202;
     private final static int DEFAULT = 0;
-    private String accessKey = ApiConstant.NaverAccessKey.getText();
-    private String secretKey = ApiConstant.NaverSecretKey.getText();
-    private String messageServiceKey = ApiConstant.NaverMessageServiceKey.getText();
+    @Value("${apikey.naver-accesskey}")
+    private String accessKey;
+    @Value("${apikey.naver-secretkey}")
+    private String secretKey;
+    @Value("${apikey.naver-message-servickey}")
+    private String messageServiceKey;
     private String makeSignature(String url, String timestamp, String method)
     {
         String space = " ";					// one space
@@ -227,11 +230,10 @@ public class MessageService {
            JSONObject sa = (JSONObject) jsonParser.parse();
            fileId = (String) sa.get("fileId");
        }
-       catch (IOException e1) {
-           e1.printStackTrace();
+       catch (IOException ioException) {
            throw new BaseException("문자 발송 API 요청 오류",8002);
        }
-       catch (Exception e) {
+       catch (Exception exception) {
            throw new BaseException("문자 발송 API 요청 오류",8001);
        }
 
