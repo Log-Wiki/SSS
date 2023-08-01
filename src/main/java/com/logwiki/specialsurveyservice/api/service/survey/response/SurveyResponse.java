@@ -1,6 +1,5 @@
 package com.logwiki.specialsurveyservice.api.service.survey.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
@@ -36,7 +35,6 @@ public class SurveyResponse {
 
     private boolean closed;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double winningPercent;
 
     private SurveyCategoryType surveyCategoryType;
