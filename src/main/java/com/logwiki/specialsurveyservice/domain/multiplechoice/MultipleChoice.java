@@ -31,4 +31,7 @@ public class MultipleChoice {
         this.question = question;
     }
 
+    public void addQuestion(Question question) {
+        this.question = question;
+    }
 }
