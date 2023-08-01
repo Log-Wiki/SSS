@@ -12,7 +12,6 @@ import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
-import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -142,29 +141,6 @@ public class ScheduleService {
                 .startAt(date)
                 .build();
     }
-
-    // 작업중인 스케줄러를 출력
-    public void getCurrentlyExecutingJobs() throws SchedulerException {
-        List<JobExecutionContext> currentJobs = scheduler.getCurrentlyExecutingJobs();
-        for (JobExecutionContext jobContext : currentJobs) {
-            JobKey jobKey = jobContext.getJobDetail().getKey();
-            System.out.println(
-                    "Job is running: " + jobKey.getName() + ", Group: " + jobKey.getGroup());
-        }
-    }
-
-    // 대기중인 job 출력
-    public void printAllJobs() throws SchedulerException {
-        for (String groupName : scheduler.getJobGroupNames()) {
-            System.out.println(groupName);
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                System.out.println(jobKey.toString());
-                System.out.println(
-                        "Job name: " + jobKey.getName() + ", Group: " + jobKey.getGroup());
-            }
-        }
-    }
-
 
     // Job 삭제
     public void deleteJob(String jobName, String jobGroup) {

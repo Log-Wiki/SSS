@@ -32,12 +32,6 @@ public class ScheduleController {
         return ApiUtils.success(scheduleService.addEndSurveySchedule(dto));
     }
 
-    @GetMapping("/schedule")
-    public ApiResponse<?> surveyGet() throws Exception {
-        scheduleService.printAllJobs();
-        return ApiUtils.success("success");
-    }
-
     @GetMapping("/schedule/{surveyId}")
     public ApiResponse<?> surveyScheduleGet(@PathVariable Long surveyId) throws Exception {
         return ApiUtils.success(scheduleService.getSchedulesBySurveyId(surveyId));
