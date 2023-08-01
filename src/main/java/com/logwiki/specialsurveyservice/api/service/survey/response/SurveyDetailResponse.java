@@ -36,13 +36,10 @@ public class SurveyDetailResponse {
 
     private final double estimateTime;
 
-    private final List<SurveyAnswerResponse> surveyAnswerResponses;
-
     @Builder
     public SurveyDetailResponse(String title, LocalDateTime startTime , LocalDateTime endTime,
             int headCount , int closedHeadCount , Long writer, String writerName , SurveyCategoryType surveyCategoryType,
-            List<String> giveawayNames, double winRate , int questionCount , double estimateTime , List<SurveyAnswerResponse>
-            surveyAnswerResponses) {
+            List<String> giveawayNames, double winRate , int questionCount , double estimateTime ) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -55,16 +52,14 @@ public class SurveyDetailResponse {
         this.winRate = winRate;
         this.questionCount = questionCount;
         this.estimateTime = estimateTime;
-        this.surveyAnswerResponses = surveyAnswerResponses;
     }
 
-    public static SurveyDetailResponse of(Survey targetSurvey, List<SurveyAnswerResponse> surveyAnswerResponses, double winRate, List<String> giveawayNames, String writerName) {
+    public static SurveyDetailResponse of(Survey targetSurvey, double winRate, List<String> giveawayNames, String writerName) {
         return SurveyDetailResponse.builder()
                 .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
                 .title(targetSurvey.getTitle())
                 .headCount(targetSurvey.getHeadCount())
                 .closedHeadCount(targetSurvey.getClosedHeadCount())
-                .surveyAnswerResponses(surveyAnswerResponses)
                 .startTime(targetSurvey.getStartTime())
                 .endTime(targetSurvey.getEndTime())
                 .writer(targetSurvey.getWriter())

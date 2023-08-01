@@ -35,6 +35,11 @@ public class SurveyController {
         return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
     }
 
+    @GetMapping("/survey/answer/log/{surveyId}")
+    public ApiResponse<?> getSurveyAnswerLogs(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyService.getSurveyAnswers(surveyId));
+    }
+
     @GetMapping("/survey/recommend-normal")
     public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendNormalSurvey());
