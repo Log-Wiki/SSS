@@ -43,12 +43,6 @@ values ('NORMAL');
 insert into survey_category (type)
 values ('INSTANT_WIN');
 
-insert into survey(title, HEAD_COUNT, CLOSED_HEAD_COUNT, closed)
-values ('설문1', 100, 200, false);
-
-insert into question(content, survey_id)
-values ('문항1', 1);
-
 -- 당첨 상품 등록
 insert into giveaway (price, name, giveaway_type, create_at, modified_at)
 values (4500, '스타벅스 아이스 아메리카노', 'COFFEE', now(), now());
