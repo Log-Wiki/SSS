@@ -33,6 +33,8 @@ public class SurveyResponse {
 
     private int totalGiveawayCount;
 
+    private int requiredTimeInSeconds;
+
     private boolean closed;
 
     private Double winningPercent;
@@ -48,8 +50,8 @@ public class SurveyResponse {
     @Builder
     public SurveyResponse(Long id, String title, LocalDateTime startTime,
             LocalDateTime endTime, int headCount, int closedHeadCount, Long writer,
-            int totalGiveawayCount, boolean closed, Double winningPercent,
-            SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
+            int totalGiveawayCount, boolean closed, int requiredTimeInSeconds,
+            Double winningPercent, SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
             List<SurveyGiveawayResponse> surveyGiveaways, List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
@@ -59,6 +61,7 @@ public class SurveyResponse {
         this.closedHeadCount = closedHeadCount;
         this.writer = writer;
         this.totalGiveawayCount = totalGiveawayCount;
+        this.requiredTimeInSeconds = requiredTimeInSeconds;
         this.closed = closed;
         this.winningPercent = winningPercent;
         this.surveyCategoryType = surveyCategoryType;
@@ -95,6 +98,7 @@ public class SurveyResponse {
                 .closedHeadCount(survey.getClosedHeadCount())
                 .writer(survey.getWriter())
                 .totalGiveawayCount(survey.getTotalGiveawayCount())
+                .requiredTimeInSeconds(survey.getRequiredTimeInSeconds())
                 .closed(survey.isClosed())
                 .winningPercent(winningPercent)
                 .surveyCategoryType(survey.getSurveyCategory().getType())
