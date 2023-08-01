@@ -19,7 +19,8 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -32,6 +33,13 @@ dependencies {
     // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    
+	//iamport payment
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+
+	// test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'

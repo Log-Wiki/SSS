@@ -1,6 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.question.request;
 
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
+import com.logwiki.specialsurveyservice.domain.question.Question;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +20,13 @@ public class MultipleChoiceCreateServiceRequest {
         this.linkNumber = linkNumber;
     }
 
-    public MultipleChoice toEntity() {
-        return MultipleChoice.builder()
+    public MultipleChoice toEntity(Question question) {
+        MultipleChoice multipleChoice = MultipleChoice.builder()
                 .content(content)
                 .linkNumber(linkNumber)
                 .build();
+        multipleChoice.addQuestion(question);
+        return multipleChoice;
     }
 
 }

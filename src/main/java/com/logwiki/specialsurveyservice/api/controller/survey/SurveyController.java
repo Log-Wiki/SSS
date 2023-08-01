@@ -7,9 +7,11 @@ import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyRespon
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +36,15 @@ public class SurveyController {
                 surveyResponse.getStartTime(), surveyResponse.getEndTime());
 
         return ApiUtils.success(surveyResponse);
+    }
+
+    @GetMapping("/survey/recommend-normal")
+    public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendNormalSurvey());
+    }
+
+    @GetMapping("/survey/recommend-instant")
+    public ApiResponse<List<SurveyResponse>> getRecommendInstantSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendInstantSurvey());
     }
 }

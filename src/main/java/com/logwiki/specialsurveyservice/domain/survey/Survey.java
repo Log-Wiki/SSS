@@ -38,7 +38,9 @@ public class Survey extends BaseEntity {
 
     private Long writer;
 
-    private boolean closed = true;
+    private int totalGiveawayCount;
+
+    private boolean closed;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "survey_category_id")
@@ -56,13 +58,14 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyResult> surveyResults;
 
-    @OneToMany(mappedBy = "survey",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyTarget> surveyTargets;
 
     @Builder
     public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
             int closedHeadCount, List<SurveyTarget> surveyTargets,
-            Long writer, SurveyCategory type, List<Question> questions) {
+            Long writer, int totalGiveawayCount, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -70,7 +73,8 @@ public class Survey extends BaseEntity {
         this.closedHeadCount = closedHeadCount;
         this.surveyCategory = type;
         this.writer = writer;
-        this.closed = true;
+        this.totalGiveawayCount = totalGiveawayCount;
+        this.closed = false;
         this.questions = questions;
         this.surveyTargets = surveyTargets;
     }
@@ -104,6 +108,10 @@ public class Survey extends BaseEntity {
         this.headCount += 1;
         if(this.headCount == closedHeadCount)
             closed = true;
+    }
+
+    public void addSurveyCategory(SurveyCategory surveyCategory) {
+        this.surveyCategory = surveyCategory;
     }
 
     public void toOpen() {

@@ -4,20 +4,13 @@ import com.logwiki.specialsurveyservice.api.service.question.request.QuestionMod
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -58,6 +51,10 @@ public class Question {
         this.content = questionModifyServiceRequest.getContent();
         this.imgAddress = questionModifyServiceRequest.getImgAddress();
         this.type = questionModifyServiceRequest.getType();
+    }
+
+    public void addMultipleChoices(List<MultipleChoice> multipleChoices) {
+        this.multipleChoice = multipleChoices;
     }
 
 }
