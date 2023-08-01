@@ -1,7 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.order.response;
 
 import com.logwiki.specialsurveyservice.domain.orders.Orders;
-import com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant;
+import com.logwiki.specialsurveyservice.domain.apiConstant.ApiConstant;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +32,6 @@ public class OrderResponse {
     public static OrderResponse from(Orders order) {
         return OrderResponse.builder().orderId(order.getOrderId())
                 .orderAmount(order.getOrderAmount()).isVerificated(order.getIsVerificated()).storeId(
-                        IamportApiConstant.StoreKey.getText()).build();
+                        ApiConstant.StoreKey.getText()).build();
     }
 }
