@@ -134,17 +134,13 @@ public class SurveyService {
 
     private static void sortByWinningPercent(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
-            int survey1GiveawayCount = survey1.getSurveyGiveaways().stream()
-                    .mapToInt(SurveyGiveaway::getCount)
-                    .sum();
-            int survey2GiveawayCount = survey2.getSurveyGiveaways().stream()
-                    .mapToInt(SurveyGiveaway::getCount)
-                    .sum();
-            float survey1WinningPercent =
-                    (float) survey1GiveawayCount / survey1.getClosedHeadCount();
-            float survey2WinningPercent =
-                    (float) survey2GiveawayCount / survey2.getClosedHeadCount();
-            return Float.compare(survey2WinningPercent, survey1WinningPercent);
+            int survey1GiveawayCount = survey1.getTotalGiveawayCount();
+            int survey2GiveawayCount = survey2.getTotalGiveawayCount();
+            double survey1WinningPercent =
+                    (double) survey1GiveawayCount / survey1.getClosedHeadCount();
+            double survey2WinningPercent =
+                    (double) survey2GiveawayCount / survey2.getClosedHeadCount();
+            return Double.compare(survey2WinningPercent, survey1WinningPercent);
         });
     }
 }
