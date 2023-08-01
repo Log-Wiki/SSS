@@ -31,6 +31,10 @@ public class SurveyResponse {
 
     private Long writer;
 
+    private int totalGiveawayCount;
+
+    private boolean closed;
+
     private SurveyCategoryType surveyCategoryType;
 
     private List<QuestionResponse> questions;
@@ -41,8 +45,8 @@ public class SurveyResponse {
 
     @Builder
     public SurveyResponse(Long id, String title, LocalDateTime startTime,
-            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer, SurveyCategoryType surveyCategoryType,
-            List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways,
+            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer, int totalGiveawayCount, boolean closed,
+            SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways,
             List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
@@ -51,6 +55,8 @@ public class SurveyResponse {
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;
         this.writer = writer;
+        this.totalGiveawayCount = totalGiveawayCount;
+        this.closed = closed;
         this.surveyCategoryType = surveyCategoryType;
         this.questions = questions;
         this.surveyGiveaways = surveyGiveaways;
@@ -69,6 +75,8 @@ public class SurveyResponse {
                 .headCount(survey.getHeadCount())
                 .closedHeadCount(survey.getClosedHeadCount())
                 .writer(survey.getWriter())
+                .totalGiveawayCount(survey.getTotalGiveawayCount())
+                .closed(survey.isClosed())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .questions(survey.getQuestions().stream()
                         .map(QuestionResponse::from)
