@@ -30,6 +30,7 @@ import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.quartz.SchedulerException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
     @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록, 설문 대상자를 이용하여 설문을 등록한다.")
     @Test
-    void addSurvey() {
+    void addSurvey() throws SchedulerException {
         // given
         String email = "duswo0624@naver.com";
         String password = "1234";
@@ -839,7 +840,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         List<AccountCodeType> accountCodeTypes = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.UNDER_TEENS,
                 AccountCodeType.TEENS, AccountCodeType.TWENTIES, AccountCodeType.THIRTIES,
                 AccountCodeType.FORTIES, AccountCodeType.FIFTIES, AccountCodeType.SIXTIES);
-        for(AccountCodeType accountCodeType : accountCodeTypes) {
+        for (AccountCodeType accountCodeType : accountCodeTypes) {
             accountCodeRepository.save(AccountCode.builder()
                     .type(accountCodeType)
                     .build());

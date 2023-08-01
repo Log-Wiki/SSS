@@ -38,6 +38,7 @@ values ('FIFTIES');
 insert into account_code (type)
 values ('SIXTIES');
 
+
 insert into survey_category (type)
 values ('NORMAL');
 insert into survey_category (type)

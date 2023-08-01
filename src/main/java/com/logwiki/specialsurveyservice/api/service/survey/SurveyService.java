@@ -26,6 +26,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
+import org.quartz.SchedulerException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -76,6 +77,8 @@ public class SurveyService {
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
+
+
         return SurveyResponse.from(survey);
     }
 
