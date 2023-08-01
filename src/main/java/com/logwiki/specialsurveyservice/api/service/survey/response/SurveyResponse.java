@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.survey.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
@@ -35,6 +36,9 @@ public class SurveyResponse {
 
     private boolean closed;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double winningPercent;
+
     private SurveyCategoryType surveyCategoryType;
 
     private List<QuestionResponse> questions;
@@ -45,9 +49,10 @@ public class SurveyResponse {
 
     @Builder
     public SurveyResponse(Long id, String title, LocalDateTime startTime,
-            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer, int totalGiveawayCount, boolean closed,
-            SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways,
-            List<AccountCodeType> surveyTarget) {
+            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer,
+            int totalGiveawayCount, boolean closed, Double winningPercent,
+            SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
+            List<SurveyGiveawayResponse> surveyGiveaways, List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;
@@ -57,6 +62,7 @@ public class SurveyResponse {
         this.writer = writer;
         this.totalGiveawayCount = totalGiveawayCount;
         this.closed = closed;
+        this.winningPercent = winningPercent;
         this.surveyCategoryType = surveyCategoryType;
         this.questions = questions;
         this.surveyGiveaways = surveyGiveaways;
@@ -67,6 +73,21 @@ public class SurveyResponse {
         if (survey == null) {
             return null;
         }
+
+        double winningPercent = 0D;
+        switch (survey.getSurveyCategory().getType()) {
+            case INSTANT_WIN:
+                winningPercent = ((double) survey.getTotalGiveawayCount() / survey.getClosedHeadCount()) * 100;
+                break;
+            case NORMAL:
+                if(survey.getHeadCount() == 0
+                        || (double) survey.getTotalGiveawayCount() / survey.getHeadCount() >= 1D)
+                    winningPercent = 100D;
+                else
+                    winningPercent = ((double) survey.getTotalGiveawayCount() / survey.getHeadCount()) * 100;
+                break;
+        }
+
         return SurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
@@ -77,6 +98,7 @@ public class SurveyResponse {
                 .writer(survey.getWriter())
                 .totalGiveawayCount(survey.getTotalGiveawayCount())
                 .closed(survey.isClosed())
+                .winningPercent(winningPercent)
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .questions(survey.getQuestions().stream()
                         .map(QuestionResponse::from)
