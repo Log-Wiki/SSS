@@ -18,6 +18,9 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
@@ -26,6 +29,7 @@ import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +50,7 @@ public class SurveyService {
     private final GiveawayRepository giveawayRepository;
     private final TargetNumberService targetNumberService;
     private final AccountCodeRepository accountCodeRepository;
+    private final SurveyCategoryRepository surveyCategoryRepository;
 
     private final GiveawayService giveawayService;
 
@@ -70,6 +75,10 @@ public class SurveyService {
                     .build();
             survey.addSurveyTarget(surveyTarget);
         }
+
+        SurveyCategory surveyCategoryByType = surveyCategoryRepository.findSurveyCategoryByType(
+                dto.getType());
+        survey.addSurveyCategory(surveyCategoryByType);
 
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = dto.getGiveaways();
         List<SurveyGiveaway> surveyGiveaways = getSurveyGiveaways(survey,
@@ -97,7 +106,26 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<SurveyResponse> getNormalRecommend() {
+    public List<SurveyResponse> getRecommendNormalSurvey() {
+        List<Survey> surveys = getRecommendSurveys(SurveyCategoryType.NORMAL);
+
+        sortByEndTime(surveys);
+        return surveys.stream()
+                .map(SurveyResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<SurveyResponse> getRecommendInstantSurvey() {
+        List<Survey> surveys = getRecommendSurveys(SurveyCategoryType.INSTANT_WIN);
+
+        sortByWinningPercent(surveys);
+
+        return surveys.stream()
+                .map(SurveyResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    private List<Survey> getRecommendSurveys(SurveyCategoryType surveyCategoryType) {
         Account account = SecurityUtil.getCurrentUsername()
                 .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
@@ -108,10 +136,32 @@ public class SurveyService {
                 .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
                 .getId();
 
-        List<Survey> surveys = surveyRepository.findRecommendNormal(genderId, ageId);
-        return surveys.stream()
-                .map(survey -> SurveyResponse.from(survey))
-                .collect(Collectors.toList());
+        return surveyRepository.findRecommendSurvey(surveyCategoryType.toString(),
+                genderId, ageId);
+    }
+
+    private static void sortByEndTime(List<Survey> surveys) {
+        surveys.sort((survey1, survey2) -> {
+            LocalDateTime survey1EndTime = survey1.getEndTime();
+            LocalDateTime survey2EndTime = survey2.getEndTime();
+            return survey1EndTime.compareTo(survey2EndTime);
+        });
+    }
+
+    private static void sortByWinningPercent(List<Survey> surveys) {
+        surveys.sort((survey1, survey2) -> {
+            int survey1GiveawayCount = survey1.getSurveyGiveaways().stream()
+                    .mapToInt(SurveyGiveaway::getCount)
+                    .sum();
+            int survey2GiveawayCount = survey2.getSurveyGiveaways().stream()
+                    .mapToInt(SurveyGiveaway::getCount)
+                    .sum();
+            float survey1WinningPercent =
+                    (float) survey1GiveawayCount / survey1.getClosedHeadCount();
+            float survey2WinningPercent =
+                    (float) survey2GiveawayCount / survey2.getClosedHeadCount();
+            return Float.compare(survey2WinningPercent, survey1WinningPercent);
+        });
     }
 
 
