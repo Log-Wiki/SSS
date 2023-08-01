@@ -28,13 +28,18 @@ public class SurveyController {
         return ApiUtils.success(surveyService.addSurvey(userId, dto.from()));
     }
 
-    @GetMapping("/survey/recommend-normal")
+    @GetMapping("/survey/recommend/normal")
     public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendNormalSurvey());
     }
 
-    @GetMapping("/survey/recommend-instant")
+    @GetMapping("/survey/recommend/instant")
     public ApiResponse<List<SurveyResponse>> getRecommendInstantSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendInstantSurvey());
+    }
+
+    @GetMapping("/survey/recommend/time")
+    public ApiResponse<List<SurveyResponse>> getRecommendShortTimeSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendShortTimeSurvey());
     }
 }
