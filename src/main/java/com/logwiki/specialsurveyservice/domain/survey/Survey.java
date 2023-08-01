@@ -40,6 +40,8 @@ public class Survey extends BaseEntity {
 
     private int totalGiveawayCount;
 
+    private int requiredTimeInSeconds;
+
     private boolean closed;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -65,7 +67,7 @@ public class Survey extends BaseEntity {
     @Builder
     public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
             int closedHeadCount, List<SurveyTarget> surveyTargets,
-            Long writer, int totalGiveawayCount, SurveyCategory type, List<Question> questions) {
+            Long writer, int totalGiveawayCount, int requiredTimeInSeconds, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -74,6 +76,7 @@ public class Survey extends BaseEntity {
         this.surveyCategory = type;
         this.writer = writer;
         this.totalGiveawayCount = totalGiveawayCount;
+        this.requiredTimeInSeconds = requiredTimeInSeconds;
         this.closed = false;
         this.questions = questions;
         this.surveyTargets = surveyTargets;
