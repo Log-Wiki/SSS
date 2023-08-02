@@ -1,8 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
-import com.logwiki.specialsurveyservice.api.service.surveyresult.response.SurveyResultResponse;
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
-import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
@@ -19,18 +18,17 @@ public class SurveyResultService {
 
     private final SurveyResultRepository surveyResultRepository;
     private final SurveyRepository surveyRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    public SurveyResultResponse addSubmitResult(Long surveyId, String userEmail, LocalDateTime writeDateTime) {
+    public void addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
-        Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        Account account = accountService.getCurrentAccountBySecurity();
         SurveyResult checkSurveyResult = surveyResultRepository.findSurveyResultByAccount_Id(account.getId());
 
         int submitOrder = createSubmitOrderIn(surveyId);
 
-        if(survey.isClosed()){
+        if (survey.isClosed()) {
             throw new BaseException("마감된 설문입니다.", 3011);
         }
         if (checkSurveyResult != null) {
@@ -48,9 +46,6 @@ public class SurveyResultService {
                 account));
 
         survey.addHeadCount();
-        
-        return SurveyResultResponse.of(surveyResult);
-
     }
 
     public int createSubmitOrderIn(Long surveyId) {
