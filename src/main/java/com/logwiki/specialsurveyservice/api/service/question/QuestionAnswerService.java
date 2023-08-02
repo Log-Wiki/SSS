@@ -38,7 +38,6 @@ public class QuestionAnswerService {
     public List<QuestionAnswerResponse> addQuestionAnswer(
             LocalDateTime writeDate,
             Long surveyId,
-            String userEmail,
             List<QuestionAnswerCreateServiceRequest> dto) {
         Account account = accountService.getCurrentAccountBySecurity();
         List<Question> questions = findQuestionsBySurveyId(surveyId);
@@ -46,7 +45,7 @@ public class QuestionAnswerService {
         checkIsTarget(account, surveyId);
         checkAnsweredAllQuestions(questions, dto);
 
-        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
+        surveyResultService.addSubmitResult(surveyId, writeDate);
         return saveQuestionAnswer(writeDate, account, questions, dto);
     }
 

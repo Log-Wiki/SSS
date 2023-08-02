@@ -21,7 +21,7 @@ public class SurveyResultService {
     private final SurveyRepository surveyRepository;
     private final AccountService accountService;
 
-    public SurveyResultResponse addSubmitResult(Long surveyId, String userEmail, LocalDateTime writeDateTime) {
+    public SurveyResultResponse addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountService.getCurrentAccountBySecurity();
