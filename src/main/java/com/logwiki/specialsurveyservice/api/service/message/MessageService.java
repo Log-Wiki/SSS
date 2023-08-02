@@ -207,7 +207,6 @@ public class MessageService {
 
 
        String body = bodyJson.toString();
-       log.info(body);
        try {
            URL url = new URL(hostNameUrl + requestUrl);
            HttpURLConnection conn = (HttpURLConnection) url.openConnection();

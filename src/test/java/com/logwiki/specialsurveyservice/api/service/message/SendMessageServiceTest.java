@@ -89,9 +89,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
                 }
             }
         }
-        System.out.println("사진 : " + fileBody);
         String fileID = messageService.registImageToNCP("더미치킨.jpg",fileBody);
-        System.out.println("사진등록 " + fileID);
         Message mms = Message.builder()
                 .to("01055014037")
                 .subject("연재용 MMS 제목")
