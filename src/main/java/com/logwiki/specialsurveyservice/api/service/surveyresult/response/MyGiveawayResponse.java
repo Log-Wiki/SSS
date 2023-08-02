@@ -1,16 +1,13 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult.response;
 
-import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
-import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class SurveyResultResponse {
+public class MyGiveawayResponse {
 
     private boolean win;
     private boolean userCheck;
@@ -20,7 +17,7 @@ public class SurveyResultResponse {
     private String giveawayName;
 
     @Builder
-    private SurveyResultResponse(boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
+    private MyGiveawayResponse(boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
             GiveawayType giveawayType, String giveawayName) {
         this.win = win;
         this.userCheck = userCheck;
@@ -30,9 +27,9 @@ public class SurveyResultResponse {
         this.giveawayName = giveawayName;
     }
 
-    public static SurveyResultResponse of(SurveyResult surveyResult, Giveaway giveaway) {
+    public static MyGiveawayResponse of(SurveyResult surveyResult, Giveaway giveaway) {
 
-        return SurveyResultResponse.builder()
+        return MyGiveawayResponse.builder()
                 .win(surveyResult.isWin())
                 .userCheck(surveyResult.isUserCheck())
                 .surveyTitle(surveyResult.getSurvey().getTitle())
