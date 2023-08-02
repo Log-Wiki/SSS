@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
+import com.logwiki.specialsurveyservice.api.service.message.request.LongMessageSendServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.message.request.ShortMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.domain.message.Message;
-import com.logwiki.specialsurveyservice.api.service.message.request.MessageSendServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.message.request.MultimediaMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import jakarta.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -21,48 +22,48 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
     @Autowired
     MessageService messageService;
 
-    @DisplayName("MMS 발송")
+    @DisplayName("SMS 발송")
     @Test
-    void sendMMSTest() {
+    void sendSMSTest() {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder()
                 .to("01055014037")
                 .content("SMS 서비스 테스트")
                 .build()
         );
-        MessageSendServiceRequest request =
-                MessageSendServiceRequest.builder()
+        ShortMessageSendServiceRequest request =
+                ShortMessageSendServiceRequest.builder()
                 .messages(messages)
                 .from("01055014037")
                 .content("테스트보내기")
-                .type("SMS")
                 .build();
 
         int responseCode = messageService.sendSMS(request);
         assertThat(responseCode).isEqualTo(202);
     }
 
-    @DisplayName("메세지 타입은 MMS,LMS,SMS 셋중 하나여야 한다.")
+    @DisplayName("LMS 발송")
     @Test
-    void MMSTypeTest() {
+    void sendLMSTest() {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder()
                 .to("01055014037")
-                .content("SMS 서비스 테스트")
+                .content("LMS 서비스 테스트" + "테스트보내기aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        + "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss"
+                        + "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")
                 .build()
         );
-        MessageSendServiceRequest request =
-                MessageSendServiceRequest.builder()
+        LongMessageSendServiceRequest request =
+                LongMessageSendServiceRequest.builder()
                         .messages(messages)
                         .from("01055014037")
-                        .content("테스트보내기")
-                        .type("KMS")
+                        .content("공통 LMS")
                         .build();
 
-        assertThatThrownBy(() ->messageService.sendSMS(request))
-                .isInstanceOf(BaseException.class)
-                .hasMessage("메세지 타입이 SMS가 아닙니다.");
+        int responseCode = messageService.sendLMS(request);
+        assertThat(responseCode).isEqualTo(202);
     }
+
 
     @DisplayName("MMS 전송 테스트")
     @Test
@@ -99,14 +100,14 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
         messages.add(mms);
         List<String> fileNames = new ArrayList<>();
         fileNames.add(fileID);
-        messageService.sendMMS(MessageSendServiceRequest.builder()
-                        .type("MMS")
+        int responseCode = messageService.sendMMS(MultimediaMessageSendServiceRequest.builder()
                         .from("01055014037")
                         .content("공통MMS내용")
                         .messages(messages)
                         .files(fileNames)
                         .subject("공통 MMS 주제")
                 .build());
+        assertThat(responseCode).isEqualTo(202);
     }
 
 }

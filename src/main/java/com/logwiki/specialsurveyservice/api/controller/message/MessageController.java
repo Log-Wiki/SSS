@@ -1,7 +1,9 @@
 package com.logwiki.specialsurveyservice.api.controller.message;
 
 import com.logwiki.specialsurveyservice.api.service.message.MessageService;
-import com.logwiki.specialsurveyservice.api.service.message.request.MessageSendServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.message.request.LongMessageSendServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.message.request.MultimediaMessageSendServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.message.request.ShortMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +20,20 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping("/message")
-    public ApiResponse<?> messageSend(@RequestBody MessageSendServiceRequest request, Authentication authentication) {
+    @PostMapping("/message/sms")
+    public ApiResponse<?> shortMessageSend(@RequestBody ShortMessageSendServiceRequest request, Authentication authentication) {
         return ApiUtils.success( messageService.sendSMS(request));
     }
+
+    @PostMapping("/message/lms")
+    public ApiResponse<?> longMessageSend(@RequestBody ShortMessageSendServiceRequest request, Authentication authentication) {
+        return ApiUtils.success( messageService.sendSMS(request));
+    }
+
+    @PostMapping("/message/mms")
+    public ApiResponse<?> MultimediaMessageSend(@RequestBody MultimediaMessageSendServiceRequest request, Authentication authentication) {
+        return ApiUtils.success( messageService.sendMMS(request));
+    }
+
 
 }
