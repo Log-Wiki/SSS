@@ -42,7 +42,7 @@ public class SurveyService {
     private final AccountCodeRepository accountCodeRepository;
     private final SurveyCategoryRepository surveyCategoryRepository;
 
-    public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
+    public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
         Account account = accountService.getCurrentAccountBySecurity();
 
         Survey survey = dto.toEntity(account.getId());
