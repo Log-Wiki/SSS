@@ -23,7 +23,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
     @Autowired
     MessageService messageService;
 
-    @DisplayName("SMS 발송")
+    @DisplayName("SMS(SHORT MESSAGE SERVICE)로 발송을 완료하면 responseCode로 202를 받는다.")
     @Test
     @Disabled("요금 이슈로 테스트 중단")
     void sendSMSTest() {
@@ -44,7 +44,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
         assertThat(responseCode).isEqualTo(202);
     }
 
-    @DisplayName("LMS 발송")
+    @DisplayName("LMS(LONG MESSAGE SERVICE)로 발송을 완료하면 responseCode로 202를 받는다.")
     @Test
     @Disabled("요금 이슈로 테스트 중단")
     void sendLMSTest() {
@@ -68,7 +68,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
     }
 
 
-    @DisplayName("MMS 전송 테스트")
+    @DisplayName("MMS(MULTIMEDIA MESSAGE SERVICE)로 발송을 완료하면 responseCode로 202를 받는다.")
     @Test
     @Disabled("요금 이슈로 테스트 중단")
     void registImageTest() {

@@ -35,6 +35,11 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
+    private final static String IMPUID = "imp_780428188220";
+    private final static int CORRECTPRICE = 43900;
+    private final static Long CORRECTTIME = 1690416454492L;
+
+
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test
     void registOrder() {
@@ -47,11 +52,11 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // when
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
         PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
 
 
@@ -59,7 +64,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         assertThat(paymentResponse).isNotNull();
         assertThat(paymentResponse)
                 .extracting("imp_uid", "orderId", "orderAmount", "isSucess")
-                .contains("imp_780428188220", userId + "_" + 1690416454492L, 43900 , "paid");
+                .contains(IMPUID, userId + "_" + CORRECTTIME, CORRECTPRICE , "paid");
     }
 
     @DisplayName("결제검증을 요청한 주문의 정보가 없는 경우")
@@ -74,11 +79,11 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454493L , "imp_780428188220");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
@@ -99,11 +104,11 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
