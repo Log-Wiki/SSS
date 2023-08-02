@@ -20,18 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class PaymentController {
 
     private final AuthenticationPaymentService authenticationPaymentService;
-    private final IamportClient iamportClientApi;
 
-    @Value("${apikey.iamport-apikey}")
-    private String iamportAccessKey;
-
-    @Value("${apikey.iamport-secretkey}")
-    private String iamportSecretKey;
 
     public PaymentController(AuthenticationPaymentService authenticationPaymentService) {
         this.authenticationPaymentService = authenticationPaymentService;
-        this.iamportClientApi = new IamportClient(iamportAccessKey
-                , iamportSecretKey);
     }
 
     @PostMapping("/payment/authentication")
@@ -39,6 +31,6 @@ public class PaymentController {
             @Valid @RequestBody PaymentAuthenticationRequest paymentAuthenticationRequest
     ) {
         return ApiUtils.success(authenticationPaymentService.authenticatePayment(
-                paymentAuthenticationRequest.toServiceRequest() , iamportClientApi));
+                paymentAuthenticationRequest.toServiceRequest()));
     }
 }

@@ -35,13 +35,6 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
-    private static String iamportAccessKey;
-
-    private static String iamportSecretKey;
-
-    private static IamportClient iamportClientApi = new IamportClient(iamportAccessKey,
-            iamportSecretKey);
-
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test
     void registOrder() {
@@ -57,10 +50,9 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
                 .requestTime(1690416454492L).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
-        System.out.println("iamport " + iamportAccessKey + " secret" + iamportSecretKey);
         // when
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
-        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
 
 
         // then
@@ -89,7 +81,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454493L , "imp_780428188220");
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 정보가 없는 결제인증 요청입니다.");
 
@@ -114,7 +106,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 금액과 결제금액이 다릅니다.");
 

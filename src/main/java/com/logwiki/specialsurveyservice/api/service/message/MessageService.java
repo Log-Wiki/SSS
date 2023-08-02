@@ -106,7 +106,6 @@ public class MessageService {
 
        }
        catch (IOException e1) {
-           e1.printStackTrace();
            throw new BaseException("문자 발송 API 요청 오류",8002);
        }
        catch (Exception e) {
