@@ -24,7 +24,7 @@ public class SurveyResultService {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountService.getCurrentAccountBySecurity();
-        SurveyResult checkSurveyResult = surveyResultRepository.findSurveyResultByAccount_Id(account.getId());
+        SurveyResult checkSurveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(survey.getId(), account.getId());
 
         int submitOrder = createSubmitOrderIn(surveyId);
 
