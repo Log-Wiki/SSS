@@ -1,6 +1,8 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult.response;
 
 import com.logwiki.specialsurveyservice.domain.account.Account;
+import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
+import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import java.time.LocalDateTime;
@@ -10,34 +12,35 @@ import lombok.Getter;
 @Getter
 public class SurveyResultResponse {
 
-    private Long id;
-    private Boolean isWin;
-    private LocalDateTime endTime;
-    private int submitOrder;
+    private boolean win;
     private boolean userCheck;
-    private Survey survey;
-    private Account account;
+    private String surveyTitle;
+    private Long giveawayId;
+    private GiveawayType giveawayType;
+    private String giveawayName;
 
     @Builder
-    private SurveyResultResponse(Long id, Boolean isWin, LocalDateTime endTime, int submitOrder, boolean userCheck, Survey survey, Account account) {
-        this.id = id;
-        this.isWin = isWin;
-        this.endTime = endTime;
-        this.submitOrder = submitOrder;
+    private SurveyResultResponse(boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
+            GiveawayType giveawayType, String giveawayName) {
+        this.win = win;
         this.userCheck = userCheck;
-        this.survey = survey;
-        this.account = account;
+        this.surveyTitle = surveyTitle;
+        this.giveawayId = giveawayId;
+        this.giveawayType = giveawayType;
+        this.giveawayName = giveawayName;
     }
 
-    public static SurveyResultResponse of(SurveyResult surveyResult) {
+    public static SurveyResultResponse of(SurveyResult surveyResult, Giveaway giveaway) {
+
         return SurveyResultResponse.builder()
-                .id(surveyResult.getId())
-                .isWin(surveyResult.getIsWin())
-                .endTime(surveyResult.getEndTime())
-                .submitOrder(surveyResult.getSubmitOrder())
+                .win(surveyResult.isWin())
                 .userCheck(surveyResult.isUserCheck())
-                .survey(surveyResult.getSurvey())
-                .account(surveyResult.getAccount())
+                .surveyTitle(surveyResult.getSurvey().getTitle())
+                .giveawayId(giveaway.getId())
+                .giveawayType(giveaway.getGiveawayType())
+                .giveawayName(giveaway.getName())
                 .build();
     }
+
+
 }
