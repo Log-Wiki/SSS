@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.account;
 
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
+import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
@@ -46,4 +47,11 @@ public class AccountService {
 
         return AccountResponse.from(accountRepository.save(account));
     }
+
+    public Account getCurrentAccountBySecurity() {
+        return SecurityUtil.getCurrentUsername()
+                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+    }
+
 }
