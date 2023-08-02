@@ -26,8 +26,8 @@ public class MessageController {
     }
 
     @PostMapping("/message/lms")
-    public ApiResponse<?> longMessageSend(@RequestBody ShortMessageSendServiceRequest request, Authentication authentication) {
-        return ApiUtils.success( messageService.sendSMS(request));
+    public ApiResponse<?> longMessageSend(@RequestBody LongMessageSendServiceRequest request, Authentication authentication) {
+        return ApiUtils.success( messageService.sendLMS(request));
     }
 
     @PostMapping("/message/mms")
