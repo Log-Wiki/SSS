@@ -31,6 +31,14 @@ public class SurveyResponse {
 
     private Long writer;
 
+    private int totalGiveawayCount;
+
+    private int requiredTimeInSeconds;
+
+    private boolean closed;
+
+    private Double winningPercent;
+
     private SurveyCategoryType surveyCategoryType;
 
     private List<QuestionResponse> questions;
@@ -41,9 +49,10 @@ public class SurveyResponse {
 
     @Builder
     public SurveyResponse(Long id, String title, LocalDateTime startTime,
-            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer, SurveyCategoryType surveyCategoryType,
-            List<QuestionResponse> questions, List<SurveyGiveawayResponse> surveyGiveaways,
-            List<AccountCodeType> surveyTarget) {
+            LocalDateTime endTime, int headCount, int closedHeadCount, Long writer,
+            int totalGiveawayCount, boolean closed, int requiredTimeInSeconds,
+            Double winningPercent, SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
+            List<SurveyGiveawayResponse> surveyGiveaways, List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
         this.startTime = startTime;
@@ -51,6 +60,10 @@ public class SurveyResponse {
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;
         this.writer = writer;
+        this.totalGiveawayCount = totalGiveawayCount;
+        this.requiredTimeInSeconds = requiredTimeInSeconds;
+        this.closed = closed;
+        this.winningPercent = winningPercent;
         this.surveyCategoryType = surveyCategoryType;
         this.questions = questions;
         this.surveyGiveaways = surveyGiveaways;
@@ -61,6 +74,21 @@ public class SurveyResponse {
         if (survey == null) {
             return null;
         }
+
+        double winningPercent = 0D;
+        switch (survey.getSurveyCategory().getType()) {
+            case INSTANT_WIN:
+                winningPercent = ((double) survey.getTotalGiveawayCount() / survey.getClosedHeadCount()) * 100;
+                break;
+            case NORMAL:
+                if(survey.getHeadCount() == 0
+                        || (double) survey.getTotalGiveawayCount() / survey.getHeadCount() >= 1D)
+                    winningPercent = 100D;
+                else
+                    winningPercent = ((double) survey.getTotalGiveawayCount() / survey.getHeadCount()) * 100;
+                break;
+        }
+
         return SurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
@@ -69,6 +97,10 @@ public class SurveyResponse {
                 .headCount(survey.getHeadCount())
                 .closedHeadCount(survey.getClosedHeadCount())
                 .writer(survey.getWriter())
+                .totalGiveawayCount(survey.getTotalGiveawayCount())
+                .requiredTimeInSeconds(survey.getRequiredTimeInSeconds())
+                .closed(survey.isClosed())
+                .winningPercent(winningPercent)
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .questions(survey.getQuestions().stream()
                         .map(QuestionResponse::from)

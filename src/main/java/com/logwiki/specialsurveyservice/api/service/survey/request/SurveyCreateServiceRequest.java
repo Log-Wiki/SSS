@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.survey.request;
 
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
+import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 public class SurveyCreateServiceRequest {
+
+    private static final int REQUIRED_TIME_FOR_SHORT_FORM_QUESTION = 20;
+    private static final int REQUIRED_TIME_FOR_MULTIPLE_CHOICE_QUESTION = 10;
 
     private String title;
 
@@ -53,6 +57,17 @@ public class SurveyCreateServiceRequest {
     }
 
     public Survey toEntity(Long userId) {
+
+        int requiredTimeInSeconds = 0;
+        for(QuestionCreateServiceRequest question : questions){
+            if(question.getType().equals(QuestionCategoryType.SHORT_FORM)) {
+                requiredTimeInSeconds += REQUIRED_TIME_FOR_SHORT_FORM_QUESTION;
+            }
+            else if(question.getType().equals(QuestionCategoryType.MULTIPLE_CHOICE)) {
+                requiredTimeInSeconds += REQUIRED_TIME_FOR_MULTIPLE_CHOICE_QUESTION;
+            }
+        }
+
         Survey survey = Survey.builder()
                 .title(title)
                 .startTime(startTime)
@@ -60,6 +75,10 @@ public class SurveyCreateServiceRequest {
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)
                 .writer(userId)
+                .totalGiveawayCount(giveaways.stream()
+                        .mapToInt(GiveawayAssignServiceRequest::getCount)
+                        .sum())
+                .requiredTimeInSeconds(requiredTimeInSeconds)
                 .type(SurveyCategory.builder()
                         .type(type)
                         .build())

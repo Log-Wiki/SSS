@@ -10,14 +10,27 @@ import org.springframework.stereotype.Repository;
 public interface SurveyRepository extends JpaRepository<Survey, Long> {
 
     @Query(value = "SELECT * FROM survey sur "
-            + "WHERE :genderId IN (SELECT st.ACCOUNT_CODE_ID "
+            + "WHERE :surveyCategoryType IN (SELECT sc.TYPE "
+                                + "FROM SURVEY_CATEGORY sc "
+                                + "WHERE sur.SURVEY_CATEGORY_ID = sc.ID)"
+            + "AND :genderId IN (SELECT st.ACCOUNT_CODE_ID "
                                 + "FROM SURVEY_TARGET st "
-                                + "WHERE st.SURVEY_ID = sur.id) "
+                                + "WHERE st.SURVEY_ID = sur.ID) "
             + "AND :ageId IN (SELECT st.ACCOUNT_CODE_ID "
                                 + "FROM SURVEY_TARGET st "
-                                + "WHERE st.SURVEY_ID = sur.id) "
-            + "AND sur.closed = false "
-            + "ORDER BY sur.END_TIME",
+                                + "WHERE st.SURVEY_ID = sur.ID) "
+            + "AND sur.closed = false ",
             nativeQuery = true)
-    List<Survey> findRecommendNormal(@Param("genderId") Long genderId, @Param("ageId") Long ageId);
+    List<Survey> findRecommendSurvey(@Param("surveyCategoryType") String surveyCategoryType, @Param("genderId") Long genderId, @Param("ageId") Long ageId);
+
+    @Query(value = "SELECT * FROM survey sur "
+            + "WHERE :genderId IN (SELECT st.ACCOUNT_CODE_ID "
+                                + "FROM SURVEY_TARGET st "
+                                + "WHERE st.SURVEY_ID = sur.ID) "
+            + "AND :ageId IN (SELECT st.ACCOUNT_CODE_ID "
+                                + "FROM SURVEY_TARGET st "
+                                + "WHERE st.SURVEY_ID = sur.ID) "
+            + "AND sur.closed = false ",
+            nativeQuery = true)
+    List<Survey> findRecommendSurvey(@Param("genderId") Long genderId, @Param("ageId") Long ageId);
 }
