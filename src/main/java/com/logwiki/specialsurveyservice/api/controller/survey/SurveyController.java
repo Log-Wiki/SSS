@@ -40,7 +40,6 @@ public class SurveyController {
         return ApiUtils.success(surveyResponse);
     }
 
-    @GetMapping("/survey/recommend/normal")
     @GetMapping("/survey/{surveyId}")
     public ApiResponse<?> surveyDetail(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
@@ -51,7 +50,7 @@ public class SurveyController {
         return ApiUtils.success(surveyService.getSurveyAnswers(surveyId));
     }
 
-    @GetMapping("/survey/recommend-normal")
+    @GetMapping("/survey/recommend/normal")
     public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendNormalSurvey());
     }
