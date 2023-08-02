@@ -191,7 +191,6 @@ public class MessageService {
        bodyJson.put("content",request.getContent());
        bodyJson.put("subject",request.getSubject());
 
-       bodyJson.put("subject",request.getSubject());
        for(Message message : request.getMessages()) {
            JSONObject toJson = new JSONObject();
            toJson.put("to",message.getTo());
