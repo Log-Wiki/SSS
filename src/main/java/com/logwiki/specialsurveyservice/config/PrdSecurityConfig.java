@@ -22,9 +22,8 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
-@Profile("prd")
+@Profile({"local", "test"})
 public class PrdSecurityConfig {
-
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

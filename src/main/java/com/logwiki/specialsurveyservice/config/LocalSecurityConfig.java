@@ -25,7 +25,6 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 @Profile({"local", "test"})
 public class LocalSecurityConfig {
-
     private final TokenProvider tokenProvider;
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
