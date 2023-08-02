@@ -10,8 +10,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +50,10 @@ public class SurveyController {
     @GetMapping("/survey/recommend/time")
     public ApiResponse<List<SurveyResponse>> getRecommendShortTimeSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendShortTimeSurvey());
+    }
+
+    @GetMapping("/survey/{surveyId}")
+    public ApiResponse<SurveyResponse> getSurvey(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyService.getSurvey(surveyId));
     }
 }

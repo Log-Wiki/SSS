@@ -168,4 +168,9 @@ public class SurveyService {
     private static void sortByRequiredTimeForSurvey(List<Survey> surveys) {
         surveys.sort(Comparator.comparingInt(Survey::getRequiredTimeInSeconds));
     }
+
+    public SurveyResponse getSurvey(Long surveyId) {
+        return SurveyResponse.from(surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new BaseException("없는 설문입니다.", 3005)));
+    }
 }
