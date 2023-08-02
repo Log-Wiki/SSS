@@ -59,6 +59,7 @@ public class SurveyService {
     private final TargetNumberRepository targetNumberRepository;
 
     private static final double MAXPROBABILITY = 100.0;
+    private static final String LOSEPRODUCT = "꽝";
 
     public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -235,7 +236,7 @@ public class SurveyService {
                     isWin = true;
                     giveawayName = tn.get().getGiveaway().getName();
                 } else {
-                    giveawayName = "꽝";
+                    giveawayName = LOSEPRODUCT;
                 }
 
                 surveyResponseResults.add(new SurveyAnswerResponse(
