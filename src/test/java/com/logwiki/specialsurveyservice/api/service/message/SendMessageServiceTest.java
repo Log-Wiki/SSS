@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
 
     @DisplayName("SMS 발송")
     @Test
+    @Disabled("요금 이슈로 테스트 중단")
     void sendSMSTest() {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder()
@@ -44,6 +46,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
 
     @DisplayName("LMS 발송")
     @Test
+    @Disabled("요금 이슈로 테스트 중단")
     void sendLMSTest() {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder()
@@ -67,6 +70,7 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
 
     @DisplayName("MMS 전송 테스트")
     @Test
+    @Disabled("요금 이슈로 테스트 중단")
     void registImageTest() {
         String fileBody = "";
         File f = new File("src/test/resources/static.img/dummyGift.jpg");
