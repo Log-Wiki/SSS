@@ -43,7 +43,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         if (authException instanceof BadCredentialsException) {
             apiResponse = ApiUtils.error(
-                    "비밀번호가 올바르지 않습니다.",
+                    "회원 정보가 올바르지 않습니다.",
                     2006
             );
         }
