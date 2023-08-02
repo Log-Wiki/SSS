@@ -23,7 +23,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
-@Profile("local")
+@Profile({"local", "test"})
 public class LocalSecurityConfig {
 
     private final TokenProvider tokenProvider;
