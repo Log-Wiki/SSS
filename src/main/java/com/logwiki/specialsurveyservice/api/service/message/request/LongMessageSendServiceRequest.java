@@ -10,21 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class LongMessageSendServiceRequest {
-    private MessageType type;
+    private MessageType type = MessageType.LONGMESSAGE;
     private String from;
     private String content;
     List<Message> messages;
-    private String subject;
-    List<String> files;
 
     @Builder
-    LongMessageSendServiceRequest( String from , String content , List<Message> messages , String subject , List<String> files) {
+    LongMessageSendServiceRequest( String from , String content , List<Message> messages ) {
         this.type = MessageType.LONGMESSAGE;
         this.from = from;
         this.content = content;
         this.messages = messages;
-        this.subject = subject;
-        this.files = files;
     }
 
 

@@ -9,21 +9,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class ShortMessageSendServiceRequest {
-    private MessageType type;
+    private MessageType type = MessageType.SHORTMESSAGE;
     private String from;
     private String content;
     List<Message> messages;
-    private String subject;
-    List<String> files;
 
     @Builder
-    ShortMessageSendServiceRequest(String from , String content , List<Message> messages , String subject , List<String> files) {
+    ShortMessageSendServiceRequest(String from , String content , List<Message> messages ) {
         this.type = MessageType.SHORTMESSAGE;
         this.from = from;
         this.content = content;
         this.messages = messages;
-        this.subject = subject;
-        this.files = files;
     }
 
 

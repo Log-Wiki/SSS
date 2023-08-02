@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class MultimediaMessageSendServiceRequest {
-    private MessageType type;
+    private MessageType type = MessageType.MULTIMEDIAMESSAGE;
     private String from;
     private String content;
     List<Message> messages;
