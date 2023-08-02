@@ -40,7 +40,7 @@ public class SurveyController {
         return ApiUtils.success(surveyResponse);
     }
 
-    @GetMapping("/survey/{surveyId}")
+    @GetMapping("/survey/detail/{surveyId}")
     public ApiResponse<?> surveyDetail(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
     }
