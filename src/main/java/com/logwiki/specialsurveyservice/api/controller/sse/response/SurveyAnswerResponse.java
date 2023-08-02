@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.controller.sse.response;
 
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -21,6 +22,15 @@ public class SurveyAnswerResponse {
         this.name = name;
         this.giveAwayName = giveAwayName;
         this.isWin = isWin;
+    }
+
+    public static SurveyAnswerResponse from(SurveyResult surveyResult , String giveAwayName , boolean isWin ) {
+        return SurveyAnswerResponse.builder()
+                .answerTime(surveyResult.getEndTime())
+                .name(surveyResult.getAccount().getName())
+                .giveAwayName(giveAwayName)
+                .isWin(isWin)
+                .build();
     }
 
 

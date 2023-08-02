@@ -194,28 +194,7 @@ public class SurveyService {
     }
 
 
-    public int getSurveyGiveawayCount(Survey survey) {
-        return survey.getSurveyGiveaways().stream()
-                .mapToInt(SurveyGiveaway::getCount)
-                .sum();
-    }
 
-    public double getSurveyWinRate(Survey survey) {
-        int giveawayNum = this.getSurveyGiveawayCount(survey);
-        double winRate;
-        if(survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
-            if (giveawayNum >= survey.getHeadCount()) {
-                winRate = MAXPROBABILITY;
-            } else {
-                winRate = (double)giveawayNum / survey.getHeadCount();
-            }
-        }
-        else {
-            winRate = (double)giveawayNum / survey.getClosedHeadCount();
-        }
-
-        return winRate * 100.0;
-    }
 
     public List<SurveyAnswerResponse> getSurveyAnswers(Long surveyId) {
         Optional<Survey> targetSurveyOptional = surveyRepository.findById(surveyId);
@@ -239,13 +218,7 @@ public class SurveyService {
                     giveawayName = LOSEPRODUCT;
                 }
 
-                surveyResponseResults.add(new SurveyAnswerResponse(
-                                surveyResult.getEndTime()
-                                , surveyResult.getAccount().getName()
-                                , giveawayName
-                                , isWin
-                        )
-                );
+                surveyResponseResults.add(SurveyAnswerResponse.from(surveyResult,giveawayName,isWin));
 
             }
         }
@@ -253,13 +226,12 @@ public class SurveyService {
     }
     public SurveyDetailResponse getSurveyDetail(Long surveyId) {
         Optional<Survey> targetSurveyOptional =  surveyRepository.findById(surveyId);
+
         if(targetSurveyOptional.isEmpty()) {
             throw new BaseException("없는 설문입니다." , 3005);
         }
         Survey targetSurvey = targetSurveyOptional.get();
-
-        double winRate = this.getSurveyWinRate(targetSurvey);
-
+        SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
         List<SurveyGiveaway> surveyGiveaways = targetSurvey.getSurveyGiveaways();
         List<String> giveawayNames = new ArrayList<>();
         for(SurveyGiveaway surveyGiveaway : surveyGiveaways) {
@@ -270,6 +242,6 @@ public class SurveyService {
         if(writerAccount.isEmpty()){
             throw new BaseException("설문 작성자가 존재하지 않습니다.", 3013);
         }
-        return SurveyDetailResponse.of(targetSurvey,winRate,giveawayNames,writerAccount.get().getName());
+        return SurveyDetailResponse.of(targetSurvey,surveyResponse.getWinningPercent(),giveawayNames,writerAccount.get().getName());
     }
 }
