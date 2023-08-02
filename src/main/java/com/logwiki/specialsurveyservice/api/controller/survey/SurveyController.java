@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,5 +49,10 @@ public class SurveyController {
     @GetMapping("/survey/recommend/time")
     public ApiResponse<List<SurveyResponse>> getRecommendShortTimeSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendShortTimeSurvey());
+    }
+
+    @GetMapping("/user/mysurveys")
+    public ApiResponse<List<SurveyResponse>> getAnsweredSurveys() {
+        return ApiUtils.success(surveyService.getMySurveys());
     }
 }
