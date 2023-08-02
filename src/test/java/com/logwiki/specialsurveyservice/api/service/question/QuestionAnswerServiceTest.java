@@ -74,7 +74,7 @@ class QuestionAnswerServiceTest {
         // then
         Assertions.assertThrows(BaseException.class, () -> {
             questionAnswerService.addQuestionAnswer(nowDate, surveyId
-                    , useEmail, dtoList);
+                    , dtoList);
         });
     }
 
@@ -136,7 +136,7 @@ class QuestionAnswerServiceTest {
         // then
         Assertions.assertThrows(BaseException.class, () -> {
             questionAnswerService.addQuestionAnswer(nowDate, surveyId
-                    , useEmail, dtoList);
+                    , dtoList);
         });
     }
 
@@ -191,7 +191,7 @@ class QuestionAnswerServiceTest {
         // then
         Assertions.assertThrows(BaseException.class, () -> {
             questionAnswerService.addQuestionAnswer(nowDate, surveyId
-                    , useEmail, dtoList);
+                    , dtoList);
         });
     }
 
