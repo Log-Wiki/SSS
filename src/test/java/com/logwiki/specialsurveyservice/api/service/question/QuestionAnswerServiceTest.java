@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
@@ -46,6 +47,8 @@ class QuestionAnswerServiceTest {
     private QuestionRepository questionRepository;
     @Mock
     private SurveyTargetRepository surveyTargetRepository;
+    @Mock
+    private AccountService accountService;
 
     @DisplayName("없는 설문에 응답을 했을 경우 에러를 반환")
     @Test
@@ -65,8 +68,8 @@ class QuestionAnswerServiceTest {
         // when
         when(questionRepository.findBySurveyId(any()))
                 .thenReturn(Optional.ofNullable(null));
-        when(accountRepository.findOneWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(account));
+        when(accountService.getCurrentAccountBySecurity())
+                .thenReturn(account);
 
         // then
         Assertions.assertThrows(BaseException.class, () -> {
@@ -125,8 +128,8 @@ class QuestionAnswerServiceTest {
         // when
         when(questionRepository.findBySurveyId(any()))
                 .thenReturn(Optional.of(questions));
-        when(accountRepository.findOneWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(account));
+        when(accountService.getCurrentAccountBySecurity())
+                .thenReturn(account);
         when(surveyTargetRepository.findSurveyTargetBySurvey_Id(any()))
                 .thenReturn(surveyTargets);
 
@@ -178,10 +181,10 @@ class QuestionAnswerServiceTest {
         String useEmail = "user@naver.com";
 
         // when
+        when(accountService.getCurrentAccountBySecurity())
+                .thenReturn(account);
         when(questionRepository.findBySurveyId(any()))
                 .thenReturn(Optional.of(questions));
-        when(accountRepository.findOneWithAuthoritiesByEmail(any()))
-                .thenReturn(Optional.ofNullable(account));
         when(surveyTargetRepository.findSurveyTargetBySurvey_Id(any()))
                 .thenReturn(surveyTargets);
 
