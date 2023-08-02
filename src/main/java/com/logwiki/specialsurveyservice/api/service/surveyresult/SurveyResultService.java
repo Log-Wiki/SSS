@@ -1,12 +1,15 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultRepository;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,7 @@ public class SurveyResultService {
     private final SurveyResultRepository surveyResultRepository;
     private final SurveyRepository surveyRepository;
     private final AccountService accountService;
+    private final TargetNumberRepository targetNumberRepository;
 
     public void addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
@@ -42,7 +46,7 @@ public class SurveyResultService {
         }
 
         account.increaseResponseSurveyCount();
-        SurveyResult surveyResult = surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
+        surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
                 account));
 
         survey.addHeadCount();
@@ -50,5 +54,22 @@ public class SurveyResultService {
 
     public int createSubmitOrderIn(Long surveyId) {
         return surveyResultRepository.findSubmitCountBy(surveyId) + 1;
+    }
+
+    public List<MyGiveawayResponse> getMyGiveaways() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<SurveyResult> surveyResults = surveyResultRepository.findSurveyResultsByAccount_Id(
+                account.getId());
+
+        List<SurveyResult> winSurveyResults = surveyResults.stream()
+                .filter(SurveyResult::isWin)
+                .toList();
+
+        return winSurveyResults.stream()
+                .map(surveyResult -> MyGiveawayResponse.of(surveyResult,
+                        targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
+                                surveyResult.getSubmitOrder(),
+                                surveyResult.getSurvey().getId()).getGiveaway()))
+                .toList();
     }
 }
