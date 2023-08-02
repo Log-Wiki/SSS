@@ -14,15 +14,17 @@ public class SurveyResultResponse {
     private Boolean isWin;
     private LocalDateTime endTime;
     private int submitOrder;
+    private boolean userCheck;
     private Survey survey;
     private Account account;
 
     @Builder
-    private SurveyResultResponse(Long id, Boolean isWin, LocalDateTime endTime, int submitOrder, Survey survey, Account account) {
+    private SurveyResultResponse(Long id, Boolean isWin, LocalDateTime endTime, int submitOrder, boolean userCheck, Survey survey, Account account) {
         this.id = id;
         this.isWin = isWin;
         this.endTime = endTime;
         this.submitOrder = submitOrder;
+        this.userCheck = userCheck;
         this.survey = survey;
         this.account = account;
     }
@@ -33,6 +35,7 @@ public class SurveyResultResponse {
                 .isWin(surveyResult.getIsWin())
                 .endTime(surveyResult.getEndTime())
                 .submitOrder(surveyResult.getSubmitOrder())
+                .userCheck(surveyResult.isUserCheck())
                 .survey(surveyResult.getSurvey())
                 .account(surveyResult.getAccount())
                 .build();
