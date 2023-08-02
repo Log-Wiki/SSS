@@ -10,4 +10,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @EntityGraph(attributePaths = "authorities")
     Optional<Account> findOneWithAuthoritiesByEmail(String Email);
+
+    @EntityGraph(attributePaths = "authorities")
+    Optional<Account> findOneWithAuthoritiesByPhoneNumber(String phoneNumber);
 }

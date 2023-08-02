@@ -28,7 +28,11 @@ public class AccountService {
     public AccountResponse signup(AccountCreateServiceRequest request) {
         if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
                 != null) {
-            throw new BaseException("이미 가입되어 있는 유저입니다.", 2001);
+            throw new BaseException("동일한 이메일로 가입되어 있는 계정이 존재합니다.", 2001);
+        }
+        if(accountRepository.findOneWithAuthoritiesByPhoneNumber(request.getPhoneNumber()).orElse(null)
+                != null) {
+            throw new BaseException("동일한 휴대폰 번호로 가입되어 있는 계정이 존재합니다.", 2007);
         }
 
         Authority authority = authorityRepository.findAuthorityByType(AuthorityType.ROLE_USER);
