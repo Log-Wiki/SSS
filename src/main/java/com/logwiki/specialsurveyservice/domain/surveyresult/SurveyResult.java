@@ -26,6 +26,8 @@ public class SurveyResult extends BaseEntity {
 
     private int submitOrder;
 
+    private boolean userCheck;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id")
     private Survey survey;
@@ -35,10 +37,11 @@ public class SurveyResult extends BaseEntity {
     private Account account;
 
     @Builder
-    private SurveyResult(Boolean isWin, LocalDateTime endTime, int submitOrder, Survey survey, Account account) {
+    private SurveyResult(Boolean isWin, LocalDateTime endTime, int submitOrder, boolean userCheck, Survey survey, Account account) {
         this.isWin = isWin;
         this.endTime = endTime;
         this.submitOrder = submitOrder;
+        this.userCheck = userCheck;
         this.survey = survey;
         this.account = account;
     }
@@ -48,6 +51,7 @@ public class SurveyResult extends BaseEntity {
                 .isWin(isWin)
                 .endTime(endTime)
                 .submitOrder(submitOrder)
+                .userCheck(false)
                 .survey(survey)
                 .account(account)
                 .build();
