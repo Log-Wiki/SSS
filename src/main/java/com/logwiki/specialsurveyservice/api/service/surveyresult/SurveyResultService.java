@@ -1,6 +1,5 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
-import com.logwiki.specialsurveyservice.api.service.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
@@ -21,7 +20,7 @@ public class SurveyResultService {
     private final SurveyRepository surveyRepository;
     private final AccountRepository accountRepository;
 
-    public SurveyResultResponse addSubmitResult(Long surveyId, String userEmail, LocalDateTime writeDateTime) {
+    public void addSubmitResult(Long surveyId, String userEmail, LocalDateTime writeDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
@@ -49,7 +48,7 @@ public class SurveyResultService {
 
         survey.addHeadCount();
         
-        return SurveyResultResponse.of(surveyResult);
+//        return SurveyResultResponse.of(surveyResult);
 
     }
 
