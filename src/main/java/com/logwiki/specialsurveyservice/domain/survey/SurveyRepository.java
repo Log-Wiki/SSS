@@ -33,4 +33,6 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             + "AND sur.closed = false ",
             nativeQuery = true)
     List<Survey> findRecommendSurvey(@Param("genderId") Long genderId, @Param("ageId") Long ageId);
+
+    List<Survey> findAllByWriter(Long writerId);
 }

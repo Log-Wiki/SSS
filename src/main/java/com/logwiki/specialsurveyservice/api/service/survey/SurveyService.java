@@ -168,4 +168,13 @@ public class SurveyService {
     private static void sortByRequiredTimeForSurvey(List<Survey> surveys) {
         surveys.sort(Comparator.comparingInt(Survey::getRequiredTimeInSeconds));
     }
+
+    public List<SurveyResponse> getMySurveys() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
+
+        return mySurveys.stream()
+                .map(SurveyResponse::from)
+                .toList();
+    }
 }
