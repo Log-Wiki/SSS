@@ -56,7 +56,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 long surveyId = 1L;
 
                 // when // then
-                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any())).thenReturn(questionAnswerResponses);
 
                 mockMvc.perform(
                                 post("/api/question/answers")
@@ -103,7 +103,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 long surveyId = 1L;
 
                 // when // then
-                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any())).thenReturn(questionAnswerResponses);
 
                 mockMvc.perform(
                                 post("/api/question/answers")
@@ -145,7 +145,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 long surveyId = 1L;
 
                 // when // then
-                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any())).thenReturn(questionAnswerResponses);
 
                 mockMvc.perform(
                                 post("/api/question/answers")
@@ -185,7 +185,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 long surveyId = 1L;
 
                 // when // then
-                when(questionAnswerService.addQuestionAnswer(any(), any(), any(), any())).thenReturn(questionAnswerResponses);
+                when(questionAnswerService.addQuestionAnswer(any(), any(), any())).thenReturn(questionAnswerResponses);
 
                 mockMvc.perform(
                                 post("/api/question/answers")

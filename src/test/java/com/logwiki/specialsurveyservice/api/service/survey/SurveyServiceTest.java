@@ -76,6 +76,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
     }
 
     @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록, 설문 대상자를 이용하여 설문을 등록한다.")
+    @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void addSurvey() throws SchedulerException {
         // given
@@ -173,7 +174,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
 
         // when
-        SurveyResponse saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
 
         // then
         assertThat(saveSurvey).isNotNull();
@@ -181,11 +182,10 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .contains(title, startTime, endTime);
     }
 
-    @DisplayName("설문을 작성하기 위해서는 email로 회원(작성자)를 조회할 수 있어야 한다.")
+    @DisplayName("설문을 작성하기 위해서는 로그인된 유저가 있어야 한다.")
     @Test
     void addSurveyWithInvalidUser() {
         // given
-        String email = "InvalidEmail@amenable.com";
         SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
                 .title("어떤 외국어를 배우고 싶습니까?")
                 .startTime(LocalDateTime.now().minusDays(1))
@@ -196,12 +196,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
 
         // when // then
-        assertThatThrownBy(() -> surveyService.addSurvey(email, surveyCreateServiceRequest))
+        assertThatThrownBy(() -> surveyService.addSurvey(surveyCreateServiceRequest))
                 .isInstanceOf(BaseException.class)
-                .hasMessage("존재하지 않는 유저입니다.");
+                .hasMessage("인증 정보가 등록되어 있지 않습니다.");
     }
 
     @DisplayName("존재하지 않는 나이성별 코드로는 설문을 작성할 수 없다.")
+    @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void abc() {
         // given
@@ -251,12 +252,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         accountCodeRepository.delete(accountCodeRepository.findAccountCodeByType(accountCodeType).get());
 
         // when // then
-        assertThatThrownBy(() -> surveyService.addSurvey(email, surveyCreateServiceRequest))
+        assertThatThrownBy(() -> surveyService.addSurvey(surveyCreateServiceRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("없는 나이,성별 코드 입니다.");
     }
 
     @DisplayName("설문을 제작할 때는 등록된 당첨 상품을 사용해야 한다.")
+    @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void addSurveyWithInvalidGiveaway() {
         // given
@@ -349,7 +351,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
 
         // when // then
-        assertThatThrownBy(() -> surveyService.addSurvey(email, surveyCreateServiceRequest))
+        assertThatThrownBy(() -> surveyService.addSurvey(surveyCreateServiceRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("등록되어 있지 않은 당첨 상품을 포함하고 있습니다.");
     }
@@ -435,11 +437,11 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
 
-        SurveyResponse saveSurvey1 = surveyService.addSurvey(email, surveyCreateServiceRequest1);
+        SurveyResponse saveSurvey1 = surveyService.addSurvey(surveyCreateServiceRequest1);
         surveyRepository.findById(saveSurvey1.getId()).get().toOpen();
-        SurveyResponse saveSurvey2 = surveyService.addSurvey(email, surveyCreateServiceRequest2);
+        SurveyResponse saveSurvey2 = surveyService.addSurvey(surveyCreateServiceRequest2);
         surveyRepository.findById(saveSurvey2.getId()).get().toOpen();
-        SurveyResponse saveSurvey3 = surveyService.addSurvey(email, surveyCreateServiceRequest3);
+        SurveyResponse saveSurvey3 = surveyService.addSurvey(surveyCreateServiceRequest3);
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
@@ -537,11 +539,11 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
 
-        SurveyResponse saveSurvey1 = surveyService.addSurvey(email, surveyCreateServiceRequest1);
+        SurveyResponse saveSurvey1 = surveyService.addSurvey(surveyCreateServiceRequest1);
         surveyRepository.findById(saveSurvey1.getId()).get().toOpen();
-        SurveyResponse saveSurvey2 = surveyService.addSurvey(email, surveyCreateServiceRequest2);
+        SurveyResponse saveSurvey2 = surveyService.addSurvey(surveyCreateServiceRequest2);
         surveyRepository.findById(saveSurvey2.getId()).get().toOpen();
-        SurveyResponse saveSurvey3 = surveyService.addSurvey(email, surveyCreateServiceRequest3);
+        SurveyResponse saveSurvey3 = surveyService.addSurvey(surveyCreateServiceRequest3);
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
@@ -658,11 +660,11 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests3)
                 .build();
 
-        SurveyResponse saveSurvey1 = surveyService.addSurvey(email, surveyCreateServiceRequest1);
+        SurveyResponse saveSurvey1 = surveyService.addSurvey(surveyCreateServiceRequest1);
         surveyRepository.findById(saveSurvey1.getId()).get().toOpen();
-        SurveyResponse saveSurvey2 = surveyService.addSurvey(email, surveyCreateServiceRequest2);
+        SurveyResponse saveSurvey2 = surveyService.addSurvey(surveyCreateServiceRequest2);
         surveyRepository.findById(saveSurvey2.getId()).get().toOpen();
-        SurveyResponse saveSurvey3 = surveyService.addSurvey(email, surveyCreateServiceRequest3);
+        SurveyResponse saveSurvey3 = surveyService.addSurvey(surveyCreateServiceRequest3);
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
@@ -806,11 +808,11 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
 
-        SurveyResponse saveSurvey1 = surveyService.addSurvey(email, surveyCreateServiceRequest1);
+        SurveyResponse saveSurvey1 = surveyService.addSurvey(surveyCreateServiceRequest1);
         surveyRepository.findById(saveSurvey1.getId()).get().toOpen();
-        SurveyResponse saveSurvey2 = surveyService.addSurvey(email, surveyCreateServiceRequest2);
+        SurveyResponse saveSurvey2 = surveyService.addSurvey(surveyCreateServiceRequest2);
         surveyRepository.findById(saveSurvey2.getId()).get().toOpen();
-        SurveyResponse saveSurvey3 = surveyService.addSurvey(email, surveyCreateServiceRequest3);
+        SurveyResponse saveSurvey3 = surveyService.addSurvey(surveyCreateServiceRequest3);
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when

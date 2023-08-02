@@ -8,17 +8,11 @@ import com.logwiki.specialsurveyservice.api.service.question.QuestionService;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -37,12 +31,10 @@ public class QuestionController {
 
     @PostMapping("/question/answers")
     public ApiResponse<?> questionAnswersAdd(@RequestParam Long surveyId,
-            @Valid @RequestBody QuestionAnswersCreateRequest dto,
-            Authentication authentication) {
-        String userEmail = authentication.getName();
+            @Valid @RequestBody QuestionAnswersCreateRequest dto) {
         LocalDateTime writeDate = LocalDateTime.now();
         return ApiUtils.success(
-                questionAnswerService.addQuestionAnswer(writeDate, surveyId, userEmail,
+                questionAnswerService.addQuestionAnswer(writeDate, surveyId,
                         dto.getAnswers().stream()
                                 .map(QuestionAnswerCreateRequest::toServiceRequest)
                                 .collect(Collectors.toList())));

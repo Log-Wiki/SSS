@@ -3,13 +3,13 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
@@ -36,8 +36,11 @@ import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.SchedulerException;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +51,7 @@ import java.util.stream.Collectors;
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final GiveawayRepository giveawayRepository;
     private final TargetNumberService targetNumberService;
     private final AccountCodeRepository accountCodeRepository;
@@ -58,12 +61,14 @@ public class SurveyService {
 
     private final TargetNumberRepository targetNumberRepository;
 
+    private final AccountRepository accountRepository;
     private static final double MAXPROBABILITY = 100.0;
     private static final String LOSEPRODUCT = "꽝";
 
-    public SurveyResponse addSurvey(String userEmail, SurveyCreateServiceRequest dto) {
-        Account account = accountRepository.findOneWithAuthoritiesByEmail(userEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+
+
+    public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
+        Account account = accountService.getCurrentAccountBySecurity();
 
         Survey survey = dto.toEntity(account.getId());
 
@@ -141,9 +146,7 @@ public class SurveyService {
     }
 
     private List<Survey> getRecommendSurveysBySurveyCategoryType(SurveyCategoryType surveyCategoryType) {
-        Account account = SecurityUtil.getCurrentUsername()
-                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        Account account = accountService.getCurrentAccountBySecurity();
         Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
                 .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
                 .getId();
@@ -156,9 +159,7 @@ public class SurveyService {
     }
 
     private List<Survey> getAllRecommendSurveys() {
-        Account account = SecurityUtil.getCurrentUsername()
-                .flatMap(accountRepository::findOneWithAuthoritiesByEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        Account account = accountService.getCurrentAccountBySecurity();
         Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
                 .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
                 .getId();
