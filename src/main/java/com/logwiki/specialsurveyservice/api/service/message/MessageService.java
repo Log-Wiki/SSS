@@ -1,6 +1,9 @@
 package com.logwiki.specialsurveyservice.api.service.message;
 
-import com.logwiki.specialsurveyservice.api.service.message.request.Message;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.logwiki.specialsurveyservice.domain.message.Message;
 import com.logwiki.specialsurveyservice.api.service.message.request.MessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.BufferedReader;
@@ -8,13 +11,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.util.LinkedHashMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.json.JSONParser;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.net.URL;
@@ -60,6 +64,9 @@ public class MessageService {
     }
 
    public int sendSMS(MessageSendServiceRequest request) {
+        if(request.getType().equals("SMS") == false) {
+            throw new BaseException("메세지 타입이 SMS가 아닙니다.",8004);
+        }
        int responseCode = DEFAULT;
        String timestamp = Long.toString(System.currentTimeMillis());
        String hostNameUrl = "https://sens.apigw.ntruss.com";
@@ -78,7 +85,7 @@ public class MessageService {
                JSONObject target = new JSONObject();
                target.put("to",message.getTo());
                target.put("content",message.getContent());
-               toArr.put(target);
+               toArr.add(target);
        }
 
        bodyJson.put("messages",toArr);
@@ -115,6 +122,9 @@ public class MessageService {
        return responseCode;
    }
    public int sendMMS(MessageSendServiceRequest request) {
+       if(request.getType().equals("MMS") == false) {
+           throw new BaseException("메세지 타입이 MMS가 아닙니다.",8005);
+       }
        int responseCode = DEFAULT;
        String timestamp = Long.toString(System.currentTimeMillis());
        String hostNameUrl = "https://sens.apigw.ntruss.com";
@@ -137,14 +147,14 @@ public class MessageService {
                toJson.put("to",message.getTo());
                toJson.put("content",message.getContent());
                toJson.put("subject",message.getSubject());
-               toArr.put(toJson);
+               toArr.add(toJson);
            }
 
            JSONArray fileArr = new JSONArray();
            for(String fileId : request.getFiles()) {
                JSONObject fileIdJson = new JSONObject();
                fileIdJson.put("fileId", fileId);
-               fileArr.put(fileIdJson);
+               fileArr.add(fileIdJson);
            }
            bodyJson.put("files" , fileArr);
        }
@@ -187,18 +197,17 @@ public class MessageService {
        String fileId = null;
        String timestamp = Long.toString(System.currentTimeMillis());
        String hostNameUrl = "https://sens.apigw.ntruss.com";
-       String requestUrl = "/sms/v2/services/"+ messageServiceKey  + "/files";
+       String requestUrl = "/sms/v2/services/"+ messageServiceKey + "/files";
        String method = "POST";
 
        JSONObject bodyJson = new JSONObject();
-
-       JSONArray toArr = new JSONArray();
 
        bodyJson.put("fileName" , fileName);
        bodyJson.put("fileBody", fileBody);
 
 
        String body = bodyJson.toString();
+       log.info(body);
        try {
            URL url = new URL(hostNameUrl + requestUrl);
            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -215,25 +224,26 @@ public class MessageService {
            dos.flush();
            dos.close();
            responseCode = conn.getResponseCode();
-           if(responseCode != SUCCESS) {
-               throw new BaseException("설문 요청 결과가 성공이 아닙니다.",8003);
+           if(responseCode != 200) {
+               throw new BaseException("이미지 업로드 요청결과가 성공이 아닙니다.",8003);
            }
-
            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
            String inputLine;
-           StringBuilder sb = new StringBuilder();
+           StringBuffer sb = new StringBuffer();
            while((inputLine = br.readLine()) != null) {
                sb.append(inputLine);
            }
-           JSONParser jsonParser = new JSONParser(sb.toString());
-           JSONObject sa = (JSONObject) jsonParser.parse();
-           fileId = (String) sa.get("fileId");
+           br.close();
+           ObjectMapper objectMapper = new ObjectMapper();
+           JsonNode jsonNode = objectMapper.readTree(sb.toString());
+
+           fileId = (String) jsonNode.get("fileId").asText();
        }
        catch (IOException ioException) {
-           throw new BaseException("문자 발송 API 요청 오류",8002);
+           throw new BaseException("사진 등록 API 요청 오류",8002);
        }
        catch (Exception exception) {
-           throw new BaseException("문자 발송 API 요청 오류",8001);
+           throw new BaseException(exception.getMessage(),8003);
        }
 
        return fileId;

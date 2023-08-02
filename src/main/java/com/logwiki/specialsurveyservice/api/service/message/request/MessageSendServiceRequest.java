@@ -1,6 +1,8 @@
 package com.logwiki.specialsurveyservice.api.service.message.request;
 
+import com.logwiki.specialsurveyservice.domain.message.Message;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,13 +16,7 @@ public class MessageSendServiceRequest {
     private String subject;
     List<String> files;
 
-    MessageSendServiceRequest(String type , String from , String content , List<Message> messages) {
-        this.type = type;
-        this.from = from;
-        this.content = content;
-        this.messages = messages;
-    }
-
+    @Builder
     MessageSendServiceRequest(String type , String from , String content , List<Message> messages , String subject , List<String> files) {
         this.type = type;
         this.from = from;
@@ -29,6 +25,7 @@ public class MessageSendServiceRequest {
         this.subject = subject;
         this.files = files;
     }
+
 
 
 
