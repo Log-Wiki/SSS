@@ -840,6 +840,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
     }
 
     @DisplayName("설문 ID를 사용해 설문 상세정보를 조회한다.")
+    @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void getSurveyDetail() {
         // given
@@ -936,7 +937,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
 
-        SurveyResponse saveSurvey = surveyService.addSurvey(email, surveyCreateServiceRequest);
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
         // when
         SurveyDetailResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
         // then
