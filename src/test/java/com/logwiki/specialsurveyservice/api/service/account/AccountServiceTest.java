@@ -67,14 +67,14 @@ class AccountServiceTest extends IntegrationTestSupport {
         .contains(email, gender, name, phoneNumber, birthday);
   }
 
-  @DisplayName("중복 회원 가입 시나리오")
+  @DisplayName("중복된 이메일로 회원가입을 진행할 수 없다.")
   @TestFactory
-  Collection<DynamicTest> duplicateSignup() {
+  Collection<DynamicTest> duplicateSignupWithDuplicatedEmail() {
     // given
     String email = "duswo0624@naver.com";
 
     return List.of(
-        DynamicTest.dynamicTest("이미 가입된 계정이 없는 경우 회원 가입을 할 수 있다.", () -> {
+        DynamicTest.dynamicTest("특정 이메일로 이미 가입된 계정이 없는 경우 회원 가입을 할 수 있다.", () -> {
           // given
           String password1 = "1234";
           AccountCodeType gender1 = AccountCodeType.MAN;
@@ -126,10 +126,75 @@ class AccountServiceTest extends IntegrationTestSupport {
           // when // then
           assertThatThrownBy(() -> accountService.signup(accountCreateServiceRequest2))
               .isInstanceOf(BaseException.class)
-              .hasMessage("이미 가입되어 있는 유저입니다.");
+              .hasMessage("동일한 이메일로 가입되어 있는 계정이 존재합니다.");
         })
     );
   }
+
+    @DisplayName("중복된 이메일로 회원가입을 진행할 수 없다.")
+    @TestFactory
+    Collection<DynamicTest> duplicateSignupWithDuplicatedPhoneNumber() {
+        // given
+        String phoneNumber = "010-1234-5678";
+
+        return List.of(
+                DynamicTest.dynamicTest("특정 이메일로 이미 가입된 계정이 없는 경우 회원 가입을 할 수 있다.", () -> {
+                    // given
+                    String email1 = "duswo0624@naver.com";
+                    String password1 = "1234";
+                    AccountCodeType gender1 = AccountCodeType.MAN;
+                    AccountCodeType age1 = AccountCodeType.TWENTIES;
+                    String name1 = "최연재";
+
+                    LocalDate birthday1 = LocalDate.of(1997, Month.JUNE, 24);
+
+                    AccountCreateServiceRequest accountCreateServiceRequest1 = AccountCreateServiceRequest.builder()
+                            .email(email1)
+                            .password(password1)
+                            .gender(gender1)
+                            .age(age1)
+                            .name(name1)
+                            .phoneNumber(phoneNumber)
+                            .birthday(birthday1)
+                            .build();
+
+                    // when
+                    AccountResponse accountResponse = accountService.signup(accountCreateServiceRequest1);
+
+                    // then
+                    assertThat(accountResponse).isNotNull();
+                    assertThat(accountResponse)
+                            .extracting("email", "gender", "name", "phoneNumber", "birthday")
+                            .contains(email1, gender1, name1, phoneNumber, birthday1);
+                }),
+
+                DynamicTest.dynamicTest("가입된 계정들 중 중복 이메일이 있는 경우 회원 가입을 할 수 없다.", () -> {
+                    // given
+                    String email2 = "amenable@naver.com";
+                    String password2 = "5678";
+                    AccountCodeType gender2 = AccountCodeType.WOMAN;
+                    AccountCodeType age2 = AccountCodeType.THIRTIES;
+                    String name2 = "홍길동";
+                    String samePhoneNumber = phoneNumber;
+                    LocalDate birthday2 = LocalDate.of(1990, Month.JANUARY, 1);
+
+                    AccountCreateServiceRequest accountCreateServiceRequest2 = AccountCreateServiceRequest.builder()
+                            .email(email2)
+                            .password(password2)
+                            .gender(gender2)
+                            .age(age2)
+                            .name(name2)
+                            .phoneNumber(samePhoneNumber)
+                            .birthday(birthday2)
+                            .build();
+
+                    // when // then
+                    assertThatThrownBy(() -> accountService.signup(accountCreateServiceRequest2))
+                            .isInstanceOf(BaseException.class)
+                            .hasMessage("동일한 휴대폰 번호로 가입되어 있는 계정이 존재합니다.");
+                })
+        );
+    }
 
   private void setAuthority() {
     Authority userAuthority = Authority.builder()
