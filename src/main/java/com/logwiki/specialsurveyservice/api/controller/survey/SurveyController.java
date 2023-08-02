@@ -27,10 +27,9 @@ public class SurveyController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/survey")
-    public ApiResponse<?> surveyAdd(@Valid @RequestBody SurveyCreateRequest dto, Authentication authentication) throws SchedulerException {
-        String userId = authentication.getName();
+    public ApiResponse<?> surveyAdd(@Valid @RequestBody SurveyCreateRequest dto) throws SchedulerException {
 
-        SurveyResponse surveyResponse = surveyService.addSurvey(userId, dto.from());
+        SurveyResponse surveyResponse = surveyService.addSurvey(dto.from());
 
         scheduleService.addSurveySchedule(surveyResponse.getId(),
                 surveyResponse.getStartTime(), surveyResponse.getEndTime());
