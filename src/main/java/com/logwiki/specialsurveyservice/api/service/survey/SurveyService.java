@@ -95,6 +95,7 @@ public class SurveyService {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
 
         sortByEndTime(surveys);
+        sortGiveawaysByPrice(surveys);
         return surveys.stream()
                 .map(SurveyResponse::from)
                 .collect(Collectors.toList());
@@ -104,7 +105,7 @@ public class SurveyService {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.INSTANT_WIN);
 
         sortByWinningPercent(surveys);
-
+        sortGiveawaysByPrice(surveys);
         return surveys.stream()
                 .map(SurveyResponse::from)
                 .collect(Collectors.toList());
@@ -114,7 +115,7 @@ public class SurveyService {
         List<Survey> surveys = getAllRecommendSurveys();
 
         sortByRequiredTimeForSurvey(surveys);
-
+        sortGiveawaysByPrice(surveys);
         return surveys.stream()
                 .map(SurveyResponse::from)
                 .collect(Collectors.toList());
@@ -145,7 +146,7 @@ public class SurveyService {
         return surveyRepository.findRecommendSurvey(genderId, ageId);
     }
 
-    private static void sortByEndTime(List<Survey> surveys) {
+    private void sortByEndTime(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
             LocalDateTime survey1EndTime = survey1.getEndTime();
             LocalDateTime survey2EndTime = survey2.getEndTime();
@@ -153,7 +154,7 @@ public class SurveyService {
         });
     }
 
-    private static void sortByWinningPercent(List<Survey> surveys) {
+    private void sortByWinningPercent(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
             int survey1GiveawayCount = survey1.getTotalGiveawayCount();
             int survey2GiveawayCount = survey2.getTotalGiveawayCount();
@@ -165,8 +166,15 @@ public class SurveyService {
         });
     }
 
-    private static void sortByRequiredTimeForSurvey(List<Survey> surveys) {
+    private void sortByRequiredTimeForSurvey(List<Survey> surveys) {
         surveys.sort(Comparator.comparingInt(Survey::getRequiredTimeInSeconds));
+    }
+
+    private void sortGiveawaysByPrice(List<Survey> surveys) {
+        for(Survey survey : surveys) {
+            survey.getSurveyGiveaways()
+                    .sort(Comparator.comparing((SurveyGiveaway sg) -> sg.getGiveaway().getPrice()).reversed());
+        }
     }
 
     public SurveyResponse getSurvey(Long surveyId) {
