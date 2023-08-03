@@ -22,7 +22,7 @@ public class SurveyResult extends BaseEntity {
 
     private boolean win;
 
-    private LocalDateTime endTime;
+    private LocalDateTime answerDateTime;
 
     private int submitOrder;
 
@@ -37,19 +37,19 @@ public class SurveyResult extends BaseEntity {
     private Account account;
 
     @Builder
-    private SurveyResult(Boolean win, LocalDateTime endTime, int submitOrder, boolean userCheck, Survey survey, Account account) {
+    private SurveyResult(Boolean win, LocalDateTime answerDateTime, int submitOrder, boolean userCheck, Survey survey, Account account) {
         this.win = win;
-        this.endTime = endTime;
+        this.answerDateTime = answerDateTime;
         this.submitOrder = submitOrder;
         this.userCheck = userCheck;
         this.survey = survey;
         this.account = account;
     }
 
-    public static SurveyResult create(Boolean isWin, LocalDateTime endTime, int submitOrder, Survey survey, Account account) {
+    public static SurveyResult create(Boolean isWin, LocalDateTime answerDateTime, int submitOrder, Survey survey, Account account) {
         return SurveyResult.builder()
                 .win(isWin)
-                .endTime(endTime)
+                .answerDateTime(answerDateTime)
                 .submitOrder(submitOrder)
                 .userCheck(false)
                 .survey(survey)

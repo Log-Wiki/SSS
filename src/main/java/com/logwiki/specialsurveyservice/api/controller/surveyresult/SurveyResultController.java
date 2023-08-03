@@ -1,6 +1,5 @@
 package com.logwiki.specialsurveyservice.api.controller.surveyresult;
 
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
@@ -21,7 +20,7 @@ public class SurveyResultController {
     public ApiResponse<List<MyGiveawayResponse>> getMyGiveaways() {
         return ApiUtils.success(surveyResultService.getMyGiveaways());
     }
-
+  
     @GetMapping("/user/surveys")
     public ApiResponse<List<SurveyResponse>> getAnsweredSurveys() {
         return ApiUtils.success(surveyResultService.getAnsweredSurveys());

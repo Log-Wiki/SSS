@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.controller.survey;
 import com.logwiki.specialsurveyservice.api.controller.survey.request.SurveyCreateRequest;
 import com.logwiki.specialsurveyservice.api.service.schedule.ScheduleService;
 import com.logwiki.specialsurveyservice.api.service.survey.SurveyService;
+import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
@@ -37,28 +38,48 @@ public class SurveyController {
         return ApiUtils.success(surveyResponse);
     }
 
-    @GetMapping("/survey/recommend/normal")
-    public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendNormalSurvey());
+    @GetMapping("/survey/recommend/normal/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendNormalSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendNormalSurveyForAnonymous());
     }
 
-    @GetMapping("/survey/recommend/instant")
-    public ApiResponse<List<SurveyResponse>> getRecommendInstantSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendInstantSurvey());
+    @GetMapping("/survey/recommend/instant/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendInstantSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendInstantSurveyForAnonymous());
     }
 
-    @GetMapping("/survey/recommend/time")
-    public ApiResponse<List<SurveyResponse>> getRecommendShortTimeSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendShortTimeSurvey());
+    @GetMapping("/survey/recommend/time/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendShortTimeSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForAnonymous());
+    }
+
+    @GetMapping("/survey/recommend/normal/user")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendNormalSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendNormalSurveyForUser());
+    }
+
+    @GetMapping("/survey/recommend/instant/user")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendInstantSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendInstantSurveyForUser());
+    }
+
+    @GetMapping("/survey/recommend/time/user")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendShortTimeSurveyForUser() {
+        return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForUser());
     }
 
     @GetMapping("/survey/{surveyId}")
     public ApiResponse<SurveyResponse> getSurvey(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurvey(surveyId));
     }
-  
-    @GetMapping("/user/mysurveys")
-    public ApiResponse<List<SurveyResponse>> getAnsweredSurveys() {
+
+    @GetMapping("/survey/writing")
+    public ApiResponse<List<AbstractSurveyResponse>> getWritingSurveys() {
         return ApiUtils.success(surveyService.getMySurveys());
+    }
+
+    @GetMapping("/survey/answered")
+    public ApiResponse<List<AbstractSurveyResponse>> getAnsweredSurveys() {
+        return ApiUtils.success(surveyService.getAnsweredSurveys());
     }
 }
