@@ -78,7 +78,8 @@ public class SurveyService {
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
-
+        
+        account.increaseCreateSurveyCount();
 
         return SurveyResponse.from(survey);
     }
@@ -149,7 +150,7 @@ public class SurveyService {
 
         sortByWinningPercent(surveys);
         sortGiveawaysByPrice(surveys);
-      
+
         return surveys.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
@@ -161,7 +162,7 @@ public class SurveyService {
 
         sortByRequiredTimeForSurvey(surveys);
         sortGiveawaysByPrice(surveys);
-      
+
         return surveys.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
@@ -218,7 +219,7 @@ public class SurveyService {
     }
 
     private void sortGiveawaysByPrice(List<Survey> surveys) {
-        for(Survey survey : surveys) {
+        for (Survey survey : surveys) {
             survey.getSurveyGiveaways()
                     .sort(Comparator.comparing((SurveyGiveaway sg) -> sg.getGiveaway().getPrice()).reversed());
         }

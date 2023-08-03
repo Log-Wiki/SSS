@@ -4,11 +4,10 @@ import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultSer
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,5 +19,15 @@ public class SurveyResultController {
     @GetMapping("/user/giveaways")
     public ApiResponse<List<MyGiveawayResponse>> getMyGiveaways() {
         return ApiUtils.success(surveyResultService.getMyGiveaways());
+    }
+
+    @GetMapping("/user/survey/{surveyId}")
+    public ApiResponse<?> getAnsweredSurveys(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyResultService.getSurveyResult(surveyId));
+    }
+
+    @PatchMapping("/user/survey-result/check/{surveyId}")
+    public ApiResponse<?> patchSurveyResult(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyResultService.patchSurveyResult(surveyId));
     }
 }
