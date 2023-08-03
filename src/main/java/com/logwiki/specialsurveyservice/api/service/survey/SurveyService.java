@@ -19,6 +19,8 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultRepository;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
@@ -42,6 +44,7 @@ public class SurveyService {
     private final TargetNumberService targetNumberService;
     private final AccountCodeRepository accountCodeRepository;
     private final SurveyCategoryRepository surveyCategoryRepository;
+    private final SurveyResultRepository surveyResultRepository;
 
     public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
         Account account = accountService.getCurrentAccountBySecurity();
@@ -179,13 +182,29 @@ public class SurveyService {
                 .orElseThrow(() -> new BaseException("없는 설문입니다.", 3005)));
     }
 
-    public List<SurveyResponse> getMySurveys() {
+    public List<AbstractSurveyResponse> getMySurveys() {
         Account account = accountService.getCurrentAccountBySecurity();
         List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
 
+        System.out.println("확인 : " + mySurveys.size());
         return mySurveys.stream()
-                .map(SurveyResponse::from)
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getAnsweredSurveys() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<SurveyResult> surveyResults = surveyResultRepository.findSurveyResultsByAccount_Id(
+                account.getId());
+
+        List<Survey> surveys = surveyResults.stream()
+                .map(SurveyResult::getSurvey)
                 .toList();
 
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
     }
 }
