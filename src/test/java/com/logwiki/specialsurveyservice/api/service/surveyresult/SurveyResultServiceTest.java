@@ -9,16 +9,10 @@ import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +55,10 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .build();
         accountService.signup(accountCreateServiceRequest);
 
+
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
         Survey survey = Survey.builder()
                 .title("당신은 어떤 과일을 좋아하십니까?")
                 .startTime(LocalDateTime.now().minusDays(1))
@@ -68,6 +66,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .headCount(50)
                 .closedHeadCount(100)
                 .writer(1L)
+                .type(surveyCategory)
                 .build();
         survey.toOpen();
 
@@ -111,6 +110,10 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .build();
         accountService.signup(accountCreateServiceRequest);
 
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
+
         Survey survey = Survey.builder()
                 .title("당신은 어떤 과일을 좋아하십니까?")
                 .startTime(LocalDateTime.now().minusDays(1))
@@ -118,6 +121,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .headCount(50)
                 .closedHeadCount(100)
                 .writer(1L)
+                .type(surveyCategory)
                 .build();
         survey.toOpen();
 
