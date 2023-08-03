@@ -1,7 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
@@ -25,7 +24,7 @@ public class SurveyResultService {
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
 
-    public void addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
+    public void addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountService.getCurrentAccountBySecurity();
@@ -47,7 +46,7 @@ public class SurveyResultService {
         }
 
         account.increaseResponseSurveyCount();
-        surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
+        surveyResultRepository.save(SurveyResult.create(isWin, answerDateTime, submitOrder, survey,
                 account));
 
         survey.addHeadCount();
@@ -67,24 +66,12 @@ public class SurveyResultService {
                 .toList();
 
         return winSurveyResults.stream()
-                .map(surveyResult -> MyGiveawayResponse.of(surveyResult,
+                .map(surveyResult -> MyGiveawayResponse.of(
+                        surveyResult,
                         targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
                                 surveyResult.getSubmitOrder(),
-                                surveyResult.getSurvey().getId()).getGiveaway()))
-                .toList();
-    }
-
-    public List<SurveyResponse> getAnsweredSurveys() {
-        Account account = accountService.getCurrentAccountBySecurity();
-        List<SurveyResult> surveyResults = surveyResultRepository.findSurveyResultsByAccount_Id(
-                account.getId());
-
-        List<Survey> surveys = surveyResults.stream()
-                .map(SurveyResult::getSurvey)
-                .toList();
-
-        return surveys.stream()
-                .map(SurveyResponse::from)
+                                surveyResult.getSurvey().getId()).getGiveaway(),
+                        accountService.getUserNameById(surveyResult.getSurvey().getWriter())))
                 .toList();
     }
 }
