@@ -32,7 +32,7 @@ public class SurveyResultController {
         return ApiUtils.success(surveyResultService.getSurveyResult(surveyId));
     }
 
-    @PatchMapping("/user/result/check/{surveyId}")
+    @PatchMapping("/user/survey-result/check/{surveyId}")
     public ApiResponse<?> patchSurveyResult(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyResultService.patchSurveyResult(surveyId));
     }
