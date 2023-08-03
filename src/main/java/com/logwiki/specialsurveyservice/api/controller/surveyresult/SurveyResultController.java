@@ -20,11 +20,6 @@ public class SurveyResultController {
     public ApiResponse<List<MyGiveawayResponse>> getMyGiveaways() {
         return ApiUtils.success(surveyResultService.getMyGiveaways());
     }
-  
-    @GetMapping("/user/surveys")
-    public ApiResponse<List<SurveyResponse>> getAnsweredSurveys() {
-        return ApiUtils.success(surveyResultService.getAnsweredSurveys());
-    }
 
     @GetMapping("/user/survey/{surveyId}")
     public ApiResponse<?> getAnsweredSurveys(@PathVariable Long surveyId) {

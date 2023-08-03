@@ -13,15 +13,15 @@ public class SurveyResultResponse {
 
     private Long id;
     private boolean win;
-    private LocalDateTime endTime;
+    private LocalDateTime answerDateTime;
     private int submitOrder;
     private boolean userCheck;
 
     @Builder
-    public SurveyResultResponse(Long id, boolean win, LocalDateTime endTime, int submitOrder, boolean userCheck) {
+    public SurveyResultResponse(Long id, boolean win, LocalDateTime answerDateTime, int submitOrder, boolean userCheck) {
         this.id = id;
         this.win = win;
-        this.endTime = endTime;
+        this.answerDateTime = answerDateTime;
         this.submitOrder = submitOrder;
         this.userCheck = userCheck;
     }
@@ -30,7 +30,7 @@ public class SurveyResultResponse {
         return SurveyResultResponse.builder()
                 .id(surveyResult.getId())
                 .win(surveyResult.isWin())
-                .endTime(surveyResult.getEndTime())
+                .answerDateTime(surveyResult.getAnswerDateTime())
                 .submitOrder(surveyResult.getSubmitOrder())
                 .userCheck(surveyResult.isUserCheck())
                 .build();

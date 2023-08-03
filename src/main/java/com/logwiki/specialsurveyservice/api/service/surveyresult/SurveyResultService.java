@@ -45,7 +45,7 @@ public class SurveyResultService {
             throw new BaseException("이미 응답한 설문입니다.", 3012);
         }
 
-        SurveyResult surveyResult = SurveyResult.create(DEFAULT_WIN, writeDateTime, submitOrder, survey,
+        SurveyResult surveyResult = SurveyResult.create(DEFAULT_WIN, answerDateTime, submitOrder, survey,
                 account);
 
         if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
@@ -124,7 +124,7 @@ public class SurveyResultService {
         if (LocalDateTime.now().isBefore(survey.getEndTime())) {
             throw new BaseException("마감되지 않은 설문은 결과를 확인할수 없습니다.", 3016);
         }
-        
+
         SurveyResult surveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
 
         if (surveyResult == null) {
