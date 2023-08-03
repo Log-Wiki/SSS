@@ -5,11 +5,11 @@ import com.logwiki.specialsurveyservice.api.controller.giveaway.request.Giveaway
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
-import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.question.request.MultipleChoiceCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
@@ -444,7 +444,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<SurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
 
         // then
         assertThat(recommendNormalSurvey.stream()
@@ -546,13 +546,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<SurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
 
-        List<SurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
-                .sorted(Comparator.comparing(SurveyResponse::getEndTime))
+        List<AbstractSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getEndTime))
                 .toList();
         boolean sameOrder = true;
         for(int i = 0; i < recommendNormalSurvey.size(); i++) {
@@ -667,25 +667,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<SurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurvey();
+        List<AbstractSurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurvey();
 
         // then
         assertThat(recommendInstantSurvey.size()).isEqualTo(3);
 
-        List<SurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurvey().stream()
-                .sorted((survey1, survey2) -> {
-                    int survey1GiveawayCount = survey1.getSurveyGiveaways().stream()
-                            .mapToInt(SurveyGiveawayResponse::getCount)
-                            .sum();
-                    int survey2GiveawayCount = survey2.getSurveyGiveaways().stream()
-                            .mapToInt(SurveyGiveawayResponse::getCount)
-                            .sum();
-                    float survey1WinningPercent =
-                            (float) survey1GiveawayCount / survey1.getClosedHeadCount();
-                    float survey2WinningPercent =
-                            (float) survey2GiveawayCount / survey2.getClosedHeadCount();
-                    return Float.compare(survey2WinningPercent, survey1WinningPercent);
-                })
+        List<AbstractSurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurvey().stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getWinningPercent).reversed())
                 .toList();
 
         boolean sameOrder = true;
@@ -815,13 +803,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<SurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurvey();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
 
-        List<SurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
-                .sorted(Comparator.comparing(SurveyResponse::getRequiredTimeInSeconds))
+        List<AbstractSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getRequiredTimeInSeconds))
                 .toList();
         boolean sameOrder = true;
         for(int i = 0; i < recommendNormalSurvey.size(); i++) {
