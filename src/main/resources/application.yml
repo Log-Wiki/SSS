@@ -61,10 +61,6 @@ spring:
     activate:
       on-profile: prd
 
-  sql:
-    init:
-      mode: always
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
@@ -73,16 +69,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true
-
-jwt:
-  header: Authorization
-  access-secret: bG9uZy10ZXJtLW1lbW9yeS1wcm9qZWN0LXdpdGgtand0LXNwcmluZy1zZWN1cml0eS11c2luZy1zZWNyZXQta2V5LW1hZGUtYnktYW1lbmFibGUtbGV0LXVzLWdldC1pdC1zdGFydGVkCg==
-  refresh-secret: dGhpcy1pcy10aGUtc3BlY2lhbC1zdXJ2ZXktc2VydmljZS1tYWRlLWJ5LXNpeC1kZXZlbG9wZXItaXQtY2FuLWJlLXRoZS1iZXN0LXNlcnZpY2UtaW4tNy10ZWFtCg==
-  access-token-validity-in-seconds: 3600 # 1시간 3600
-  refresh-token-validity-in-seconds: 1296000 # 15일 1296000

@@ -17,17 +17,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      #      - name: Set Yaml # 환경변수 설정
-      #        uses: microsoft/variable-substitution@v1
-      #        with:
-      #          files: ./src/main/resources/application.yml
-      #        env:
-      #          spring.datasource.url: ${{ secrets.DB_URL }}
-      #          spring.datasource.username: ${{ secrets.DB_USER_NAME }}
-      #          spring.datasource.password: ${{ secrets.DB_USER_PASSWORD }}
-
       - name: gradlew 권한 설정
         run: chmod +x gradlew
+
+      - name: application.yml 내부 값 변경
+        uses: cschleiden/replace-tokens@v1
+        with:
+          tokenPrefix: "${"
+          tokenSuffix: "}"
+          files: "[\"./src/main/resources/application.yml\"]"
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USER_NAME: ${{ secrets.DB_USER_NAME }}
+          DB_USER_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
 
       - name: 스프링부트 애플리케이션 빌드 # (1)
         run: ./gradlew build
@@ -59,4 +61,4 @@ jobs:
             docker rm sss-dev 
             docker rmi ${{ secrets.HOME_USERNAME }}/sss-dev:latest
             docker pull ${{ secrets.HOME_USERNAME }}/sss-dev
-            docker run -d -p ${{ secrets.SPRING_PORT }}:${{ secrets.SPRING_PORT }} --name sss-dev ${{ secrets.HOME_USERNAME }}/sss-dev
+            docker run -e  "SPRING_PROFILES_ACTIVE=prd" -d -p ${{ secrets.SPRING_PORT }}:${{ secrets.SPRING_PORT }} --name sss-dev ${{ secrets.HOME_USERNAME }}/sss-dev

@@ -4,6 +4,7 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
@@ -18,6 +19,8 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveygiveaway.SurveyGiveaway;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultRepository;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.exception.BaseException;
@@ -41,6 +44,7 @@ public class SurveyService {
     private final TargetNumberService targetNumberService;
     private final AccountCodeRepository accountCodeRepository;
     private final SurveyCategoryRepository surveyCategoryRepository;
+    private final SurveyResultRepository surveyResultRepository;
 
     public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
         Account account = accountService.getCurrentAccountBySecurity();
@@ -74,7 +78,8 @@ public class SurveyService {
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
-
+        
+        account.increaseCreateSurveyCount();
 
         return SurveyResponse.from(survey);
     }
@@ -91,32 +96,76 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<SurveyResponse> getRecommendNormalSurvey() {
+    public List<AbstractSurveyResponse> getRecommendNormalSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous(SurveyCategoryType.NORMAL.toString());
+
+        sortByEndTime(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getRecommendInstantSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous(SurveyCategoryType.INSTANT_WIN.toString());
+
+        sortByWinningPercent(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getRecommendShortTimeSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous();
+
+        sortByRequiredTimeForSurvey(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<AbstractSurveyResponse> getRecommendNormalSurveyForUser() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
 
         sortByEndTime(surveys);
+        sortGiveawaysByPrice(surveys);
+
         return surveys.stream()
-                .map(SurveyResponse::from)
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
-    public List<SurveyResponse> getRecommendInstantSurvey() {
+    public List<AbstractSurveyResponse> getRecommendInstantSurveyForUser() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.INSTANT_WIN);
 
         sortByWinningPercent(surveys);
+        sortGiveawaysByPrice(surveys);
 
         return surveys.stream()
-                .map(SurveyResponse::from)
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
-    public List<SurveyResponse> getRecommendShortTimeSurvey() {
+    public List<AbstractSurveyResponse> getRecommendShortTimeSurveyForUser() {
         List<Survey> surveys = getAllRecommendSurveys();
 
         sortByRequiredTimeForSurvey(surveys);
+        sortGiveawaysByPrice(surveys);
 
         return surveys.stream()
-                .map(SurveyResponse::from)
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
@@ -145,7 +194,7 @@ public class SurveyService {
         return surveyRepository.findRecommendSurvey(genderId, ageId);
     }
 
-    private static void sortByEndTime(List<Survey> surveys) {
+    private void sortByEndTime(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
             LocalDateTime survey1EndTime = survey1.getEndTime();
             LocalDateTime survey2EndTime = survey2.getEndTime();
@@ -153,7 +202,7 @@ public class SurveyService {
         });
     }
 
-    private static void sortByWinningPercent(List<Survey> surveys) {
+    private void sortByWinningPercent(List<Survey> surveys) {
         surveys.sort((survey1, survey2) -> {
             int survey1GiveawayCount = survey1.getTotalGiveawayCount();
             int survey2GiveawayCount = survey2.getTotalGiveawayCount();
@@ -165,7 +214,48 @@ public class SurveyService {
         });
     }
 
-    private static void sortByRequiredTimeForSurvey(List<Survey> surveys) {
+    private void sortByRequiredTimeForSurvey(List<Survey> surveys) {
         surveys.sort(Comparator.comparingInt(Survey::getRequiredTimeInSeconds));
+    }
+
+    private void sortGiveawaysByPrice(List<Survey> surveys) {
+        for (Survey survey : surveys) {
+            survey.getSurveyGiveaways()
+                    .sort(Comparator.comparing((SurveyGiveaway sg) -> sg.getGiveaway().getPrice()).reversed());
+        }
+    }
+
+    public SurveyResponse getSurvey(Long surveyId) {
+        return SurveyResponse.from(surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new BaseException("없는 설문입니다.", 3005)));
+    }
+
+    public List<AbstractSurveyResponse> getMySurveys() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
+
+        sortGiveawaysByPrice(mySurveys);
+
+        return mySurveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getAnsweredSurveys() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<SurveyResult> surveyResults = surveyResultRepository.findSurveyResultsByAccount_Id(
+                account.getId());
+
+        List<Survey> surveys = surveyResults.stream()
+                .map(SurveyResult::getSurvey)
+                .toList();
+
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
     }
 }
