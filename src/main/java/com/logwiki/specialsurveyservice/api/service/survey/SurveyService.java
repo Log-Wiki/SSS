@@ -88,9 +88,9 @@ public class SurveyService {
 
     private static void checkTimeValidate(SurveyCreateServiceRequest dto) {
         if (LocalDateTime.now().isAfter(dto.getEndTime())) {
-            throw new BaseException("설문 마감시간은 현재 시간보다 커야합니다.", 2000);
+            throw new BaseException("설문 마감시간은 현재 시간보다 커야합니다.", 3017);
         } else if (dto.getEndTime().isBefore(dto.getStartTime())) {
-            throw new BaseException("설문 마감시간은 시작 시간보다 커야합니다.", 2000);
+            throw new BaseException("설문 마감시간은 시작 시간보다 커야합니다.", 3018);
         }
     }
 
