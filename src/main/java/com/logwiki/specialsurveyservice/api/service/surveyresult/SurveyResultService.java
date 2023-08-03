@@ -24,7 +24,7 @@ public class SurveyResultService {
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
 
-    public void addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
+    public void addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountService.getCurrentAccountBySecurity();
@@ -46,7 +46,7 @@ public class SurveyResultService {
         }
 
         account.increaseResponseSurveyCount();
-        surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
+        surveyResultRepository.save(SurveyResult.create(isWin, answerDateTime, submitOrder, survey,
                 account));
 
         survey.addHeadCount();
@@ -66,10 +66,12 @@ public class SurveyResultService {
                 .toList();
 
         return winSurveyResults.stream()
-                .map(surveyResult -> MyGiveawayResponse.of(surveyResult,
+                .map(surveyResult -> MyGiveawayResponse.of(
+                        surveyResult,
                         targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
                                 surveyResult.getSubmitOrder(),
-                                surveyResult.getSurvey().getId()).getGiveaway()))
+                                surveyResult.getSurvey().getId()).getGiveaway(),
+                        accountService.getUserNameById(surveyResult.getSurvey().getWriter())))
                 .toList();
     }
 }

@@ -32,7 +32,7 @@ public class QuestionAnswerResponse {
                 .multipleChoiceAnswer(questionAnswer.getAnswerNumber())
                 .shortFormAnswer(questionAnswer.getShortFormAnswer())
                 .writer(questionAnswer.getAccount().getId())
-                .writeDate(questionAnswer.getWriteDate())
+                .writeDate(questionAnswer.getAnswerDateTime())
                 .build();
     }
 
