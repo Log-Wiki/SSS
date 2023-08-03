@@ -1,6 +1,6 @@
 package com.logwiki.specialsurveyservice.domain.targetnumber;
 
-서import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
