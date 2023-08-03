@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
+import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
@@ -119,5 +120,14 @@ public class SurveyResultService {
                 .giveawayType(giveaway.getGiveawayType())
                 .giveawayName(giveaway.getName())
                 .build();
+    }
+
+    public SurveyResultResponse patchSurveyResult(Long surveyResultId) {
+        SurveyResult surveyResult = surveyResultRepository.findById(surveyResultId)
+                .orElseThrow(() ->
+                        new BaseException("미응답 설문입니다.", 3014));
+        surveyResult.checkResult();
+        ;
+        return SurveyResultResponse.from(surveyResult);
     }
 }
