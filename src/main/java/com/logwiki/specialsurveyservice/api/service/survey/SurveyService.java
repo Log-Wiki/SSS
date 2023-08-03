@@ -169,6 +169,11 @@ public class SurveyService {
         surveys.sort(Comparator.comparingInt(Survey::getRequiredTimeInSeconds));
     }
 
+    public SurveyResponse getSurvey(Long surveyId) {
+        return SurveyResponse.from(surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new BaseException("없는 설문입니다.", 3005)));
+    }
+
     public List<SurveyResponse> getMySurveys() {
         Account account = accountService.getCurrentAccountBySecurity();
         List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
@@ -176,5 +181,6 @@ public class SurveyService {
         return mySurveys.stream()
                 .map(SurveyResponse::from)
                 .toList();
+
     }
 }
