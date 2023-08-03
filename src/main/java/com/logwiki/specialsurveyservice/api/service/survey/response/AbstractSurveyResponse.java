@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class RecommendSurveyResponse {
+public class AbstractSurveyResponse {
 
     private Long id;
 
@@ -31,12 +31,17 @@ public class RecommendSurveyResponse {
 
     private LocalDateTime endTime;
 
+    private int headCount;
+
+    private int closedHeadCount;
+
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
-    public RecommendSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
+    public AbstractSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
             List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
-            int requiredTimeInSeconds, LocalDateTime endTime, List<SurveyGiveawayResponse> surveyGiveaways) {
+            int requiredTimeInSeconds, LocalDateTime endTime,
+            int headCount, int closedHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
         this.title = title;
         this.surveyCategoryType = surveyCategoryType;
@@ -45,10 +50,12 @@ public class RecommendSurveyResponse {
         this.winningPercent = winningPercent;
         this.requiredTimeInSeconds = requiredTimeInSeconds;
         this.endTime = endTime;
+        this.headCount = headCount;
+        this.closedHeadCount = closedHeadCount;
         this.surveyGiveaways = surveyGiveaways;
     }
 
-    public static RecommendSurveyResponse from(Survey survey, String writerName) {
+    public static AbstractSurveyResponse from(Survey survey, String writerName) {
         if (survey == null) {
             return null;
         }
@@ -70,7 +77,7 @@ public class RecommendSurveyResponse {
                 break;
         }
 
-        return RecommendSurveyResponse.builder()
+        return AbstractSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
@@ -83,6 +90,8 @@ public class RecommendSurveyResponse {
                 .winningPercent(winningPercent)
                 .requiredTimeInSeconds(survey.getRequiredTimeInSeconds())
                 .endTime(survey.getEndTime())
+                .headCount(survey.getHeadCount())
+                .closedHeadCount(survey.getClosedHeadCount())
                 .surveyGiveaways(survey.getSurveyGiveaways().stream()
                         .map(SurveyGiveawayResponse::from)
                         .collect(Collectors.toList()))

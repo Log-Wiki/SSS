@@ -4,7 +4,7 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.survey.response.RecommendSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
@@ -92,36 +92,36 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<RecommendSurveyResponse> getRecommendNormalSurvey() {
+    public List<AbstractSurveyResponse> getRecommendNormalSurvey() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
 
         sortByEndTime(surveys);
 
         return surveys.stream()
                 .map(survey
-                        -> RecommendSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
-    public List<RecommendSurveyResponse> getRecommendInstantSurvey() {
+    public List<AbstractSurveyResponse> getRecommendInstantSurvey() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.INSTANT_WIN);
 
         sortByWinningPercent(surveys);
 
         return surveys.stream()
                 .map(survey
-                        -> RecommendSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
-    public List<RecommendSurveyResponse> getRecommendShortTimeSurvey() {
+    public List<AbstractSurveyResponse> getRecommendShortTimeSurvey() {
         List<Survey> surveys = getAllRecommendSurveys();
 
         sortByRequiredTimeForSurvey(surveys);
 
         return surveys.stream()
                 .map(survey
-                        -> RecommendSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 

@@ -9,7 +9,7 @@ import com.logwiki.specialsurveyservice.api.service.question.request.MultipleCho
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.survey.response.RecommendSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
@@ -444,7 +444,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<RecommendSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
 
         // then
         assertThat(recommendNormalSurvey.stream()
@@ -546,13 +546,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<RecommendSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
 
-        List<RecommendSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
-                .sorted(Comparator.comparing(RecommendSurveyResponse::getEndTime))
+        List<AbstractSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getEndTime))
                 .toList();
         boolean sameOrder = true;
         for(int i = 0; i < recommendNormalSurvey.size(); i++) {
@@ -667,13 +667,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<RecommendSurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurvey();
+        List<AbstractSurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurvey();
 
         // then
         assertThat(recommendInstantSurvey.size()).isEqualTo(3);
 
-        List<RecommendSurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurvey().stream()
-                .sorted(Comparator.comparing(RecommendSurveyResponse::getWinningPercent).reversed())
+        List<AbstractSurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurvey().stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getWinningPercent).reversed())
                 .toList();
 
         boolean sameOrder = true;
@@ -803,13 +803,13 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<RecommendSurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurvey();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
 
-        List<RecommendSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
-                .sorted(Comparator.comparing(RecommendSurveyResponse::getRequiredTimeInSeconds))
+        List<AbstractSurveyResponse> sortedSurveyResponses = recommendNormalSurvey.stream()
+                .sorted(Comparator.comparing(AbstractSurveyResponse::getRequiredTimeInSeconds))
                 .toList();
         boolean sameOrder = true;
         for(int i = 0; i < recommendNormalSurvey.size(); i++) {
