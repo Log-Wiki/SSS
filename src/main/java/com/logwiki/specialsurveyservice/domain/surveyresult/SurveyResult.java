@@ -60,5 +60,9 @@ public class SurveyResult extends BaseEntity {
     public void winSurvey() {
         this.win = true;
     }
-    
+
+    public void checkResult() {
+        this.userCheck = true;
+    }
+
 }
