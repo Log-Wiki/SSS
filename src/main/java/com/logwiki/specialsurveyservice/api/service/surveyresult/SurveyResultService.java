@@ -6,15 +6,16 @@ import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGive
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,10 +41,13 @@ public class SurveyResultService {
             throw new BaseException("이미 응답한 설문입니다.", 3012);
         }
 
-        boolean isWin = survey.getTargetNumbers().stream()
-                .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder);
-        if (isWin) {
-            account.increaseWinningGiveawayCount();
+        boolean isWin = false;
+        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
+            isWin = survey.getTargetNumbers().stream()
+                    .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder);
+            if (isWin) {
+                account.increaseWinningGiveawayCount();
+            }
         }
 
         account.increaseResponseSurveyCount();
