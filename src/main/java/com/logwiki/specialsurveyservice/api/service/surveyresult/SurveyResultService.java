@@ -102,6 +102,13 @@ public class SurveyResultService {
     public ResultPageResponse getSurveyResult(Long surveyId) {
         Account account = accountService.getCurrentAccountBySecurity();
 
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() ->
+                new BaseException("없는 설문입니다.", 3005));
+
+        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            throw new BaseException("즉시 당첨만 확인이 가능합니다.", 3015);
+        }
+
         SurveyResult surveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
         if (surveyResult == null) {
             throw new BaseException("미응답 설문입니다.", 3014);
@@ -122,12 +129,21 @@ public class SurveyResultService {
                 .build();
     }
 
-    public SurveyResultResponse patchSurveyResult(Long surveyResultId) {
-        SurveyResult surveyResult = surveyResultRepository.findById(surveyResultId)
-                .orElseThrow(() ->
-                        new BaseException("미응답 설문입니다.", 3014));
+    public SurveyResultResponse patchSurveyResult(Long surveyId) {
+        Account account = accountService.getCurrentAccountBySecurity();
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() ->
+                new BaseException("없는 설문입니다.", 3005));
+        if (LocalDateTime.now().isBefore(survey.getEndTime())) {
+            throw new BaseException("마감되지 않은 설문은 결과를 확인할수 없습니다.", 3016);
+        }
+        
+        SurveyResult surveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
+
+        if (surveyResult == null) {
+            throw new BaseException("미응답 설문입니다.", 3014);
+        }
+
         surveyResult.checkResult();
-        ;
         return SurveyResultResponse.from(surveyResult);
     }
 }

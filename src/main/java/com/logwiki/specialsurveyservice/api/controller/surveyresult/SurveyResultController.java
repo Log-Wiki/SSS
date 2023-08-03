@@ -32,8 +32,8 @@ public class SurveyResultController {
         return ApiUtils.success(surveyResultService.getSurveyResult(surveyId));
     }
 
-    @PatchMapping("/user/survey/${surveyResultId}/check-result")
-    public ApiResponse<?> patchSurveyResult(@PathVariable Long surveyResultId) {
-        return ApiUtils.success(surveyResultService.patchSurveyResult(surveyResultId));
+    @PatchMapping("/user/result/check/{surveyId}")
+    public ApiResponse<?> patchSurveyResult(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyResultService.patchSurveyResult(surveyId));
     }
 }
