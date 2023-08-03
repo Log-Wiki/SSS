@@ -49,6 +49,8 @@ public class SurveyService {
     public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
         Account account = accountService.getCurrentAccountBySecurity();
 
+        checkTimeValidate(dto);
+
         Survey survey = dto.toEntity(account.getId());
 
         for (AccountCodeType accountCodeType : dto.getSurveyTarget()) {
@@ -78,10 +80,18 @@ public class SurveyService {
                 targetNumberCreateServiceRequest);
         survey.addTargetNumbers(targetNumbers);
         surveyRepository.save(survey);
-        
+
         account.increaseCreateSurveyCount();
 
         return SurveyResponse.from(survey);
+    }
+
+    private static void checkTimeValidate(SurveyCreateServiceRequest dto) {
+        if (LocalDateTime.now().isAfter(dto.getEndTime())) {
+            throw new BaseException("설문 마감시간은 현재 시간보다 커야합니다.", 2000);
+        } else if (dto.getEndTime().isBefore(dto.getStartTime())) {
+            throw new BaseException("설문 마감시간은 시작 시간보다 커야합니다.", 2000);
+        }
     }
 
     private List<SurveyGiveaway> getSurveyGiveaways(Survey survey,
@@ -258,4 +268,5 @@ public class SurveyService {
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
+
 }
