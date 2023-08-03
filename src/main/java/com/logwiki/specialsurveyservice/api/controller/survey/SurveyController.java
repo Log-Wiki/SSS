@@ -56,4 +56,9 @@ public class SurveyController {
     public ApiResponse<SurveyResponse> getSurvey(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurvey(surveyId));
     }
+  
+    @GetMapping("/user/mysurveys")
+    public ApiResponse<List<SurveyResponse>> getAnsweredSurveys() {
+        return ApiUtils.success(surveyService.getMySurveys());
+    }
 }

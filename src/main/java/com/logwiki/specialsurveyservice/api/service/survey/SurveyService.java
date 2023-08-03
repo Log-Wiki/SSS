@@ -173,4 +173,14 @@ public class SurveyService {
         return SurveyResponse.from(surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("없는 설문입니다.", 3005)));
     }
+
+    public List<SurveyResponse> getMySurveys() {
+        Account account = accountService.getCurrentAccountBySecurity();
+        List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
+
+        return mySurveys.stream()
+                .map(SurveyResponse::from)
+                .toList();
+
+    }
 }
