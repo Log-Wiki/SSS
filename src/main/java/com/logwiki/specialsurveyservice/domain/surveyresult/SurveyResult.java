@@ -56,4 +56,9 @@ public class SurveyResult extends BaseEntity {
                 .account(account)
                 .build();
     }
+
+    public void winSurvey() {
+        this.win = true;
+    }
+    
 }

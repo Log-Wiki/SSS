@@ -25,6 +25,7 @@ public class SurveyResultService {
     private final SurveyRepository surveyRepository;
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
+    private final static boolean DEFAULT_WIN = false;
 
     public void addSubmitResult(Long surveyId, LocalDateTime writeDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
@@ -41,18 +42,20 @@ public class SurveyResultService {
             throw new BaseException("이미 응답한 설문입니다.", 3012);
         }
 
-        boolean isWin = false;
+        SurveyResult surveyResult = SurveyResult.create(DEFAULT_WIN, writeDateTime, submitOrder, survey,
+                account);
+
         if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
-            isWin = survey.getTargetNumbers().stream()
-                    .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder);
-            if (isWin) {
+            if (survey.getTargetNumbers().stream()
+                    .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder)) {
                 account.increaseWinningGiveawayCount();
+                surveyResult.winSurvey();
             }
         }
 
         account.increaseResponseSurveyCount();
-        surveyResultRepository.save(SurveyResult.create(isWin, writeDateTime, submitOrder, survey,
-                account));
+
+        surveyResultRepository.save(surveyResult);
 
         survey.addHeadCount();
     }
