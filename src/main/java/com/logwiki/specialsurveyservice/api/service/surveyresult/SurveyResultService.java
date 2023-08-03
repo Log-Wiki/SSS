@@ -2,6 +2,10 @@ package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
 import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.sse.SseConnectService;
+import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.SurveyService;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.ResultPageResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,7 @@ public class SurveyResultService {
     private final SurveyRepository surveyRepository;
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
+    private final SseConnectService sseConnectService;
     private final static boolean DEFAULT_WIN = false;
 
     public void addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
@@ -62,6 +68,29 @@ public class SurveyResultService {
 
 
         survey.addHeadCount();
+
+        sendResultToSSE(survey,surveyResult,submitOrder);
+    }
+
+    private void sendResultToSSE(Survey targetSurvey, SurveyResult surveyResult, int submitOrder){
+        SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
+        if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
+        }
+
+        String giveawayName = null;
+
+        Optional<TargetNumber> targetNumber = targetNumberRepository.findFirstBySurveyAndNumber(
+                targetSurvey,
+                submitOrder);
+        if (targetNumber.isPresent()) {
+            giveawayName = targetNumber.get().getGiveaway().getName();
+        }
+        sseConnectService.refreshSurveyFinisher(surveyResponse.getId(), SurveyAnswerResponse.builder()
+                .answerTime(surveyResult.getAnswerDateTime())
+                .giveAwayName(giveawayName)
+                .isWin(surveyResult.isWin())
+                .name(surveyResult.getAccount().getName()).build());
     }
 
     public int createSubmitOrderIn(Long surveyId) {
