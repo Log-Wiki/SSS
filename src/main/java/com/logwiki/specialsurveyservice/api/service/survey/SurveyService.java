@@ -233,6 +233,8 @@ public class SurveyService {
         Account account = accountService.getCurrentAccountBySecurity();
         List<Survey> mySurveys = surveyRepository.findAllByWriter(account.getId());
 
+        sortGiveawaysByPrice(mySurveys);
+
         return mySurveys.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
@@ -247,6 +249,8 @@ public class SurveyService {
         List<Survey> surveys = surveyResults.stream()
                 .map(SurveyResult::getSurvey)
                 .toList();
+
+        sortGiveawaysByPrice(surveys);
 
         return surveys.stream()
                 .map(survey
