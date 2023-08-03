@@ -95,19 +95,56 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<AbstractSurveyResponse> getRecommendNormalSurvey() {
-        List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
+    public List<AbstractSurveyResponse> getRecommendNormalSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous(SurveyCategoryType.NORMAL.toString());
 
         sortByEndTime(surveys);
         sortGiveawaysByPrice(surveys);
-      
+
         return surveys.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
 
-    public List<AbstractSurveyResponse> getRecommendInstantSurvey() {
+    public List<AbstractSurveyResponse> getRecommendInstantSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous(SurveyCategoryType.INSTANT_WIN.toString());
+
+        sortByWinningPercent(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getRecommendShortTimeSurveyForAnonymous() {
+        List<Survey> surveys = surveyRepository.findRecommendSurveyForAnonymous();
+
+        sortByRequiredTimeForSurvey(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<AbstractSurveyResponse> getRecommendNormalSurveyForUser() {
+        List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
+
+        sortByEndTime(surveys);
+        sortGiveawaysByPrice(surveys);
+
+        return surveys.stream()
+                .map(survey
+                        -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractSurveyResponse> getRecommendInstantSurveyForUser() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.INSTANT_WIN);
 
         sortByWinningPercent(surveys);
@@ -119,7 +156,7 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
-    public List<AbstractSurveyResponse> getRecommendShortTimeSurvey() {
+    public List<AbstractSurveyResponse> getRecommendShortTimeSurveyForUser() {
         List<Survey> surveys = getAllRecommendSurveys();
 
         sortByRequiredTimeForSurvey(surveys);

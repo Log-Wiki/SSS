@@ -48,7 +48,10 @@ public class PrdSecurityConfig {
                 )
 
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/signup", "/api/authenticate", "/api/refresh", "/api/subscribe/**", "api/updateTest").permitAll()
+                        .requestMatchers("/api/signup", "/api/authenticate", "/api/refresh",
+                                "/api/subscribe/**", "api/updateTest",
+                                "/api/survey/recommend/normal/anonymous", "/api/survey/recommend/instant/anonymous", "/api/survey/recommend/time/anonymous")
+                        .permitAll()
                         .anyRequest().authenticated())
 
                 .sessionManagement(sessionManagement ->
