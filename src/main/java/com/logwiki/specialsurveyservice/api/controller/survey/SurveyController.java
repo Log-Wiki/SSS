@@ -38,19 +38,34 @@ public class SurveyController {
         return ApiUtils.success(surveyResponse);
     }
 
-    @GetMapping("/survey/recommend/normal")
+    @GetMapping("/survey/recommend/normal/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendNormalSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendNormalSurveyForAnonymous());
+    }
+
+    @GetMapping("/survey/recommend/instant/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendInstantSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendInstantSurveyForAnonymous());
+    }
+
+    @GetMapping("/survey/recommend/time/anonymous")
+    public ApiResponse<List<AbstractSurveyResponse>> getRecommendShortTimeSurveyForAnonymous() {
+        return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForAnonymous());
+    }
+
+    @GetMapping("/survey/recommend/normal/user")
     public ApiResponse<List<AbstractSurveyResponse>> getRecommendNormalSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendNormalSurvey());
+        return ApiUtils.success(surveyService.getRecommendNormalSurveyForUser());
     }
 
-    @GetMapping("/survey/recommend/instant")
+    @GetMapping("/survey/recommend/instant/user")
     public ApiResponse<List<AbstractSurveyResponse>> getRecommendInstantSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendInstantSurvey());
+        return ApiUtils.success(surveyService.getRecommendInstantSurveyForUser());
     }
 
-    @GetMapping("/survey/recommend/time")
+    @GetMapping("/survey/recommend/time/user")
     public ApiResponse<List<AbstractSurveyResponse>> getRecommendShortTimeSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendShortTimeSurvey());
+        return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForUser());
     }
 
     @GetMapping("/survey/{surveyId}")

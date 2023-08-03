@@ -444,7 +444,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurveyForUser();
 
         // then
         assertThat(recommendNormalSurvey.stream()
@@ -546,7 +546,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendNormalSurveyForUser();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
@@ -667,12 +667,12 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<AbstractSurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurvey();
+        List<AbstractSurveyResponse> recommendInstantSurvey = surveyService.getRecommendInstantSurveyForUser();
 
         // then
         assertThat(recommendInstantSurvey.size()).isEqualTo(3);
 
-        List<AbstractSurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurvey().stream()
+        List<AbstractSurveyResponse> sortedSurveyResponses = surveyService.getRecommendInstantSurveyForUser().stream()
                 .sorted(Comparator.comparing(AbstractSurveyResponse::getWinningPercent).reversed())
                 .toList();
 
@@ -803,7 +803,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
         surveyRepository.findById(saveSurvey3.getId()).get().toOpen();
 
         // when
-        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurvey();
+        List<AbstractSurveyResponse> recommendNormalSurvey = surveyService.getRecommendShortTimeSurveyForUser();
 
         // then
         assertThat(recommendNormalSurvey.size()).isEqualTo(3);
