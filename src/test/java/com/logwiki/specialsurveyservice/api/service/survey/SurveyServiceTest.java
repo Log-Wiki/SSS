@@ -145,8 +145,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -229,8 +227,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(1L)
-                .giveawayType(GiveawayType.COFFEE)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -328,8 +324,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(InvalidGiveawayId)
-                .giveawayType(giveawayType)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -394,8 +388,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -496,8 +488,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -602,8 +592,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest1 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests1 = List.of(giveawayAssignServiceRequest1);
@@ -623,8 +611,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest2 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(30)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests2 = List.of(giveawayAssignServiceRequest2);
@@ -642,8 +628,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest3 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(20)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests3 = List.of(giveawayAssignServiceRequest3);
@@ -753,8 +737,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
