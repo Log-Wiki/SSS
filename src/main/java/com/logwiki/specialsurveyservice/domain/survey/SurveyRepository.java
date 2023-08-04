@@ -33,4 +33,19 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             + "AND sur.closed = false ",
             nativeQuery = true)
     List<Survey> findRecommendSurvey(@Param("genderId") Long genderId, @Param("ageId") Long ageId);
+
+    @Query(value = "SELECT * FROM survey sur "
+            + "WHERE :surveyCategoryType IN (SELECT sc.TYPE "
+                                + "FROM SURVEY_CATEGORY sc "
+                                + "WHERE sur.SURVEY_CATEGORY_ID = sc.ID)"
+            + "AND sur.closed = false ",
+            nativeQuery = true)
+    List<Survey> findRecommendSurveyForAnonymous(@Param("surveyCategoryType") String surveyCategoryType);
+
+    @Query(value = "SELECT * FROM survey sur "
+            + "WHERE sur.closed = false ",
+            nativeQuery = true)
+    List<Survey> findRecommendSurveyForAnonymous();
+
+    List<Survey> findAllByWriter(Long writerId);
 }

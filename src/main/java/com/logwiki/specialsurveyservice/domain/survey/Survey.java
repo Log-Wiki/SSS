@@ -76,7 +76,7 @@ public class Survey extends BaseEntity {
         this.writer = writer;
         this.totalGiveawayCount = totalGiveawayCount;
         this.requiredTimeInSeconds = requiredTimeInSeconds;
-        this.closed = false;
+        this.closed = true;
         this.questions = questions;
         this.surveyTargets = surveyTargets;
     }
@@ -100,15 +100,15 @@ public class Survey extends BaseEntity {
     public void addSurveyResults(List<SurveyResult> surveyResults) {
         this.surveyResults = surveyResults;
     }
-  
+
     public void addSurveyTarget(SurveyTarget surveyTarget) {
         if (this.surveyTargets == null) this.surveyTargets = new ArrayList<>();
         this.surveyTargets.add(surveyTarget);
     }
-  
+
     public void addHeadCount() {
         this.headCount += 1;
-        if(this.headCount == closedHeadCount)
+        if (this.headCount == closedHeadCount)
             closed = true;
     }
 
