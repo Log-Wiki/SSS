@@ -12,5 +12,4 @@ public interface TargetNumberRepository extends JpaRepository<TargetNumber, Long
 
     TargetNumber findTargetNumberByNumberAndSurvey_Id(int targetNumber, Long surveyId);
 
-    Optional<TargetNumber> findFirstBySurveyAndNumber(Survey survey, int number);
 }
