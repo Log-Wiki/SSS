@@ -2,10 +2,13 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
+import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
+import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
 import com.logwiki.specialsurveyservice.api.service.question.request.MultipleChoiceCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
@@ -29,6 +32,7 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.quartz.SchedulerException;
@@ -67,7 +71,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
     private SurveyCategoryRepository surveyCategoryRepository;
     @Autowired
     private SurveyRepository surveyRepository;
-
+    @Autowired
+    private QuestionAnswerService questionAnswerService;
     @BeforeEach
     void setUp() {
         setAuthority();
@@ -936,6 +941,130 @@ class SurveyServiceTest extends IntegrationTestSupport {
         assertThat(response.getEndTime()).isEqualTo(endTime);
         assertThat(response.getHeadCount()).isEqualTo(0);
         assertThat(response.getClosedHeadCount()).isEqualTo(closedHeadCount);
+    }
+    @Disabled("오류 미완성")
+    @DisplayName("설문상세페이지에 필요한 설문 응답 로그들을 조회한다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void getSurveyAnswers() {
+        // given
+        String email = "duswo0624@naver.com";
+        String password = "1234";
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
+        String name = "최연재";
+        String phoneNumber = "010-1234-5678";
+        LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password(password)
+                .gender(gender)
+                .age(age)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .birthday(birthday)
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+
+        MultipleChoiceCreateServiceRequest multipleChoiceCreateServiceRequest1 = MultipleChoiceCreateServiceRequest.builder()
+                .content("사과")
+                .linkNumber(2L)
+                .build();
+        MultipleChoiceCreateServiceRequest multipleChoiceCreateServiceRequest2 = MultipleChoiceCreateServiceRequest.builder()
+                .content("바나나")
+                .linkNumber(3L)
+                .build();
+        List<MultipleChoiceCreateServiceRequest> multipleChoiceCreateServiceRequests = List.of(multipleChoiceCreateServiceRequest1, multipleChoiceCreateServiceRequest2);
+
+        QuestionCreateServiceRequest questionCreateServiceRequestByMultipleChoice = QuestionCreateServiceRequest.builder()
+                .questionNumber(1L)
+                .content("좋아하는 과일을 고르세요.")
+                .imgAddress(null)
+                .type(QuestionCategoryType.MULTIPLE_CHOICE)
+                .multipleChoices(multipleChoiceCreateServiceRequests)
+                .build();
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm1 = QuestionCreateServiceRequest.builder()
+                .questionNumber(2L)
+                .content("사과를 좋아하는 이유는 무엇인가요?")
+                .imgAddress(null)
+                .type(QuestionCategoryType.SHORT_FORM)
+                .multipleChoices(null)
+                .build();
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm2 = QuestionCreateServiceRequest.builder()
+                .questionNumber(3L)
+                .content("바나나를 좋아하는 이유는 무엇인가요?")
+                .imgAddress(null)
+                .type(QuestionCategoryType.SHORT_FORM)
+                .multipleChoices(null)
+                .build();
+        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(questionCreateServiceRequestByMultipleChoice,
+                questionCreateServiceRequestByShortForm1,
+                questionCreateServiceRequestByShortForm2);
+
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String giveawayName = "스타벅스 아메리카노";
+        int price = 4500;
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(giveawayType)
+                .name(giveawayName)
+                .price(price)
+                .build();
+        giveawayService.createGiveaway(request);
+        Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(giveawayName);
+        Long giveawayId = giveaway.get().getId();
+        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+                .id(giveawayId)
+                .giveawayType(giveawayType)
+                .name("스타벅스 아메리카노")
+                .count(10)
+                .build();
+        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+
+        String title = "당신은 어떤 과일을 좋아하나요?";
+        SurveyCategoryType surveyCategoryType = SurveyCategoryType.INSTANT_WIN;
+        int closedHeadCount = 100;
+        LocalDateTime startTime = LocalDateTime.now().minusDays(1);
+        LocalDateTime endTime = LocalDateTime.now().plusDays(1);
+        List<AccountCodeType> targets = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN,
+                AccountCodeType.UNDER_TEENS, AccountCodeType.TEENS, AccountCodeType.TWENTIES,
+                AccountCodeType.THIRTIES, AccountCodeType.FORTIES, AccountCodeType.FIFTIES,
+                AccountCodeType.SIXTIES);
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title(title)
+                .startTime(startTime)
+                .endTime(endTime)
+                .headCount(0)
+                .surveyTarget(targets)
+                .closedHeadCount(closedHeadCount)
+                .type(surveyCategoryType)
+                .questions(questionCreateServiceRequests)
+                .giveaways(giveawayAssignServiceRequests)
+                .build();
+
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
+        // when
+        List<SurveyAnswerResponse> responses = surveyService.getSurveyAnswers(saveSurvey.getId());
+        List<QuestionAnswerCreateServiceRequest> questionAnswerCreateServiceRequests = new ArrayList<>();
+        questionAnswerCreateServiceRequests.add(QuestionAnswerCreateServiceRequest.builder()
+                .questionId(1L)
+                .multipleChoiceAnswer(1L)
+                .build()
+        );
+        questionAnswerCreateServiceRequests.add(QuestionAnswerCreateServiceRequest.builder()
+                .questionId(2L)
+                .shorFormAnswer("그냥 좋아서")
+                .build()
+        );
+        questionAnswerCreateServiceRequests.add(QuestionAnswerCreateServiceRequest.builder()
+                .questionId(3L)
+                .shorFormAnswer("그냥 싫어서")
+                .build()
+        );
+        questionAnswerService.addQuestionAnswer(LocalDateTime.now(),saveSurvey.getId(),
+                questionAnswerCreateServiceRequests);
+        // then
+        surveyService.getSurveyAnswers(saveSurvey.getId());
+
     }
 
     private void setAccountCode() {
