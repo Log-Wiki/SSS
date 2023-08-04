@@ -30,14 +30,13 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import java.util.Comparator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.quartz.SchedulerException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -151,8 +151,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -235,8 +233,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(1L)
-                .giveawayType(GiveawayType.COFFEE)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -334,8 +330,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(InvalidGiveawayId)
-                .giveawayType(giveawayType)
-                .name("스타벅스 아메리카노")
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -345,8 +339,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
         int closedHeadCount = 100;
         SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
                 .title(title)
-                .startTime(LocalDateTime.of(2023, 7, 28, 0, 0))
-                .endTime(LocalDateTime.of(2023, 7, 30, 0, 0))
+                .startTime(LocalDateTime.now())
+                .endTime(LocalDateTime.now().plusDays(1))
                 .headCount(50)
                 .closedHeadCount(closedHeadCount)
                 .type(surveyCategoryType)
@@ -400,8 +394,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -461,7 +453,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
     }
 
 
-
     @DisplayName("일반(타임어택) 설문 추천은 마감시간이 짧은 순으로 설문을 추천 받는다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
@@ -502,8 +493,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -561,8 +550,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .sorted(Comparator.comparing(AbstractSurveyResponse::getEndTime))
                 .toList();
         boolean sameOrder = true;
-        for(int i = 0; i < recommendNormalSurvey.size(); i++) {
-            if(recommendNormalSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
+        for (int i = 0; i < recommendNormalSurvey.size(); i++) {
+            if (recommendNormalSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
                 sameOrder = false;
         }
         assertThat(sameOrder).isTrue();
@@ -608,8 +597,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest1 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests1 = List.of(giveawayAssignServiceRequest1);
@@ -629,8 +616,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest2 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(30)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests2 = List.of(giveawayAssignServiceRequest2);
@@ -648,8 +633,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest3 = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(20)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests3 = List.of(giveawayAssignServiceRequest3);
@@ -683,8 +666,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .toList();
 
         boolean sameOrder = true;
-        for(int i = 0; i < recommendInstantSurvey.size(); i++) {
-            if(recommendInstantSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
+        for (int i = 0; i < recommendInstantSurvey.size(); i++) {
+            if (recommendInstantSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
                 sameOrder = false;
         }
         assertThat(sameOrder).isTrue();
@@ -759,8 +742,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
         Long giveawayId = giveaway.get().getId();
         GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
                 .id(giveawayId)
-                .giveawayType(giveawayType)
-                .name(giveawayName)
                 .count(10)
                 .build();
         List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
@@ -818,8 +799,8 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .sorted(Comparator.comparing(AbstractSurveyResponse::getRequiredTimeInSeconds))
                 .toList();
         boolean sameOrder = true;
-        for(int i = 0; i < recommendNormalSurvey.size(); i++) {
-            if(recommendNormalSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
+        for (int i = 0; i < recommendNormalSurvey.size(); i++) {
+            if (recommendNormalSurvey.get(i).getId() != sortedSurveyResponses.get(i).getId())
                 sameOrder = false;
         }
         assertThat(sameOrder).isTrue();
