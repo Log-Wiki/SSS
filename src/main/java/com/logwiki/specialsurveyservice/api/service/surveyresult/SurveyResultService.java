@@ -89,7 +89,7 @@ public class SurveyResultService {
         sseConnectService.refreshSurveyFinisher(surveyResponse.getId(), SurveyAnswerResponse.builder()
                 .answerTime(surveyResult.getAnswerDateTime())
                 .giveAwayName(giveawayName)
-                .isWin(surveyResult.isWin())
+                .isWin(false)
                 .name(surveyResult.getAccount().getName()).build());
     }
 
