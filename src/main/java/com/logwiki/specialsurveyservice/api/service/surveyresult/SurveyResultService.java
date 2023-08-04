@@ -15,6 +15,7 @@ import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SurveyResultService {
 
     private final SurveyResultRepository surveyResultRepository;
@@ -57,9 +59,9 @@ public class SurveyResultService {
         }
 
         account.increaseResponseSurveyCount();
+        log.info("당첨여부 [{}][{}][{}]", survey.getId(), account.getEmail(), surveyResult.isWin());
 
         surveyResultRepository.save(surveyResult);
-
 
         survey.addHeadCount();
     }

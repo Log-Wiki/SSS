@@ -49,15 +49,11 @@ class TargetNumberServiceTest extends IntegrationTestSupport {
         int giveawayCount2 = 5;
         GiveawayAssignServiceRequest giveawayAssignServiceRequest1 = GiveawayAssignServiceRequest.builder()
                 .id(saveGiveaway1.getId())
-                .giveawayType(giveawayType1)
-                .name(name1)
                 .count(giveawayCount1)
                 .build();
 
         GiveawayAssignServiceRequest giveawayAssignServiceRequest2 = GiveawayAssignServiceRequest.builder()
                 .id(saveGiveaway2.getId())
-                .giveawayType(giveawayType2)
-                .name(name2)
                 .count(giveawayCount2)
                 .build();
 

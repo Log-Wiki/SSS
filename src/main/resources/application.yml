@@ -91,3 +91,13 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/basic.log
+  logback:
+    rolling-policy:
+      file-name-pattern: "logs/basic.%d{yyyy-MM-dd}.%i"
+      max-history: 30
