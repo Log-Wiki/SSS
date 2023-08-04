@@ -8,6 +8,7 @@ import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +22,11 @@ public class OrderController {
 
     private final RegistOrderService registOrderService;
 
-    @PostMapping("/order/regist/{userId}")
+    @PostMapping("/order/regist")
     public ApiResponse<OrderResponse> registOrder(
             @RequestBody @Valid OrderCreateRequest orderCreateRequest,
-            @PathVariable String userId
+            Authentication authentication
     ) {
-        return ApiUtils.success(registOrderService.createOrder(orderCreateRequest.toServiceRequest(userId,System.currentTimeMillis())));
+        return ApiUtils.success(registOrderService.createOrder(orderCreateRequest.toServiceRequest(authentication.getName(),System.currentTimeMillis())));
     }
 }
