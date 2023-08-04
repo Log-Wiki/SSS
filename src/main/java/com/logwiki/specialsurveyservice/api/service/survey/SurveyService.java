@@ -257,19 +257,17 @@ public class SurveyService {
         List<SurveyAnswerResponse> surveyResponseResults = new ArrayList<>();
         if(targetSurvey.getSurveyResults() != null) {
             for (SurveyResult surveyResult : targetSurvey.getSurveyResults()) {
-                String giveawayName;
+                String giveawayName = LOSEPRODUCT;
                 boolean isWin = false;
-                Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
-                        targetSurvey, surveyResult.getSubmitOrder());
-                if (tn.isPresent()) {
-                    isWin = true;
-                    giveawayName = tn.get().getGiveaway().getName();
-                } else {
-                    giveawayName = LOSEPRODUCT;
+                if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
+                    Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
+                            targetSurvey, surveyResult.getSubmitOrder());
+                    if (tn.isPresent()) {
+                        isWin = true;
+                        giveawayName = tn.get().getGiveaway().getName();
+                    }
                 }
-
                 surveyResponseResults.add(SurveyAnswerResponse.from(surveyResult,giveawayName,isWin));
-
             }
         }
         return surveyResponseResults;
