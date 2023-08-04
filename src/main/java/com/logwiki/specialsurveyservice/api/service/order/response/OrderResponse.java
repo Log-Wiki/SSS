@@ -1,11 +1,11 @@
 package com.logwiki.specialsurveyservice.api.service.order.response;
 
 import com.logwiki.specialsurveyservice.domain.orders.Orders;
-import com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @Getter
@@ -17,7 +17,7 @@ public class OrderResponse {
     private final Integer orderAmount;
     @NotNull(message = "주문 결제여부는 필수 입니다")
     private final Boolean isVerificated;
-    @NotNull(message = "가맹정ID는 필수 입니다.")
+    @Value("${apikey.iamport-storekey}")
     private final String storeId;
 
     @Builder
@@ -31,7 +31,6 @@ public class OrderResponse {
 
     public static OrderResponse from(Orders order) {
         return OrderResponse.builder().orderId(order.getOrderId())
-                .orderAmount(order.getOrderAmount()).isVerificated(order.getIsVerificated()).storeId(
-                        IamportApiConstant.StoreKey.getText()).build();
+                .orderAmount(order.getOrderAmount()).isVerificated(order.getIsVerificated()).build();
     }
 }

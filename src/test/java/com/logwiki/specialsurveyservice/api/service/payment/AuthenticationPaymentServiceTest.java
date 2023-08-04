@@ -13,7 +13,6 @@ import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResp
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
-import com.logwiki.specialsurveyservice.domain.payment.IamportApiConstant;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.siot.IamportRestClient.IamportClient;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -35,8 +35,10 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     @Autowired
     GiveawayRepository giveawayRepository;
 
-    private static IamportClient iamportClientApi = new IamportClient(IamportApiConstant.IamportApiKey.getText(),
-            IamportApiConstant.IamportApiSecretKey.getText());
+    private final static String IMPUID = "imp_780428188220";
+    private final static int CORRECTPRICE = 43900;
+    private final static Long CORRECTTIME = 1690416454492L;
+
 
     @DisplayName("주문정보 , 수신한 결제정보 , 결제API의 결제정보를 검사하고 처리결과를 반환한다.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ")
     @Test
@@ -50,19 +52,19 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // when
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
-        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi);
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
 
 
         // then
         assertThat(paymentResponse).isNotNull();
         assertThat(paymentResponse)
                 .extracting("imp_uid", "orderId", "orderAmount", "isSucess")
-                .contains("imp_780428188220", userId + "_" + 1690416454492L, 43900 , "paid");
+                .contains(IMPUID, userId + "_" + CORRECTTIME, CORRECTPRICE , "paid");
     }
 
     @DisplayName("결제검증을 요청한 주문의 정보가 없는 경우")
@@ -77,14 +79,14 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454493L , "imp_780428188220");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME+1 , IMPUID);
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 정보가 없는 결제인증 요청입니다.");
 
@@ -102,14 +104,14 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
 
         OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().userId(userId).giveaways(giveaways)
-                .requestTime(1690416454492L).build();
+                .requestTime(CORRECTTIME).build();
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + 1690416454492L , "imp_780428188220");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
 
         // then
-        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest(),iamportClientApi))
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("주문 금액과 결제금액이 다릅니다.");
 

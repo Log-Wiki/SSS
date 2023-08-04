@@ -11,6 +11,7 @@ import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthenticationPaymentService {
     private final OrdersRepository orderRepository;
+
+    private IamportClient iamportClientApi;
+
+    @Value("${apikey.iamport-apikey}")
+    private  String iamportAccessKey;
+
+    @Value("${apikey.iamport-secretkey}")
+    private String iamportSecretKey;
+
     private final static Boolean orderSuccess = true;
+
+
     @Transactional
-    public PaymentResponse authenticatePayment(PaymentAuthenticationServiceRequest request,
-            IamportClient iamportClientApi) {
+    public PaymentResponse authenticatePayment(PaymentAuthenticationServiceRequest request) {
+        iamportClientApi = new IamportClient(iamportAccessKey , iamportSecretKey);
 
         Orders order = orderRepository.findOneByOrderId(request.getOrderId()).orElse(null);
 
