@@ -139,7 +139,7 @@ class UserDetailServiceTest extends IntegrationTestSupport {
     @DisplayName("로그인이 된 상태에서 회원을 탈퇴하면 자신의 정보를 조회할 수 없다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
-    void umm() {
+    void getMyInfoWithAccountIsWorking() {
         // given
         String email = "duswo0624@naver.com";
         AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
