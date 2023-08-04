@@ -26,7 +26,7 @@ public class SurveyAnswerResponse {
 
     public static SurveyAnswerResponse from(SurveyResult surveyResult , String giveAwayName , boolean isWin ) {
         return SurveyAnswerResponse.builder()
-                .answerTime(surveyResult.getEndTime())
+                .answerTime(surveyResult.getAnswerDateTime())
                 .name(surveyResult.getAccount().getName())
                 .giveAwayName(giveAwayName)
                 .isWin(isWin)

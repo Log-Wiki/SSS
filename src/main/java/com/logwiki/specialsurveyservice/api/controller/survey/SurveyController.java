@@ -68,6 +68,7 @@ public class SurveyController {
     @GetMapping("/survey/recommend/time/user")
     public ApiResponse<List<AbstractSurveyResponse>> getRecommendShortTimeSurveyForUser() {
         return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForUser());
+    }
     @GetMapping("/survey/detail/{surveyId}")
     public ApiResponse<?> surveyDetail(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
@@ -76,11 +77,6 @@ public class SurveyController {
     @GetMapping("/survey/answer/log/{surveyId}")
     public ApiResponse<?> getSurveyAnswerLogs(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurveyAnswers(surveyId));
-    }
-
-    @GetMapping("/survey/recommend/normal")
-    public ApiResponse<List<SurveyResponse>> getRecommendNormalSurveyForUser() {
-        return ApiUtils.success(surveyService.getRecommendNormalSurvey());
     }
 
     @GetMapping("/survey/{surveyId}")
