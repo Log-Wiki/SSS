@@ -135,7 +135,7 @@ class QuestionControllerTest extends ControllerTestSupport {
                 QuestionAnswerCreateRequest questionAnswerCreateRequest = QuestionAnswerCreateRequest.builder()
                         .questionId(1L)
                         .multipleChoiceAnswer(3L)
-                        .shorFormAnswer("answer")
+                        .shortFormAnswer("answer")
                         .build();
                 List<QuestionAnswerCreateRequest> answers = new ArrayList<>();
                 answers.add(questionAnswerCreateRequest);
