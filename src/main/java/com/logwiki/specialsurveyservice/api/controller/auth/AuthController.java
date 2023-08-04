@@ -7,7 +7,6 @@ import com.logwiki.specialsurveyservice.api.controller.auth.response.RefreshResp
 import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.logwiki.specialsurveyservice.jwt.JwtFilter;
 import com.logwiki.specialsurveyservice.jwt.TokenProvider;
 import jakarta.validation.Valid;
@@ -15,12 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,11 +70,5 @@ public class AuthController {
 
         ApiResponse<RefreshResponse> apiResponse = ApiUtils.success(new RefreshResponse(accessToken));
         return new ResponseEntity<>(apiResponse, httpHeaders, HttpStatus.OK);
-    }
-
-    @GetMapping("/hello")
-    @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("hello");
     }
 }
