@@ -91,11 +91,3 @@ spring:
       hibernate:
         format_sql: true
     defer-datasource-initialization: true
-
-apikey:
-  iamport-apikey: 7343166512186774
-  iamport-secretkey: AFgMzlcN1niQMqo4QjGlV7hyBuQOmuKFnKHqtHRzeCme37sbo6b8zKRhfAMtQKzX5BgPSrbE0pfdAEDK
-  iamport-storekey: imp36635434
-  naver-accesskey: mgIU1Z68m4jAneZU7f37
-  naver-secretkey: DpDVZgrDqbK5neoRR9oqlAAReOn6vBPzAmsMEBvj
-  naver-message-servickey: ncp:sms:kr:299147416082:supersurveyservice
