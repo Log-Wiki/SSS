@@ -1,6 +1,7 @@
 package com.logwiki.specialsurveyservice.api.controller.sse;
 
 import com.logwiki.specialsurveyservice.api.service.sse.SseConnectService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,8 @@ public class SseController {
         this.sseConnectService = sseConnectService;
     }
     @GetMapping(value = "/subscribe/{survey_id}" , produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter connect(@PathVariable Long survey_id) {
+    public SseEmitter connect(@PathVariable Long survey_id , HttpServletResponse response) {
+        response.setHeader("X-Accel-Buffering", "no");
         SseEmitter sseEmitter = new SseEmitter(TIMEOUT);
         sseEmitter = sseConnectService.subscribe((long) (Math.random()* RANDSIZE), survey_id,sseEmitter);
         return sseEmitter;
