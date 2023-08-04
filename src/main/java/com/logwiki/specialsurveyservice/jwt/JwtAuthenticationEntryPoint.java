@@ -3,8 +3,6 @@ package com.logwiki.specialsurveyservice.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
-import com.logwiki.specialsurveyservice.exception.security.ExpiredTokenException;
-import com.logwiki.specialsurveyservice.exception.security.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,14 +30,21 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
 
         ApiResponse<?> apiResponse = ApiUtils.error(
-            authException.getMessage(),
-            1000
+            "알 수 없는 에러입니다.",
+            1006
         );
+
+        if(authException instanceof InsufficientAuthenticationException) {
+            apiResponse = ApiUtils.error(
+                    "토큰이 유효하지 않습니다.",
+                    1005
+            );
+        }
 
         if (authException instanceof BadCredentialsException) {
             apiResponse = ApiUtils.error(
                     "회원 정보가 올바르지 않습니다.",
-                    1000
+                    2006
             );
         }
 

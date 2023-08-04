@@ -1,11 +1,11 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
 
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
-import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.question.Question;
@@ -29,30 +29,24 @@ public class QuestionAnswerService {
 
     private final QuestionAnswerRepository questionAnswerRepository;
     private final QuestionRepository questionRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final SurveyResultService surveyResultService;
     private final SurveyTargetRepository surveyTargetRepository;
     private final AccountCodeRepository accountCodeRepository;
 
     @Transactional
     public List<QuestionAnswerResponse> addQuestionAnswer(
-            LocalDateTime writeDate,
+            LocalDateTime answerDateTime,
             Long surveyId,
-            String userEmail,
             List<QuestionAnswerCreateServiceRequest> dto) {
-        Account account = findAccountByEmail(userEmail);
+        Account account = accountService.getCurrentAccountBySecurity();
         List<Question> questions = findQuestionsBySurveyId(surveyId);
-        
+
         checkIsTarget(account, surveyId);
         checkAnsweredAllQuestions(questions, dto);
 
-        surveyResultService.addSubmitResult(surveyId, userEmail, writeDate);
-        return saveQuestionAnswer(writeDate, account, questions, dto);
-    }
-
-    private Account findAccountByEmail(String userEmail) {
-        return accountRepository.findOneWithAuthoritiesByEmail(userEmail)
-                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+        surveyResultService.addSubmitResult(surveyId, answerDateTime);
+        return saveQuestionAnswer(answerDateTime, account, questions, dto);
     }
 
     private List<Question> findQuestionsBySurveyId(Long surveyId) {
@@ -85,7 +79,7 @@ public class QuestionAnswerService {
     }
 
     private List<QuestionAnswerResponse> saveQuestionAnswer(
-            LocalDateTime writeDate,
+            LocalDateTime answerDateTime,
             Account account,
             List<Question> questions,
             List<QuestionAnswerCreateServiceRequest> dto) {
@@ -96,7 +90,7 @@ public class QuestionAnswerService {
             for (QuestionAnswerCreateServiceRequest answer : dto) {
                 if (question.getId().equals(answer.getQuestionId())) {
                     QuestionAnswer questionAnswer = answer.toEntity(question, account);
-                    questionAnswer.setWriteDate(writeDate);
+                    questionAnswer.setAnswerDateTime(answerDateTime);
                     questionAnswerRepository.save(questionAnswer);
                     result.add(QuestionAnswerResponse.from(questionAnswer));
                     notFoundQuestion = false;
