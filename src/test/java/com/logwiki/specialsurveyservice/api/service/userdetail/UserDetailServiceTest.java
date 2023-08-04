@@ -6,11 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.service.userdetail.response.UserDetailResponse;
+import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.logwiki.specialsurveyservice.exception.security.NotFoundAuthenticationException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -26,12 +29,12 @@ class UserDetailServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private AccountService accountService;
-
     @Autowired
     private UserDetailService userDetailService;
-
     @Autowired
     private AuthorityRepository authorityRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @BeforeEach
     void setUp() {
@@ -131,6 +134,31 @@ class UserDetailServiceTest extends IntegrationTestSupport {
         assertThat(userDetailResponse)
                 .extracting("email", "gender", "name", "phoneNumber", "birthday")
                 .contains(email, gender, name, phoneNumber, birthday);
+    }
+
+    @DisplayName("로그인이 된 상태에서 회원을 탈퇴하면 자신의 정보를 조회할 수 없다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void umm() {
+        // given
+        String email = "duswo0624@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, Month.JUNE, 24))
+                .build();
+        AccountResponse accountResponse = accountService.signup(accountCreateServiceRequest);
+
+        accountRepository.deleteById(accountResponse.getId());
+
+        // when // then
+        assertThatThrownBy(() -> userDetailService.getMyUserWithAuthorities())
+                .isInstanceOf(BaseException.class)
+                .hasMessage("존재하지 않는 유저입니다.");
     }
 
     private void setAuthority() {
