@@ -38,7 +38,7 @@ public class SurveyResultService {
     private final SseConnectService sseConnectService;
     private final static boolean DEFAULT_WIN = false;
 
-    public void addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
+    public SurveyResult addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new BaseException("설문조사 PK가 올바르지 않습니다.", 3010));
         Account account = accountService.getCurrentAccountBySecurity();
@@ -71,10 +71,11 @@ public class SurveyResultService {
 
         survey.addHeadCount();
 
-        sendResultToSSE(survey,surveyResult,submitOrder);
+        return  surveyResult;
     }
 
-    private void sendResultToSSE(Survey targetSurvey, SurveyResult surveyResult, int submitOrder){
+    public void sendResultToSSE(Long surveyId, SurveyResult surveyResult, int submitOrder){
+        Survey targetSurvey = surveyRepository.findById(surveyId).get();
         SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
         if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
             sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));

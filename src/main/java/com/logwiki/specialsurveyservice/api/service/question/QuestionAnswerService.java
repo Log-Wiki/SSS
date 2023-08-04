@@ -12,6 +12,7 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
@@ -45,7 +46,8 @@ public class QuestionAnswerService {
         checkIsTarget(account, surveyId);
         checkAnsweredAllQuestions(questions, dto);
 
-        surveyResultService.addSubmitResult(surveyId, answerDateTime);
+        SurveyResult surveyResult = surveyResultService.addSubmitResult(surveyId, answerDateTime);
+        surveyResultService.sendResultToSSE(surveyId,surveyResult, surveyResult.getSubmitOrder());
         return saveQuestionAnswer(answerDateTime, account, questions, dto);
     }
 
