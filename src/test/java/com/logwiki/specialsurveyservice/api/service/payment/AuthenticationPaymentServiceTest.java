@@ -83,7 +83,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME+1 , IMPUID);
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
