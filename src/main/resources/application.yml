@@ -75,3 +75,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+logging:
+  level:
+    root: INFO
+  file:
+    name: logs/basic.log
+  logback:
+    rolling-policy:
+      file-name-pattern: "logs/basic.%d{yyyy-MM-dd}.%i"
+      max-history: 30
