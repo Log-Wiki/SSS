@@ -3,9 +3,10 @@ package com.logwiki.specialsurveyservice.api.service.surveyresult.response;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class MyGiveawayResponse {
@@ -13,6 +14,7 @@ public class MyGiveawayResponse {
     private boolean win;
     private boolean userCheck;
     private String surveyTitle;
+    private double probabilty;
     private Long giveawayId;
     private GiveawayType giveawayType;
     private String giveawayName;
@@ -21,7 +23,7 @@ public class MyGiveawayResponse {
 
     @Builder
     private MyGiveawayResponse(boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
-            GiveawayType giveawayType, String giveawayName, String surveyWriter, LocalDateTime answerDateTime) {
+            GiveawayType giveawayType, String giveawayName, String surveyWriter, LocalDateTime answerDateTime, double probabilty) {
         this.win = win;
         this.userCheck = userCheck;
         this.surveyTitle = surveyTitle;
@@ -30,9 +32,10 @@ public class MyGiveawayResponse {
         this.giveawayName = giveawayName;
         this.surveyWriter = surveyWriter;
         this.answerDateTime = answerDateTime;
+        this.probabilty = probabilty;
     }
 
-    public static MyGiveawayResponse of(SurveyResult surveyResult, Giveaway giveaway, String surveyWriter) {
+    public static MyGiveawayResponse of(SurveyResult surveyResult, Giveaway giveaway, String surveyWriter, double probabilty) {
 
         return MyGiveawayResponse.builder()
                 .win(surveyResult.isWin())
@@ -43,6 +46,7 @@ public class MyGiveawayResponse {
                 .giveawayName(giveaway.getName())
                 .surveyWriter(surveyWriter)
                 .answerDateTime(surveyResult.getAnswerDateTime())
+                .probabilty(probabilty)
                 .build();
     }
 
