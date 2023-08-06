@@ -23,6 +23,8 @@ public class Question {
 
     private Long questionNumber;
 
+    private String title;
+
     private String content;
 
     private String imgAddress;
@@ -37,9 +39,10 @@ public class Question {
     private List<MultipleChoice> multipleChoice;
 
     @Builder
-    public Question(Long questionNumber, String content, String imgAddress, Survey survey,
+    public Question(String title, Long questionNumber, String content, String imgAddress, Survey survey,
             QuestionCategoryType type, List<MultipleChoice> multipleChoice) {
         this.questionNumber = questionNumber;
+        this.title = title;
         this.content = content;
         this.imgAddress = imgAddress;
         this.survey = survey;
