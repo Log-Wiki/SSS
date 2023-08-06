@@ -21,6 +21,8 @@ public class SurveyResponse {
 
     private String title;
 
+    private String content;
+
     private String img;
 
     private LocalDateTime startTime;
@@ -50,13 +52,14 @@ public class SurveyResponse {
     private List<AccountCodeType> surveyTarget;
 
     @Builder
-    public SurveyResponse(String img, Long id, String title, LocalDateTime startTime,
+    public SurveyResponse(String content, String img, Long id, String title, LocalDateTime startTime,
             LocalDateTime endTime, int headCount, int closedHeadCount, Long writer,
             int totalGiveawayCount, boolean closed, int requiredTimeInSeconds,
             Double winningPercent, SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
             List<SurveyGiveawayResponse> surveyGiveaways, List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
+        this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
         this.headCount = headCount;
@@ -94,6 +97,7 @@ public class SurveyResponse {
         return SurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
+                .content(survey.getContent())
                 .img(survey.getImg())
                 .startTime(survey.getStartTime())
                 .endTime(survey.getEndTime())

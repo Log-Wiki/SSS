@@ -25,6 +25,8 @@ public class SurveyCreateServiceRequest {
 
     private String img;
 
+    private String content;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -42,13 +44,14 @@ public class SurveyCreateServiceRequest {
     private List<AccountCodeType> surveyTarget;
 
     @Builder
-    public SurveyCreateServiceRequest(String img, String title, LocalDateTime startTime, LocalDateTime endTime,
+    public SurveyCreateServiceRequest(String content, String img, String title, LocalDateTime startTime, LocalDateTime endTime,
             int headCount, int closedHeadCount, SurveyCategoryType type,
             List<QuestionCreateServiceRequest> questions,
             List<GiveawayAssignServiceRequest> giveaways,
             List<AccountCodeType> surveyTarget) {
         this.title = title;
         this.img = img;
+        this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;
         this.headCount = headCount;
@@ -74,6 +77,7 @@ public class SurveyCreateServiceRequest {
                 .title(title)
                 .startTime(startTime)
                 .img(img)
+                .content(content)
                 .endTime(endTime)
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)

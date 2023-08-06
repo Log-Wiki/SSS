@@ -25,6 +25,8 @@ public class SurveyCreateRequest {
 
     private String img;
 
+    private String content;
+
     @NotNull(message = "시작 시간은 필수입니다.")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
@@ -60,6 +62,7 @@ public class SurveyCreateRequest {
         return SurveyCreateServiceRequest.builder()
                 .title(title)
                 .img(img)
+
                 .startTime(startTime)
                 .endTime(endTime)
                 .headCount(headCount)

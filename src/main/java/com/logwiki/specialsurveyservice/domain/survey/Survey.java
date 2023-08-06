@@ -28,6 +28,8 @@ public class Survey extends BaseEntity {
 
     private String title;
 
+    private String content;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -66,11 +68,12 @@ public class Survey extends BaseEntity {
     private List<SurveyTarget> surveyTargets;
 
     @Builder
-    public Survey(String img, String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
+    public Survey(String content, String img, String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
             int closedHeadCount, List<SurveyTarget> surveyTargets,
             Long writer, int totalGiveawayCount, int requiredTimeInSeconds, SurveyCategory type, List<Question> questions) {
         this.title = title;
         this.startTime = startTime;
+        this.content = content;
         this.endTime = endTime;
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;

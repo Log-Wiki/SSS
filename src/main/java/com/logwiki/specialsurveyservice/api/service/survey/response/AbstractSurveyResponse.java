@@ -20,6 +20,8 @@ public class AbstractSurveyResponse {
 
     private String title;
 
+    private String content;
+
     private String img;
 
     private SurveyCategoryType surveyCategoryType;
@@ -41,13 +43,14 @@ public class AbstractSurveyResponse {
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
-    public AbstractSurveyResponse(String img, Long id, String title, SurveyCategoryType surveyCategoryType,
+    public AbstractSurveyResponse(String content, String img, Long id, String title, SurveyCategoryType surveyCategoryType,
             List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
             int requiredTimeInSeconds, LocalDateTime endTime,
             int headCount, int closedHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
         this.img = img;
         this.title = title;
+        this.content = content;
         this.surveyCategoryType = surveyCategoryType;
         this.surveyTarget = surveyTarget;
         this.writerName = writerName;
@@ -84,6 +87,7 @@ public class AbstractSurveyResponse {
         return AbstractSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
+                .content(survey.getContent())
                 .img(survey.getImg())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .surveyTarget(survey.getSurveyTargets().stream()
