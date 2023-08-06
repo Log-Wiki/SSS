@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.account;
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
+import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
 import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
@@ -10,6 +11,7 @@ import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -86,4 +88,23 @@ public class AccountService {
 
         return AccountResponse.from(account);
     }
+
+    public DuplicateResponse checkDuplicateEmail(String email) {
+        Optional<Account> account = accountRepository.findOneWithAuthoritiesByEmail(email);
+        boolean duplicate = account.isPresent();
+
+        return DuplicateResponse.builder()
+                .duplicate(duplicate)
+                .build();
+    }
+
+    public DuplicateResponse checkDuplicatePhoneNumber(String phoneNumber) {
+        Optional<Account> account = accountRepository.findOneWithAuthoritiesByPhoneNumber(phoneNumber);
+        boolean duplicate = account.isPresent();
+
+        return DuplicateResponse.builder()
+                .duplicate(duplicate)
+                .build();
+    }
+
 }
