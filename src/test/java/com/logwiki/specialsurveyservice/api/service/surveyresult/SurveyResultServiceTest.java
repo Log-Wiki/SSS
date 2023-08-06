@@ -281,7 +281,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .endTime(LocalDateTime.now().plusDays(3))
                 .headCount(1)
                 .closedHeadCount(1)
-                .writer(1L)
+                .writer(accountService.getCurrentAccountBySecurity().getId())
                 .type(surveyCategory)
                 .build();
         survey.toClose();
