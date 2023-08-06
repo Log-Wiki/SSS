@@ -51,9 +51,11 @@ public class LocalSecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/signup", "/api/authenticate", "/api/refresh",
                                 "/api/subscribe/**", "api/updateTest",
-                                "/api/survey/recommend/normal/anonymous", "/api/survey/recommend/instant/anonymous", "/api/survey/recommend/time/anonymous",
-                                "/api/message/cert/signup/send" , "/api/message/cert/signup/auth"
-                        )
+                                "/api/message/cert/signup/send" , "/api/message/cert/signup/auth",
+                                "/api/survey/recommend/normal/anonymous", "/api/survey/recommend/instant/anonymous",
+                                "/api/survey/recommend/time/anonymous",
+                                "/api/duplicate/email",
+                                "/api/duplicate/phone-number")
                         .permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated())
