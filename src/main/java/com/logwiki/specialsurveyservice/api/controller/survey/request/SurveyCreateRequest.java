@@ -62,7 +62,7 @@ public class SurveyCreateRequest {
         return SurveyCreateServiceRequest.builder()
                 .title(title)
                 .img(img)
-
+                .content(content)
                 .startTime(startTime)
                 .endTime(endTime)
                 .headCount(headCount)

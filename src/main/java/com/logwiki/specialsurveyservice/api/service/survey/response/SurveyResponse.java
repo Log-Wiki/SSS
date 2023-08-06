@@ -59,6 +59,7 @@ public class SurveyResponse {
             List<SurveyGiveawayResponse> surveyGiveaways, List<AccountCodeType> surveyTarget) {
         this.id = id;
         this.title = title;
+        this.img = img;
         this.content = content;
         this.startTime = startTime;
         this.endTime = endTime;

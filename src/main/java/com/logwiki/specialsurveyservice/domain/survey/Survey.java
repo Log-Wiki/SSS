@@ -74,6 +74,7 @@ public class Survey extends BaseEntity {
         this.title = title;
         this.startTime = startTime;
         this.content = content;
+        this.img = img;
         this.endTime = endTime;
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;
