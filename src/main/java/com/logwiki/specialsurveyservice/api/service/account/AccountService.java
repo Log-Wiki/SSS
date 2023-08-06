@@ -1,7 +1,9 @@
 package com.logwiki.specialsurveyservice.api.service.account;
 
+import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
+import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
 import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
@@ -9,6 +11,7 @@ import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class AccountService {
 
@@ -25,6 +28,7 @@ public class AccountService {
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public AccountResponse signup(AccountCreateServiceRequest request) {
         if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
                 != null) {
@@ -62,6 +66,45 @@ public class AccountService {
         return accountRepository.findById(userId)
                 .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000))
                 .getName();
+    }
+
+    @Transactional
+    public AccountResponse updateAccount(AccountUpdateRequest accountUpdateRequest) {
+        Account account = getCurrentAccountBySecurity();
+
+        if(accountUpdateRequest.getPassword() != null) {
+            accountUpdateRequest.encodePassword(passwordEncoder.encode(accountUpdateRequest.getPassword()));
+        }
+
+        Account updatedAccount = account.update(accountUpdateRequest);
+
+        return AccountResponse.from(updatedAccount);
+    }
+
+    @Transactional
+    public AccountResponse deleteAccount() {
+        Account account = getCurrentAccountBySecurity();
+        accountRepository.delete(account);
+
+        return AccountResponse.from(account);
+    }
+
+    public DuplicateResponse checkDuplicateEmail(String email) {
+        Optional<Account> account = accountRepository.findOneWithAuthoritiesByEmail(email);
+        boolean duplicate = account.isPresent();
+
+        return DuplicateResponse.builder()
+                .duplicate(duplicate)
+                .build();
+    }
+
+    public DuplicateResponse checkDuplicatePhoneNumber(String phoneNumber) {
+        Optional<Account> account = accountRepository.findOneWithAuthoritiesByPhoneNumber(phoneNumber);
+        boolean duplicate = account.isPresent();
+
+        return DuplicateResponse.builder()
+                .duplicate(duplicate)
+                .build();
     }
 
 }
