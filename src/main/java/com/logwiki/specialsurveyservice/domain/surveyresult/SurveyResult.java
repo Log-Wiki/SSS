@@ -65,4 +65,8 @@ public class SurveyResult extends BaseEntity {
         this.userCheck = true;
     }
 
+    public boolean isResponse() {
+        return (userCheck == false || win) && survey.isClosed();
+    }
+
 }
