@@ -13,6 +13,7 @@ public class MyGiveawayResponse {
 
     private boolean win;
     private boolean userCheck;
+    private Long surveyId;
     private String surveyTitle;
     private double probabilty;
     private Long giveawayId;
@@ -22,9 +23,10 @@ public class MyGiveawayResponse {
     private LocalDateTime answerDateTime;
 
     @Builder
-    private MyGiveawayResponse(boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
+    private MyGiveawayResponse(Long surveyId, boolean win, boolean userCheck, String surveyTitle, Long giveawayId,
             GiveawayType giveawayType, String giveawayName, String surveyWriter, LocalDateTime answerDateTime, double probabilty) {
         this.win = win;
+        this.surveyId = surveyId;
         this.userCheck = userCheck;
         this.surveyTitle = surveyTitle;
         this.giveawayId = giveawayId;
@@ -39,6 +41,7 @@ public class MyGiveawayResponse {
 
         return MyGiveawayResponse.builder()
                 .win(surveyResult.isWin())
+                .surveyId(surveyResult.getSurvey().getId())
                 .userCheck(surveyResult.isUserCheck())
                 .surveyTitle(surveyResult.getSurvey().getTitle())
                 .giveawayId(giveaway.getId())

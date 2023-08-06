@@ -108,19 +108,34 @@ public class SurveyResultService {
                 account.getId());
 
         List<SurveyResult> winSurveyResults = surveyResults.stream()
-                .filter(SurveyResult::isWin)
+                .filter(SurveyResult::isResponse)
                 .toList();
 
         return winSurveyResults.stream()
-                .map(surveyResult -> MyGiveawayResponse.of(
-                                surveyResult,
-                                targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
-                                        surveyResult.getSubmitOrder(),
-                                        surveyResult.getSurvey().getId()).getGiveaway(),
-                                accountService.getUserNameById(surveyResult.getSurvey().getWriter()),
-                                (double) surveyResultRepository.findByGiveawaySurvey(surveyResult.getSurvey().getId(), surveyResult.getSubmitOrder())
-                                        .orElseGet(() -> 0) / surveyResult.getSurvey().getHeadCount() * PARSE_100
-                        )
+                .map(surveyResult -> {
+                            if (targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
+                                    surveyResult.getSubmitOrder(),
+                                    surveyResult.getSurvey().getId()) == null) {
+                                return MyGiveawayResponse.builder()
+                                        .win(surveyResult.isWin())
+                                        .userCheck(surveyResult.isUserCheck())
+                                        .surveyTitle(surveyResult.getSurvey().getTitle())
+                                        .surveyWriter(accountService.getUserNameById(surveyResult.getSurvey().getWriter()))
+                                        .probabilty(DEFAULT_PROBABILITY)
+                                        .answerDateTime(surveyResult.getAnswerDateTime())
+                                        .build();
+                            }
+                            return MyGiveawayResponse.of(
+                                    surveyResult,
+                                    targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
+                                                    surveyResult.getSubmitOrder(),
+                                                    surveyResult.getSurvey().getId())
+                                            .getGiveaway(),
+                                    accountService.getUserNameById(surveyResult.getSurvey().getWriter()),
+                                    (double) surveyResultRepository.findByGiveawaySurvey(surveyResult.getSurvey().getId(), surveyResult.getSubmitOrder())
+                                            .orElseGet(() -> 0) / surveyResult.getSurvey().getHeadCount() * PARSE_100
+                            );
+                        }
                 )
                 .toList();
     }
