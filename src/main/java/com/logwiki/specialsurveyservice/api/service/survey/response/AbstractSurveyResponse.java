@@ -16,32 +16,24 @@ import lombok.NoArgsConstructor;
 public class AbstractSurveyResponse {
 
     private Long id;
-
     private String title;
-
     private SurveyCategoryType surveyCategoryType;
-
     private List<AccountCodeType> surveyTarget;
-
     private String writerName;
-
     private Double winningPercent;
-
     private int requiredTimeInSeconds;
-
+    private LocalDateTime startTime;
     private LocalDateTime endTime;
-
     private int headCount;
-
     private int closedHeadCount;
-
+    private int questionCount;
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
     public AbstractSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
             List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
-            int requiredTimeInSeconds, LocalDateTime endTime,
-            int headCount, int closedHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
+            int requiredTimeInSeconds, LocalDateTime startTime, LocalDateTime endTime,
+            int headCount, int closedHeadCount, int questionCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
         this.title = title;
         this.surveyCategoryType = surveyCategoryType;
@@ -49,9 +41,11 @@ public class AbstractSurveyResponse {
         this.writerName = writerName;
         this.winningPercent = winningPercent;
         this.requiredTimeInSeconds = requiredTimeInSeconds;
+        this.startTime = startTime;
         this.endTime = endTime;
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;
+        this.questionCount = questionCount;
         this.surveyGiveaways = surveyGiveaways;
     }
 
@@ -89,9 +83,11 @@ public class AbstractSurveyResponse {
                 .writerName(writerName)
                 .winningPercent(winningPercent)
                 .requiredTimeInSeconds(survey.getRequiredTimeInSeconds())
+                .startTime(survey.getStartTime())
                 .endTime(survey.getEndTime())
                 .headCount(survey.getHeadCount())
                 .closedHeadCount(survey.getClosedHeadCount())
+                .questionCount(survey.getQuestions().size())
                 .surveyGiveaways(survey.getSurveyGiveaways().stream()
                         .map(SurveyGiveawayResponse::from)
                         .collect(Collectors.toList()))
