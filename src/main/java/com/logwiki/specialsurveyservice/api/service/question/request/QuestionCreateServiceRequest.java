@@ -46,9 +46,8 @@ public class QuestionCreateServiceRequest {
                     .build();
 
             question.addMultipleChoices(multipleChoices.stream()
-                    .map(multipleChoiceCreateServiceRequest -> {
-                        return multipleChoiceCreateServiceRequest.toEntity(question);
-                    }).collect(Collectors.toList()));
+                    .map(multipleChoiceCreateServiceRequest -> multipleChoiceCreateServiceRequest.toEntity(question)
+                    ).collect(Collectors.toList()));
 
             return question;
         }
@@ -73,9 +72,9 @@ public class QuestionCreateServiceRequest {
                     .build();
 
             question.addMultipleChoices(multipleChoices.stream()
-                    .map(multipleChoiceCreateServiceRequest -> {
-                        return multipleChoiceCreateServiceRequest.toEntity(question);
-                    }).collect(Collectors.toList()));
+                    .map(multipleChoiceCreateServiceRequest ->
+                            multipleChoiceCreateServiceRequest.toEntity(question)
+                    ).collect(Collectors.toList()));
 
             return question;
         }
