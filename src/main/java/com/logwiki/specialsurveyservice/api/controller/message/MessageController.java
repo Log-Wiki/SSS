@@ -1,5 +1,7 @@
 package com.logwiki.specialsurveyservice.api.controller.message;
 
+import com.logwiki.specialsurveyservice.api.controller.message.request.SmsCertAuthRequest;
+import com.logwiki.specialsurveyservice.api.controller.message.request.SmsCertSendRequest;
 import com.logwiki.specialsurveyservice.api.service.message.MessageService;
 import com.logwiki.specialsurveyservice.api.service.message.request.LongMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.message.request.MultimediaMessageSendServiceRequest;
@@ -8,10 +10,7 @@ import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,6 +32,18 @@ public class MessageController {
     @PostMapping("/message/mms")
     public ApiResponse<?> MultimediaMessageSend(@RequestBody MultimediaMessageSendServiceRequest request, Authentication authentication) {
         return ApiUtils.success( messageService.sendMMS(request));
+    }
+
+
+    @PostMapping ("/message/cert/signup/send")
+    public ApiResponse<?> registCertSend(@RequestBody SmsCertSendRequest smsCertSendRequest) {
+        messageService.sendSMS(messageService.makeCertMessage(smsCertSendRequest.getPhoneNumber()));
+        return ApiUtils.success("CertCode sended");
+    }
+
+    @PostMapping ("/message/cert/signup/auth")
+    public ApiResponse<?> registCertAuth(@RequestBody SmsCertAuthRequest smsCertRequest) {
+        return ApiUtils.success(messageService.checkCertAuthCode(smsCertRequest));
     }
 
 
