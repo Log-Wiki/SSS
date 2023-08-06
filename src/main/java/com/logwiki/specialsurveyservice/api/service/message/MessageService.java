@@ -2,11 +2,13 @@ package com.logwiki.specialsurveyservice.api.service.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.logwiki.specialsurveyservice.api.controller.message.request.SmsCertAuthRequest;
 import com.logwiki.specialsurveyservice.api.service.message.request.LongMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.message.request.ShortMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.domain.message.Message;
 import com.logwiki.specialsurveyservice.api.service.message.request.MultimediaMessageSendServiceRequest;
-import com.logwiki.specialsurveyservice.domain.message.MessageType;
+import com.logwiki.specialsurveyservice.domain.message.MessageAuth;
+import com.logwiki.specialsurveyservice.domain.message.MessageAuthRedisRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -15,6 +17,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.simple.JSONArray;
@@ -22,10 +27,17 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class MessageService {
+    private final MessageAuthRedisRepository messageAuthRedisRepository;
     private final static int SUCCESS = 202;
     private final static int DEFAULT = 0;
     @Value("${apikey.naver-accesskey}")
@@ -34,6 +46,7 @@ public class MessageService {
     private String secretKey;
     @Value("${apikey.naver-message-servickey}")
     private String messageServiceKey;
+
     private String makeSignature(String url, String timestamp, String method)
     {
         String space = " ";					// one space
@@ -297,4 +310,40 @@ public class MessageService {
    }
 
 
+    public ShortMessageSendServiceRequest makeCertMessage(String phoneNumber) {
+        List<Message> messages = new ArrayList<>();
+        Random random = new SecureRandom();
+        String certCode = String.valueOf(random.nextInt(999999));
+
+        MessageAuth messageAuth = MessageAuth.builder()
+                .phoneNumber(phoneNumber)
+                .certAuthCode(certCode)
+                .build();
+
+        messageAuthRedisRepository.save(messageAuth);
+
+        messages.add(Message.builder()
+                .to("01055014037")
+                .content(certCode)
+                .build()
+        );
+        ShortMessageSendServiceRequest request =
+                ShortMessageSendServiceRequest.builder()
+                        .messages(messages)
+                        .from("01055014037")
+                        .content("공통인증메세지")
+                        .build();
+        return request;
+    }
+
+    public boolean checkCertAuthCode(SmsCertAuthRequest smsCertAuthRequest) {
+        Optional<MessageAuth> messageAuthOptional = messageAuthRedisRepository.findByPhoneNumber(smsCertAuthRequest.getPhoneNumber());
+        if(messageAuthOptional.isPresent() == false) {
+            throw new BaseException("인증 요청한 전화번호가 존재하지않습니다." , 2008);
+        }
+        if(smsCertAuthRequest.getCertAuthCode().equals(messageAuthOptional.get().getCertAuthCode())) {
+            return true;
+        }
+        return false;
+    }
 }
