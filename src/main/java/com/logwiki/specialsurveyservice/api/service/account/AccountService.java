@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.api.service.account;
 
+import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.utils.SecurityUtil;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class AccountService {
 
@@ -25,6 +26,7 @@ public class AccountService {
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public AccountResponse signup(AccountCreateServiceRequest request) {
         if (accountRepository.findOneWithAuthoritiesByEmail(request.getEmail()).orElse(null)
                 != null) {
@@ -64,4 +66,24 @@ public class AccountService {
                 .getName();
     }
 
+    @Transactional
+    public AccountResponse updateAccount(AccountUpdateRequest accountUpdateRequest) {
+        Account account = getCurrentAccountBySecurity();
+
+        if(accountUpdateRequest.getPassword() != null) {
+            accountUpdateRequest.encodePassword(passwordEncoder.encode(accountUpdateRequest.getPassword()));
+        }
+
+        Account updatedAccount = account.update(accountUpdateRequest);
+
+        return AccountResponse.from(updatedAccount);
+    }
+
+    @Transactional
+    public AccountResponse deleteAccount() {
+        Account account = getCurrentAccountBySecurity();
+        accountRepository.delete(account);
+
+        return AccountResponse.from(account);
+    }
 }
