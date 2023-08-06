@@ -72,7 +72,6 @@ public class SurveyCreateServiceRequest {
                 requiredTimeInSeconds += REQUIRED_TIME_FOR_MULTIPLE_CHOICE_QUESTION;
             }
         }
-        System.out.println("img다" + img);
 
         Survey survey = Survey.builder()
                 .title(title)
