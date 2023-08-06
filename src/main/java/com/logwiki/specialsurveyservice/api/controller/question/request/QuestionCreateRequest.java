@@ -19,8 +19,11 @@ public class QuestionCreateRequest {
 
     @NotNull(message = "문제번호는 필수입니다.")
     private Long questionNumber;
-
+    
     @NotEmpty(message = "질문내용은 필수입니다.")
+    private String title;
+
+    @NotEmpty(message = "질문 내용은 필수입니다.")
     private String content;
 
     private String imgAddress;
@@ -33,7 +36,7 @@ public class QuestionCreateRequest {
 
     @Builder
     public QuestionCreateRequest(Long questionNumber, String content, String imgAddress,
-                                 QuestionCategoryType type, List<MultipleChoiceCreateRequest> multipleChoices) {
+            QuestionCategoryType type, List<MultipleChoiceCreateRequest> multipleChoices) {
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
