@@ -18,6 +18,7 @@ import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultReposito
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class SurveyResultService {
 
     private final SurveyResultRepository surveyResultRepository;
@@ -156,13 +158,17 @@ public class SurveyResultService {
             throw new BaseException("미응답 설문입니다.", 3014);
         }
 
+        surveyResult.checkResult();
+
         TargetNumber targetNumber = targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(surveyResult.getSubmitOrder(), surveyId);
 
         if (targetNumber == null) {
+            surveyResult.checkResult();
             return ResultPageResponse.builder()
-                    .isWin(false)
+                    .isWin(surveyResult.isWin())
                     .build();
         }
+
         Giveaway giveaway = targetNumber.getGiveaway();
         List<SurveyGiveaway> surveyGiveaway = survey.getSurveyGiveaways();
         double probability = DEFAULT_PROBABILITY;
@@ -174,8 +180,10 @@ public class SurveyResultService {
             }
         }
 
+        surveyResult.winSurvey();
+
         return ResultPageResponse.builder()
-                .isWin(true)
+                .isWin(surveyResult.isWin())
                 .giveawayType(giveaway.getGiveawayType())
                 .giveawayName(giveaway.getName())
                 .probability(probability)
