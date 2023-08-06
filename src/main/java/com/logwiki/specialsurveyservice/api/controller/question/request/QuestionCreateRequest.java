@@ -19,7 +19,7 @@ public class QuestionCreateRequest {
 
     @NotNull(message = "문제번호는 필수입니다.")
     private Long questionNumber;
-    
+
     @NotEmpty(message = "질문내용은 필수입니다.")
     private String title;
 
@@ -55,6 +55,7 @@ public class QuestionCreateRequest {
         if (multipleChoices != null) {
             return QuestionCreateServiceRequest.builder()
                     .questionNumber(questionNumber)
+                    .title(title)
                     .content(content)
                     .imgAddress(imgAddress)
                     .type(type)
@@ -65,6 +66,7 @@ public class QuestionCreateRequest {
         }
         return QuestionCreateServiceRequest.builder()
                 .questionNumber(questionNumber)
+                .title(title)
                 .content(content)
                 .imgAddress(imgAddress)
                 .type(type)
