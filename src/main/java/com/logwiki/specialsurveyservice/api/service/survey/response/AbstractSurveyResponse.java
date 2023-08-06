@@ -1,9 +1,12 @@
 package com.logwiki.specialsurveyservice.api.service.survey.response;
 
+import static com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType.NORMAL;
+
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,32 +19,25 @@ import lombok.NoArgsConstructor;
 public class AbstractSurveyResponse {
 
     private Long id;
-
     private String title;
-
     private SurveyCategoryType surveyCategoryType;
-
     private List<AccountCodeType> surveyTarget;
-
     private String writerName;
-
     private Double winningPercent;
-
     private int requiredTimeInSeconds;
-
+    private LocalDateTime startTime;
     private LocalDateTime endTime;
-
     private int headCount;
-
     private int closedHeadCount;
-
+    private int questionCount;
+    private long winHeadCount;
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
     public AbstractSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
-            List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
-            int requiredTimeInSeconds, LocalDateTime endTime,
-            int headCount, int closedHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
+                                  List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
+                                  int requiredTimeInSeconds, LocalDateTime startTime, LocalDateTime endTime,
+                                  int headCount, int closedHeadCount, int questionCount, long winHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
         this.title = title;
         this.surveyCategoryType = surveyCategoryType;
@@ -49,9 +45,12 @@ public class AbstractSurveyResponse {
         this.writerName = writerName;
         this.winningPercent = winningPercent;
         this.requiredTimeInSeconds = requiredTimeInSeconds;
+        this.startTime = startTime;
         this.endTime = endTime;
         this.headCount = headCount;
         this.closedHeadCount = closedHeadCount;
+        this.questionCount = questionCount;
+        this.winHeadCount = winHeadCount;
         this.surveyGiveaways = surveyGiveaways;
     }
 
@@ -77,6 +76,12 @@ public class AbstractSurveyResponse {
                 break;
         }
 
+        long winHeadCount = survey.getSurveyResults().stream()
+                .filter(SurveyResult::isWin)
+                .count();
+        if(survey.getSurveyCategory().getType().equals(NORMAL))
+            winHeadCount = 0;
+
         return AbstractSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
@@ -89,9 +94,12 @@ public class AbstractSurveyResponse {
                 .writerName(writerName)
                 .winningPercent(winningPercent)
                 .requiredTimeInSeconds(survey.getRequiredTimeInSeconds())
+                .startTime(survey.getStartTime())
                 .endTime(survey.getEndTime())
                 .headCount(survey.getHeadCount())
                 .closedHeadCount(survey.getClosedHeadCount())
+                .questionCount(survey.getQuestions().size())
+                .winHeadCount(winHeadCount)
                 .surveyGiveaways(survey.getSurveyGiveaways().stream()
                         .map(SurveyGiveawayResponse::from)
                         .collect(Collectors.toList()))

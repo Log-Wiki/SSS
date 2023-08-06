@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,7 +68,7 @@ public class SurveyController {
         return ApiUtils.success(surveyService.getRecommendShortTimeSurveyForUser());
     }
     @GetMapping("/survey/detail/{surveyId}")
-    public ApiResponse<?> surveyDetail(@PathVariable Long surveyId) {
+    public ApiResponse<AbstractSurveyResponse> surveyDetail(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getSurveyDetail(surveyId));
     }
 
