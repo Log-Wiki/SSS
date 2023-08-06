@@ -33,6 +33,7 @@ public class Question {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+    @Enumerated(EnumType.STRING)
     private QuestionCategoryType type;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
