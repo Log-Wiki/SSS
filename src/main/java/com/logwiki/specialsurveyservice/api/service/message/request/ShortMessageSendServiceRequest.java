@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ShortMessageSendServiceRequest {
     private MessageType type = MessageType.SHORTMESSAGE;
-    private String from;
+    private String from = "01055014037";
     private String content;
     List<Message> messages;
 
