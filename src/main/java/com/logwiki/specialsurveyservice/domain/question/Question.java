@@ -23,6 +23,8 @@ public class Question {
 
     private Long questionNumber;
 
+    private String title;
+
     private String content;
 
     private String imgAddress;
@@ -38,13 +40,14 @@ public class Question {
 
     @Builder
     public Question(Long questionNumber, String content, String imgAddress, Survey survey,
-            QuestionCategoryType type, List<MultipleChoice> multipleChoice) {
+            QuestionCategoryType type, List<MultipleChoice> multipleChoice, String title) {
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
         this.survey = survey;
         this.type = type;
         this.multipleChoice = multipleChoice;
+        this.title = title;
     }
 
     public void updateQuestion(QuestionModifyServiceRequest questionModifyServiceRequest) {
