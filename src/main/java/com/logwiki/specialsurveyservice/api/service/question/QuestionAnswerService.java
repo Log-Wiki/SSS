@@ -54,8 +54,11 @@ public class QuestionAnswerService {
     }
 
     private List<Question> findQuestionsBySurveyId(Long surveyId) {
-        return questionRepository.findBySurveyId(surveyId).orElseThrow(
-                () -> new BaseException("없는 설문입니다.", 3005));
+        List<Question> questions = questionRepository.findBySurveyId(surveyId);
+        if (questions.size() == 0) {
+            throw new BaseException("없는 설문입니다.", 3005);
+        }
+        return questions;
     }
 
     private void checkIsTarget(Account account, Long surveyId) {
@@ -80,23 +83,32 @@ public class QuestionAnswerService {
         int minimumQuestionAnswerCnt = questions.size();
         Map<Long, Boolean> checkLinkNumber = new HashMap<>();
         for (Question question : questions) {
+            if (question.isEssential()) {
+                minimumQuestionAnswerCnt -= 1;
+                continue;
+            }
             if (question.getType() == QuestionCategoryType.MULTIPLE_CHOICE ||
                     question.getType() == QuestionCategoryType.CHECK_BOX) {
-                int curLinkQuestionCnt = 0;
-                for (MultipleChoice multipleChoice : question.getMultipleChoice()) {
-                    Long curLinkNumber = multipleChoice.getLinkNumber();
-                    if (curLinkNumber != 0 &&
-                            checkLinkNumber.getOrDefault(curLinkNumber, true)) {
-                        curLinkQuestionCnt += 1;
-                        checkLinkNumber.put(curLinkNumber, false);
-                    }
-                }
-                minimumQuestionAnswerCnt -= Math.max(curLinkQuestionCnt - 1, 0);
+                minimumQuestionAnswerCnt -= getMinusAnswerCnt(question.getMultipleChoice(), checkLinkNumber);
             }
         }
         if (minimumQuestionAnswerCnt > dto.size()) {
             throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
         }
+    }
+
+    private int getMinusAnswerCnt(List<MultipleChoice> multipleChoices, Map<Long, Boolean> checkLinkNumber) {
+        final int DEFAULT_ANSWER_CNT = 1;
+        int curLinkQuestionCnt = 0;
+        for (MultipleChoice multipleChoice : multipleChoices) {
+            Long curLinkNumber = multipleChoice.getLinkNumber();
+            if (curLinkNumber != 0 &&
+                    checkLinkNumber.getOrDefault(curLinkNumber, true)) {
+                curLinkQuestionCnt += 1;
+                checkLinkNumber.put(curLinkNumber, false);
+            }
+        }
+        return Math.max(curLinkQuestionCnt - DEFAULT_ANSWER_CNT, 0);
     }
 
     private List<QuestionAnswerResponse> saveQuestionAnswer(
