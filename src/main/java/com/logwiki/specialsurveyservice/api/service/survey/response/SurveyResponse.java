@@ -21,6 +21,8 @@ public class SurveyResponse {
 
     private String title;
 
+    private String img;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -48,7 +50,7 @@ public class SurveyResponse {
     private List<AccountCodeType> surveyTarget;
 
     @Builder
-    public SurveyResponse(Long id, String title, LocalDateTime startTime,
+    public SurveyResponse(String img, Long id, String title, LocalDateTime startTime,
             LocalDateTime endTime, int headCount, int closedHeadCount, Long writer,
             int totalGiveawayCount, boolean closed, int requiredTimeInSeconds,
             Double winningPercent, SurveyCategoryType surveyCategoryType, List<QuestionResponse> questions,
@@ -81,7 +83,7 @@ public class SurveyResponse {
                 winningPercent = ((double) survey.getTotalGiveawayCount() / survey.getClosedHeadCount()) * 100;
                 break;
             case NORMAL:
-                if(survey.getHeadCount() == 0
+                if (survey.getHeadCount() == 0
                         || (double) survey.getTotalGiveawayCount() / survey.getHeadCount() >= 1D)
                     winningPercent = 100D;
                 else
@@ -92,6 +94,7 @@ public class SurveyResponse {
         return SurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
+                .img(survey.getImg())
                 .startTime(survey.getStartTime())
                 .endTime(survey.getEndTime())
                 .headCount(survey.getHeadCount())

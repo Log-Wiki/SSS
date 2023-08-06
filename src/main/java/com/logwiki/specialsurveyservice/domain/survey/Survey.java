@@ -32,6 +32,8 @@ public class Survey extends BaseEntity {
 
     private LocalDateTime endTime;
 
+    private String img;
+
     private int headCount;
 
     private int closedHeadCount;
@@ -60,11 +62,11 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyResult> surveyResults;
 
-    @OneToMany(mappedBy = "survey",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SurveyTarget> surveyTargets;
 
     @Builder
-    public Survey(String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
+    public Survey(String img, String title, LocalDateTime startTime, LocalDateTime endTime, int headCount,
             int closedHeadCount, List<SurveyTarget> surveyTargets,
             Long writer, int totalGiveawayCount, int requiredTimeInSeconds, SurveyCategory type, List<Question> questions) {
         this.title = title;

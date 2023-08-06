@@ -23,6 +23,8 @@ public class SurveyCreateServiceRequest {
 
     private String title;
 
+    private String img;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -40,12 +42,13 @@ public class SurveyCreateServiceRequest {
     private List<AccountCodeType> surveyTarget;
 
     @Builder
-    public SurveyCreateServiceRequest(String title, LocalDateTime startTime, LocalDateTime endTime,
+    public SurveyCreateServiceRequest(String img, String title, LocalDateTime startTime, LocalDateTime endTime,
             int headCount, int closedHeadCount, SurveyCategoryType type,
             List<QuestionCreateServiceRequest> questions,
             List<GiveawayAssignServiceRequest> giveaways,
             List<AccountCodeType> surveyTarget) {
         this.title = title;
+        this.img = img;
         this.startTime = startTime;
         this.endTime = endTime;
         this.headCount = headCount;
@@ -59,11 +62,10 @@ public class SurveyCreateServiceRequest {
     public Survey toEntity(Long userId) {
 
         int requiredTimeInSeconds = 0;
-        for(QuestionCreateServiceRequest question : questions){
-            if(question.getType().equals(QuestionCategoryType.SHORT_FORM)) {
+        for (QuestionCreateServiceRequest question : questions) {
+            if (question.getType().equals(QuestionCategoryType.SHORT_FORM)) {
                 requiredTimeInSeconds += REQUIRED_TIME_FOR_SHORT_FORM_QUESTION;
-            }
-            else if(question.getType().equals(QuestionCategoryType.MULTIPLE_CHOICE)) {
+            } else if (question.getType().equals(QuestionCategoryType.MULTIPLE_CHOICE)) {
                 requiredTimeInSeconds += REQUIRED_TIME_FOR_MULTIPLE_CHOICE_QUESTION;
             }
         }
@@ -71,6 +73,7 @@ public class SurveyCreateServiceRequest {
         Survey survey = Survey.builder()
                 .title(title)
                 .startTime(startTime)
+                .img(img)
                 .endTime(endTime)
                 .headCount(headCount)
                 .closedHeadCount(closedHeadCount)

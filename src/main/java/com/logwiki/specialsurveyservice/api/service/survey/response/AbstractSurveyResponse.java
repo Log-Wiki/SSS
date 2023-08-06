@@ -4,12 +4,13 @@ import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGive
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -18,6 +19,8 @@ public class AbstractSurveyResponse {
     private Long id;
 
     private String title;
+
+    private String img;
 
     private SurveyCategoryType surveyCategoryType;
 
@@ -38,11 +41,12 @@ public class AbstractSurveyResponse {
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
-    public AbstractSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
+    public AbstractSurveyResponse(String img, Long id, String title, SurveyCategoryType surveyCategoryType,
             List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
             int requiredTimeInSeconds, LocalDateTime endTime,
             int headCount, int closedHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
+        this.img = img;
         this.title = title;
         this.surveyCategoryType = surveyCategoryType;
         this.surveyTarget = surveyTarget;
@@ -80,6 +84,7 @@ public class AbstractSurveyResponse {
         return AbstractSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
+                .img(survey.getImg())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .surveyTarget(survey.getSurveyTargets().stream()
                         .map(surveyTarget1 -> {
