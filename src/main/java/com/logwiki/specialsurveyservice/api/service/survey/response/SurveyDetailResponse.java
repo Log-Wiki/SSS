@@ -28,19 +28,16 @@ public class SurveyDetailResponse {
 
     private final List<String> giveawayNames;
 
-    private final double winRate;
+    private final double winningPercent;
 
     private final int questionCount;
-
-    private final double estimateTime;
 
     private final int requiredTimeInSeconds;
 
     @Builder
     public SurveyDetailResponse(String title, LocalDateTime startTime , LocalDateTime endTime,
             int headCount , int closedHeadCount , Long writer, String writerName , SurveyCategoryType surveyCategoryType,
-            List<String> giveawayNames, double winRate , int questionCount , double estimateTime,
-            int requiredTimeInSeconds) {
+            List<String> giveawayNames, double winningPercent , int questionCount , int requiredTimeInSeconds) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -50,13 +47,12 @@ public class SurveyDetailResponse {
         this.writerName = writerName;
         this.surveyCategoryType = surveyCategoryType;
         this.giveawayNames = giveawayNames;
-        this.winRate = winRate;
+        this.winningPercent = winningPercent;
         this.questionCount = questionCount;
-        this.estimateTime = estimateTime;
         this.requiredTimeInSeconds = requiredTimeInSeconds;
     }
 
-    public static SurveyDetailResponse of(Survey targetSurvey, double winRate, List<String> giveawayNames, String writerName) {
+    public static SurveyDetailResponse of(Survey targetSurvey, double winningPercent, List<String> giveawayNames, String writerName) {
         return SurveyDetailResponse.builder()
                 .surveyCategoryType(targetSurvey.getSurveyCategory().getType())
                 .title(targetSurvey.getTitle())
@@ -67,8 +63,7 @@ public class SurveyDetailResponse {
                 .requiredTimeInSeconds(targetSurvey.getRequiredTimeInSeconds())
                 .writer(targetSurvey.getWriter())
                 .writerName(writerName)
-                .winRate(winRate)
-                .estimateTime(0)
+                .winningPercent(winningPercent)
                 .questionCount(targetSurvey.getQuestions().size())
                 .giveawayNames(giveawayNames)
                 .build();
