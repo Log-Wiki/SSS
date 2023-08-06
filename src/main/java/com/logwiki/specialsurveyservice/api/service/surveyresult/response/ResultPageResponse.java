@@ -11,13 +11,11 @@ public class ResultPageResponse {
     private boolean isWin;
     private GiveawayType giveawayType;
     private String giveawayName;
-    private double probability;
 
     @Builder
-    public ResultPageResponse(boolean isWin, GiveawayType giveawayType, String giveawayName, double probability) {
+    public ResultPageResponse(boolean isWin, GiveawayType giveawayType, String giveawayName) {
         this.isWin = isWin;
         this.giveawayType = giveawayType;
         this.giveawayName = giveawayName;
-        this.probability = probability;
     }
 }
