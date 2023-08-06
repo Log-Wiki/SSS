@@ -14,17 +14,11 @@ import java.util.stream.Collectors;
 public class QuestionResponse {
 
     private Long id;
-
     private Long questionNumber;
-
     private String title;
-
     private String content;
-
     private String imgAddress;
-
     private QuestionCategoryType type;
-
     private List<MultipleChoiceResponse> multipleChoices;
 
     @Builder
