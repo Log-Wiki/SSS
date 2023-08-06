@@ -16,8 +16,6 @@ public class QuestionCreateServiceRequest {
 
     private Long questionNumber;
 
-    private String title;
-
     private String content;
 
     private String imgAddress;
@@ -27,10 +25,9 @@ public class QuestionCreateServiceRequest {
     private List<MultipleChoiceCreateServiceRequest> multipleChoices;
 
     @Builder
-    public QuestionCreateServiceRequest(String title, Long questionNumber, String content,
+    public QuestionCreateServiceRequest(Long questionNumber, String content,
             String imgAddress,
             QuestionCategoryType type, List<MultipleChoiceCreateServiceRequest> multipleChoices) {
-        this.title = title;
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
@@ -42,7 +39,6 @@ public class QuestionCreateServiceRequest {
         if (multipleChoices != null) {
             Question question = Question.builder()
                     .questionNumber(questionNumber)
-                    .title(title)
                     .content(content)
                     .survey(survey)
                     .imgAddress(imgAddress)
@@ -58,7 +54,6 @@ public class QuestionCreateServiceRequest {
         }
         return Question.builder()
                 .questionNumber(questionNumber)
-                .title(title)
                 .content(content)
                 .imgAddress(imgAddress)
                 .survey(survey)
@@ -70,7 +65,6 @@ public class QuestionCreateServiceRequest {
         if (multipleChoices != null) {
             Question question = Question.builder()
                     .questionNumber(questionNumber)
-                    .title(title)
                     .content(content)
                     .imgAddress(imgAddress)
                     .type(type)
@@ -85,7 +79,6 @@ public class QuestionCreateServiceRequest {
         }
         return Question.builder()
                 .questionNumber(questionNumber)
-                .title(title)
                 .content(content)
                 .imgAddress(imgAddress)
                 .type(type)
