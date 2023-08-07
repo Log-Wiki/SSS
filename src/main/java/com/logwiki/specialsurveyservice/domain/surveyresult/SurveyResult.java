@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.domain.surveyresult;
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -67,7 +68,13 @@ public class SurveyResult extends BaseEntity {
     }
 
     public boolean isResponse() {
-        return (userCheck == false || win) && survey.isClosed();
+        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            if ((userCheck == false || win) && survey.isClosed()) {
+                return true;
+            }
+            return false;
+        }
+        return win;
     }
 
 }

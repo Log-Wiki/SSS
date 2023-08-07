@@ -52,8 +52,10 @@ public class ScheduleService {
         JobKey jobKey = jobDetail.getKey();
         String name = jobKey.getName();
         String group = jobKey.getGroup();
-
         Date date = Date.from(dto.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+            date = Date.from(LocalDateTime.now().plusSeconds(5).atZone(ZoneId.systemDefault()).toInstant());
+        }
 
         Trigger trigger = buildOneTimeJobTrigger(jobDetail, date, START_SURVEY);
         scheduler.scheduleJob(jobDetail, trigger);
