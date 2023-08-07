@@ -96,11 +96,11 @@ public class SurveyResultService {
 
         if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
             sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
-            if(targetSurvey.isClosed() == false)
+            if (targetSurvey.isClosed() == false)
                 resultSuccess = false;
         }
         sseConnectService.refreshSurveyFinisher(surveyResponse.getId(),
-                SurveyAnswerResponse.from(surveyResult,giveawayName, resultSuccess));
+                SurveyAnswerResponse.from(surveyResult, giveawayName, resultSuccess));
     }
 
     public int createSubmitOrderIn(Long surveyId) {
@@ -197,6 +197,11 @@ public class SurveyResultService {
         Account account = accountService.getCurrentAccountBySecurity();
         Survey survey = surveyRepository.findById(surveyId).orElseThrow(() ->
                 new BaseException("없는 설문입니다.", 3005));
+
+        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
+            throw new BaseException("마이페이지 당첨 결과는 노말 타입만 확인이 가능합니다.", 3019);
+        }
+
         if (survey.isClosed()) {
 
             SurveyResult surveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
