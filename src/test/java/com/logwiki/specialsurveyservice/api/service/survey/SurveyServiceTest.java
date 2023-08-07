@@ -12,7 +12,6 @@ import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAns
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyDetailResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
@@ -32,7 +31,6 @@ import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryRepo
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -912,7 +910,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
 
         SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
         // when
-        SurveyDetailResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
+        AbstractSurveyResponse response = surveyService.getSurveyDetail(saveSurvey.getId());
         // then
         assertThat(response).isNotNull();
         assertThat(response.getSurveyCategoryType()).isEqualTo(surveyCategoryType);
