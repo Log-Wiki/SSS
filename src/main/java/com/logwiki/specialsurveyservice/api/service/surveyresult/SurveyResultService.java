@@ -38,6 +38,8 @@ public class SurveyResultService {
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
     private final SseConnectService sseConnectService;
+
+    private static final String LOSEPRODUCT = "꽝";
     private final static boolean DEFAULT_WIN = false;
     private final static double DEFAULT_PROBABILITY = 0;
     private final static double PARSE_100 = 100;
@@ -84,7 +86,7 @@ public class SurveyResultService {
         boolean resultSuccess = false;
 
 
-        String giveawayName = null;
+        String giveawayName = LOSEPRODUCT;
 
         Optional<TargetNumber> targetNumber = targetNumberRepository.findFirstBySurveyAndNumber(
                 targetSurvey,
@@ -96,8 +98,11 @@ public class SurveyResultService {
 
         if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
             sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
-            if (targetSurvey.isClosed() == false)
+            if(targetSurvey.isClosed() == false) {
                 resultSuccess = false;
+                giveawayName = LOSEPRODUCT;
+            }
+
         }
         sseConnectService.refreshSurveyFinisher(surveyResponse.getId(),
                 SurveyAnswerResponse.from(surveyResult, giveawayName, resultSuccess));

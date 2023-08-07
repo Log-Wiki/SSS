@@ -250,13 +250,20 @@ public class SurveyService {
             for (SurveyResult surveyResult : targetSurvey.getSurveyResults()) {
                 String giveawayName = LOSEPRODUCT;
                 boolean isWin = false;
-                if(targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
-                    Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
-                            targetSurvey, surveyResult.getSubmitOrder());
-                    if (tn.isPresent()) {
-                        isWin = true;
-                        giveawayName = tn.get().getGiveaway().getName();
+
+                Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
+                        targetSurvey, surveyResult.getSubmitOrder());
+                if (tn.isPresent()) {
+                    isWin = true;
+                    giveawayName = tn.get().getGiveaway().getName();
+                }
+
+                if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+                    if(targetSurvey.isClosed() == false) {
+                        isWin = false;
+                        giveawayName = LOSEPRODUCT;
                     }
+
                 }
                 surveyResponseResults.add(SurveyAnswerResponse.from(surveyResult,giveawayName,isWin));
             }
