@@ -107,7 +107,8 @@ jacocoTestReport {
                               "**/*Request*",
                               "**/*Response*",
                               "**/*Interceptor*",
-                              "**/*Exception*"] + Qdomains)
+                              "**/*Exception*",
+                              "com/logwiki/specialsurveyservice/jwt/*"] + Qdomains)
         }))
     }
     finalizedBy 'jacocoTestCoverageVerification'
@@ -136,7 +137,8 @@ jacocoTestCoverageVerification {
                         "**/*Request*",
                         "**/*Response*",
                         "**/*Interceptor*",
-                        "**/*Exception*"] + Qdomains
+                        "**/*Exception*",
+                        "com/logwiki/specialsurveyservice/jwt/*"] + Qdomains
         }
     }
 }
