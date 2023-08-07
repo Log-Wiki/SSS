@@ -20,6 +20,7 @@ import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultRepository;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
+import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,11 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 class SurveyResultServiceTest extends IntegrationTestSupport {
@@ -59,32 +60,13 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     void addSubmitResult() {
         // given
         setAuthority();
-        String email = "duswo0624@naver.com";
-        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
-                .email(email)
-                .password("1234")
-                .gender(AccountCodeType.MAN)
-                .age(AccountCodeType.TWENTIES)
-                .name("최연재")
-                .phoneNumber("010-1234-5678")
-                .birthday(LocalDate.of(1997, 6, 24))
-                .build();
-        accountService.signup(accountCreateServiceRequest);
+        saveAccountYJ();
 
 
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
                 .build();
-        Survey survey = Survey.builder()
-                .title("당신은 어떤 과일을 좋아하십니까?")
-                .startTime(LocalDateTime.now().minusDays(1))
-                .endTime(LocalDateTime.now().plusDays(3))
-                .headCount(50)
-                .closedHeadCount(100)
-                .writer(accountService.getCurrentAccountBySecurity().getId())
-                .type(surveyCategory)
-                .build();
-        survey.toOpen();
+        Survey survey = getSurvey(50, 100, surveyCategory);
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(3)
@@ -114,32 +96,15 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     Collection<DynamicTest> createSubmitOrderIn() {
         // given
         setAuthority();
-        String email = "duswo0624@naver.com";
-        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
-                .email(email)
-                .password("1234")
-                .gender(AccountCodeType.MAN)
-                .age(AccountCodeType.TWENTIES)
-                .name("최연재")
-                .phoneNumber("010-1234-5678")
-                .birthday(LocalDate.of(1997, 6, 24))
-                .build();
-        accountService.signup(accountCreateServiceRequest);
+        saveAccountYJ();
+
 
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
                 .build();
+        //
+        Survey survey = getSurvey(50, 100, surveyCategory);
 
-        Survey survey = Survey.builder()
-                .title("당신은 어떤 과일을 좋아하십니까?")
-                .startTime(LocalDateTime.now().minusDays(1))
-                .endTime(LocalDateTime.now().plusDays(3))
-                .headCount(50)
-                .closedHeadCount(100)
-                .writer(accountService.getCurrentAccountBySecurity().getId())
-                .type(surveyCategory)
-                .build();
-        survey.toOpen();
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(3)
@@ -165,20 +130,10 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void notWinProbabilityZero() {
-// given
+        // given
         setAuthority();
-        String email = "duswo0624@naver.com";
-        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
-                .email(email)
-                .password("1234")
-                .gender(AccountCodeType.MAN)
-                .age(AccountCodeType.TWENTIES)
-                .name("최연재")
-                .phoneNumber("010-1234-5678")
-                .birthday(LocalDate.of(1997, 6, 24))
-                .build();
-        accountService.signup(accountCreateServiceRequest);
-
+        saveAccountYJ();
+        // 카테고리 생성
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
                 .build();
@@ -190,16 +145,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .price(10000)
                 .build();
 
-
-        Survey survey = Survey.builder()
-                .title("당신은 어떤 과일을 좋아하십니까?")
-                .startTime(LocalDateTime.now().minusDays(1))
-                .endTime(LocalDateTime.now().plusDays(3))
-                .headCount(1)
-                .closedHeadCount(1)
-                .writer(accountService.getCurrentAccountBySecurity().getId())
-                .type(surveyCategory)
-                .build();
+        Survey survey = getSurvey(1, 1, surveyCategory);
         survey.toClose();
 
         SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
@@ -207,10 +153,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .count(1)
                 .survey(survey)
                 .build();
-        List<SurveyGiveaway> surveyGiveaways = new ArrayList<>();
-        surveyGiveaways.add(surveyGiveaway);
-
-        survey.addSurveyGiveaways(surveyGiveaways);
+        survey.addSurveyGiveaways(List.of(surveyGiveaway));
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(1)
@@ -222,22 +165,11 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         giveawayRepository.save(giveaway);
 
         //설문 당첨 상품
-
         surveyRepository.save(survey);
-        survey.getSurveyGiveaways().add(surveyGiveaway);
 
         // 상품 생성
-        SurveyResult surveyResult = SurveyResult.builder()
-                .win(false)
-                .answerDateTime(LocalDateTime.now())
-                .survey(survey)
-                .userCheck(false)
-                .account(accountService.getCurrentAccountBySecurity())
-                .submitOrder(2)
-                .build();
-        surveyResultRepository.save(surveyResult);
+        SurveyResult surveyResult = getSurveyResult(survey, 2, true);
 
-        System.out.println(accountService.getCurrentAccountBySecurity().getId());
         List<MyGiveawayResponse> myGiveawayResponses = surveyResultService.getMyGiveaways();
 
         double ZERO_PROBABILITY = 0;
@@ -251,17 +183,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     void winProbability100Percent() {
         // given
         setAuthority();
-        String email = "duswo0624@naver.com";
-        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
-                .email(email)
-                .password("1234")
-                .gender(AccountCodeType.MAN)
-                .age(AccountCodeType.TWENTIES)
-                .name("최연재")
-                .phoneNumber("010-1234-5678")
-                .birthday(LocalDate.of(1997, 6, 24))
-                .build();
-        accountService.signup(accountCreateServiceRequest);
+        saveAccountYJ();
 
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
@@ -273,17 +195,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .name("커피")
                 .price(10000)
                 .build();
-
-
-        Survey survey = Survey.builder()
-                .title("당신은 어떤 과일을 좋아하십니까?")
-                .startTime(LocalDateTime.now().minusDays(1))
-                .endTime(LocalDateTime.now().plusDays(3))
-                .headCount(1)
-                .closedHeadCount(1)
-                .writer(accountService.getCurrentAccountBySecurity().getId())
-                .type(surveyCategory)
-                .build();
+        Survey survey = getSurvey(1, 1, surveyCategory);
         survey.toClose();
 
         SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
@@ -291,10 +203,8 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 .count(1)
                 .survey(survey)
                 .build();
-        List<SurveyGiveaway> surveyGiveaways = new ArrayList<>();
-        surveyGiveaways.add(surveyGiveaway);
 
-        survey.addSurveyGiveaways(surveyGiveaways);
+        survey.addSurveyGiveaways(List.of(surveyGiveaway));
 
         TargetNumber targetNumber = TargetNumber.builder()
                 .number(1)
@@ -308,27 +218,347 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         //설문 당첨 상품
 
         surveyRepository.save(survey);
-        survey.getSurveyGiveaways().add(surveyGiveaway);
 
         // 상품 생성
-        SurveyResult surveyResult = SurveyResult.builder()
-                .win(true)
-                .answerDateTime(LocalDateTime.now())
-                .survey(survey)
-                .userCheck(false)
-                .account(accountService.getCurrentAccountBySecurity())
-                .submitOrder(1)
-                .build();
-        surveyResultRepository.save(surveyResult);
-
+        SurveyResult surveyResult = getSurveyResult(survey, 1, true);
 
         List<MyGiveawayResponse> myGiveawayResponses = surveyResultService.getMyGiveaways();
 
         double PROBABILITY_100 = 100;
-        double a = surveyResultRepository.findByGiveawaySurvey(surveyResult.getSurvey().getId(), surveyResult.getSubmitOrder())
-                .orElseGet(() -> 0);
 
         assertThat(myGiveawayResponses.get(0).getProbabilty()).isEqualTo(PROBABILITY_100);
+    }
+
+    @Nested
+    @DisplayName("즉시당첨 설문 응답 결과 확인 테스트")
+    class SurveyResultCheck {
+        @Nested
+        @DisplayName("실패 테스트")
+        class Fail {
+
+            @DisplayName("없는 설문을 조회할시 에러를 반환한다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void emptySurveyIsThrowError() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                assertThatThrownBy(() -> surveyResultService.getSurveyResult(1L))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("없는 설문입니다.");
+            }
+
+            @DisplayName("즉시당첨만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckInstance() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+                assertThatThrownBy(() -> surveyResultService.getSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("즉시 당첨만 확인이 가능합니다.");
+            }
+
+            @DisplayName("응답한 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+                assertThatThrownBy(() -> surveyResultService.getSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("미응답 설문입니다.");
+            }
+        }
+
+        @Nested
+        @DisplayName("성공 테스트")
+        class Success {
+            @DisplayName("당첨이 되지않은 결과인 경우 isWin 은 False 이다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(1, 1, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 2, false);
+
+                assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(false);
+            }
+
+            @DisplayName("당첨된 결과인 경우 isWin 은 true 이다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void isWinTrue() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(1, 1, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, false);
+
+                assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(true);
+            }
+
+
+        }
+    }
+
+    @Nested
+    @DisplayName("마이페이지 설문 당첨결과 확인 테스트")
+    class MyPageSurveyResultCheck {
+        @Nested
+        @DisplayName("실패 테스트")
+        class Fail {
+
+            @DisplayName("없는 설문을 조회할시 에러를 반환한다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void emptySurveyIsThrowError() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(1L))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("없는 설문입니다.");
+            }
+
+            @DisplayName("응답한 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                survey.toClose();
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("미응답 설문입니다.");
+            }
+
+            @DisplayName("마감된 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckCloseSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마감되지 않은 설문은 결과를 확인할수 없습니다.");
+            }
+
+            @DisplayName("마이페이지에서 결과 확인은 노말타입 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckTypeIsNormal() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마이페이지 당첨 결과는 노말 타입만 확인이 가능합니다.");
+            }
+
+            @DisplayName("미응답 설문은 결과를 확인 할 수 없다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canNotCheckResultNoAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마감되지 않은 설문은 결과를 확인할수 없습니다.");
+            }
+        }
+
+        @Nested
+        @DisplayName("성공 테스트")
+        class Success {
+            @DisplayName("당첨된 결과인 경우 isWin 은 true 이다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void isWinTrue() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(1, 1, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, true);
+
+                assertThat(surveyResultService.patchSurveyResult(survey.getId()).isWin()).isEqualTo(true);
+            }
+        }
+    }
+
+    private Survey getSurvey(int headCount, int closedHeadCount, SurveyCategory surveyCategory) {
+        Survey survey = Survey.builder()
+                .title("당신은 어떤 과일을 좋아하십니까?")
+                .startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().plusDays(3))
+                .headCount(headCount)
+                .closedHeadCount(closedHeadCount)
+                .writer(accountService.getCurrentAccountBySecurity().getId())
+                .type(surveyCategory)
+                .build();
+        survey.toOpen();
+        return survey;
+    }
+
+    private void saveAccountYJ() {
+        String email = "duswo0624@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+    }
+
+    private SurveyResult getSurveyResult(Survey survey, int submitOrder, boolean isWin) {
+        SurveyResult surveyResult = SurveyResult.builder()
+                .win(isWin)
+                .answerDateTime(LocalDateTime.now())
+                .survey(survey)
+                .userCheck(false)
+                .account(accountService.getCurrentAccountBySecurity())
+                .submitOrder(submitOrder)
+                .build();
+        surveyResultRepository.save(surveyResult);
+        return surveyResult;
     }
 
     private void setAuthority() {
