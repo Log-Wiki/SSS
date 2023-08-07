@@ -21,8 +21,8 @@ public class SseConnectService {
         sseEmitter = emitterRepository.save(id , sseEmitter);
         try {
             sseEmitter.send(SseEmitter.event()
-                    .name("connectName")
-                    .data("connectedMessage" , MediaType.TEXT_EVENT_STREAM)
+                    .name("SSE연결")
+                    .data("SSE연결성공" , MediaType.TEXT_EVENT_STREAM)
             );
         }
         catch (IOException e) {

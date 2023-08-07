@@ -81,9 +81,8 @@ public class SurveyResultService {
     public void sendResultToSSE(Long surveyId, SurveyResult surveyResult, int submitOrder) {
         Survey targetSurvey = surveyRepository.findById(surveyId).get();
         SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
-        if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
-            sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
-        }
+        boolean resultSuccess = false;
+
 
         String giveawayName = null;
 
@@ -92,12 +91,16 @@ public class SurveyResultService {
                 submitOrder);
         if (targetNumber.isPresent()) {
             giveawayName = targetNumber.get().getGiveaway().getName();
+            resultSuccess = true;
         }
-        sseConnectService.refreshSurveyFinisher(surveyResponse.getId(), SurveyAnswerResponse.builder()
-                .answerTime(surveyResult.getAnswerDateTime())
-                .giveAwayName(giveawayName)
-                .isWin(false)
-                .name(surveyResult.getAccount().getName()).build());
+
+        if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
+            if(targetSurvey.isClosed() == false)
+                resultSuccess = false;
+        }
+        sseConnectService.refreshSurveyFinisher(surveyResponse.getId(),
+                SurveyAnswerResponse.from(surveyResult,giveawayName, resultSuccess));
     }
 
     public int createSubmitOrderIn(Long surveyId) {
