@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@lombok.Generated
 public enum AccountCodeType {
 
     MAN("남자"), WOMAN("여자"), UNDER_TEENS("10세 미만"),

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@lombok.Generated
 public enum AuthorityType {
 
     ROLE_ADMIN("ROLE_ADMIN"),

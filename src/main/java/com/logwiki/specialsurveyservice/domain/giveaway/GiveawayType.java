@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@lombok.Generated
 public enum GiveawayType {
 
     @JsonProperty("COFFEE")
