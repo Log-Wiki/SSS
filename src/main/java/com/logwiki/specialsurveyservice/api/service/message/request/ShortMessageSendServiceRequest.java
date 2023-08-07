@@ -5,12 +5,14 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @NoArgsConstructor
 @Getter
 public class ShortMessageSendServiceRequest {
     private MessageType type = MessageType.SHORTMESSAGE;
-    private String from = "01055014037";
+    @Value("{sender.phone-number}")
+    private String from;
     private String content;
     List<Message> messages;
 

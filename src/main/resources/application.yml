@@ -33,6 +33,10 @@ apikey:
   naver-secretkey: DpDVZgrDqbK5neoRR9oqlAAReOn6vBPzAmsMEBvj
   naver-message-servickey: ncp:sms:kr:299147416082:supersurveyservice
 
+sender:
+  phone-number: 01055014037
+
+
 
 ---
 spring:
