@@ -93,17 +93,50 @@ jacocoTestReport {
         csv.required = false
     }
 
+    def Qdomains = []
+    for (qPattern in '*.QA'..'*.QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ["**/*Application*",
+                              "**/*Config*",
+                              "**/*Dto*",
+                              "**/*Request*",
+                              "**/*Response*",
+                              "**/*Interceptor*",
+                              "**/*Exception*"] + Qdomains)
+        }))
+    }
     finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
+    def Qdomains = []
+    for (qPattern in '*.QA'..'*.QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+
     violationRules {
         rule {
+            element = 'CLASS'
+            enabled = true
+
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
                 minimum = 0.00
             }
+
+            excludes = ["**/*Application*",
+                        "**/*Config*",
+                        "**/*Dto*",
+                        "**/*Request*",
+                        "**/*Response*",
+                        "**/*Interceptor*",
+                        "**/*Exception*"] + Qdomains
         }
     }
 }
