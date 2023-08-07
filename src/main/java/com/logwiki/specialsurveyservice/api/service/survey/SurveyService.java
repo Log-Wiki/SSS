@@ -1,8 +1,8 @@
 package com.logwiki.specialsurveyservice.api.service.survey;
 
 
-import com.logwiki.specialsurveyservice.api.controller.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
