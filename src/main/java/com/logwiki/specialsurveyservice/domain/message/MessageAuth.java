@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @RedisHash(value = "messageAuth", timeToLive = 60 * 5)
 @NoArgsConstructor
 @AllArgsConstructor
+@lombok.Generated
 public class MessageAuth {
     @Id
     private String id;

@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@lombok.Generated
 public class AccountAuthority extends BaseEntity {
 
     @Id

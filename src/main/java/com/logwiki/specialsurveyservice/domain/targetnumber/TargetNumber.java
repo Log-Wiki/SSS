@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@lombok.Generated
 public class TargetNumber extends BaseEntity {
 
     @Id

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@lombok.Generated
 public enum QuestionCategoryType {
 
     SHORT_FORM("주관식"), MULTIPLE_CHOICE("객관식"),

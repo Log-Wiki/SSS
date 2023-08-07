@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@lombok.Generated
 public class Message {
     private String to;
     private String content;

@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
 @Repository
+@lombok.Generated
 public class EmitterRepository {
     public final Map<String , SseEmitter> sseEmitterMap = new ConcurrentHashMap<>();
 

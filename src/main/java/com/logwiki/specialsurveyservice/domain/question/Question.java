@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@lombok.Generated
 public class Question {
 
     @Id

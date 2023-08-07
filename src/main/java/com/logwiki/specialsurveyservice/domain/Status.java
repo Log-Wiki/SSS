@@ -1,5 +1,6 @@
 package com.logwiki.specialsurveyservice.domain;
 
+@lombok.Generated
 public enum Status {
   ACTIVE("Active"),
   INACTIVE("Inactive");

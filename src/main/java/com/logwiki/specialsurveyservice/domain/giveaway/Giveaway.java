@@ -15,6 +15,7 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = "UPDATE giveaway SET status = 'INACTIVE' WHERE id = ?")
 @Where(clause = "status = 'ACTIVE'")
 @Entity
+@lombok.Generated
 public class Giveaway extends BaseEntity {
 
     @Id

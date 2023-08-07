@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@lombok.Generated
 public class SurveyResult extends BaseEntity {
 
     @Id
