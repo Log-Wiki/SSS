@@ -90,11 +90,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-    defer-datasource-initialization: true
+  cache:
+    redis:
+      time-to-live: 3600 # 데이터 유지 시간(sec)
+      cache-null-values: true # null 캐싱 여부
+      host: ${HOME_HOST}
+      port: 6379
 
 logging:
   level:
