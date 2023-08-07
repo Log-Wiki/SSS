@@ -53,8 +53,8 @@ public class PrdSecurityConfig {
                                 "/api/message/cert/signup/send" , "/api/message/cert/signup/auth",
                                 "/api/survey/recommend/normal/anonymous", "/api/survey/recommend/instant/anonymous",
                                 "/api/survey/recommend/time/anonymous",
-                                "/api/survey/detail/*",
-                                "/api/survey/answer/log/*",
+                                "/api/survey/detail/**",
+                                "/api/survey/answer/log/**",
                                 "/api/duplicate/email",
                                 "/api/duplicate/phone-number")
                         .permitAll()
