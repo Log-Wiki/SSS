@@ -76,6 +76,13 @@ public class AccountService {
             accountUpdateRequest.encodePassword(passwordEncoder.encode(accountUpdateRequest.getPassword()));
         }
 
+        if(accountUpdateRequest.getPhoneNumber() != null) {
+            if(accountRepository.findOneWithAuthoritiesByPhoneNumber(accountUpdateRequest.getPhoneNumber()).orElse(null)
+                    != null) {
+                throw new BaseException("동일한 휴대폰 번호로 가입되어 있는 계정이 존재합니다.", 2007);
+            }
+        }
+
         Account updatedAccount = account.update(accountUpdateRequest);
 
         return AccountResponse.from(updatedAccount);
