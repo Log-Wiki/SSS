@@ -6,11 +6,13 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @NoArgsConstructor
 @Getter
 public class LongMessageSendServiceRequest {
     private MessageType type = MessageType.LONGMESSAGE;
+    @Value("${sender.phone-number}")
     private String from;
     private String content;
     List<Message> messages;
