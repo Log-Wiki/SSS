@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -67,7 +66,7 @@ class QuestionAnswerServiceTest {
 
         // when
         when(questionRepository.findBySurveyId(any()))
-                .thenReturn(Optional.ofNullable(null));
+                .thenReturn(new ArrayList<>());
         when(accountService.getCurrentAccountBySecurity())
                 .thenReturn(account);
 
@@ -127,7 +126,7 @@ class QuestionAnswerServiceTest {
 
         // when
         when(questionRepository.findBySurveyId(any()))
-                .thenReturn(Optional.of(questions));
+                .thenReturn(questions);
         when(accountService.getCurrentAccountBySecurity())
                 .thenReturn(account);
         when(surveyTargetRepository.findSurveyTargetBySurvey_Id(any()))
@@ -184,7 +183,7 @@ class QuestionAnswerServiceTest {
         when(accountService.getCurrentAccountBySecurity())
                 .thenReturn(account);
         when(questionRepository.findBySurveyId(any()))
-                .thenReturn(Optional.of(questions));
+                .thenReturn(questions);
         when(surveyTargetRepository.findSurveyTargetBySurvey_Id(any()))
                 .thenReturn(surveyTargets);
 

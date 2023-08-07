@@ -7,6 +7,7 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,12 +15,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 @NoArgsConstructor
 public class AbstractSurveyResponse {
 
     private Long id;
     private String title;
+    private String content;
+    private String img;
     private SurveyCategoryType surveyCategoryType;
     private List<AccountCodeType> surveyTarget;
     private String writerName;
@@ -34,12 +41,14 @@ public class AbstractSurveyResponse {
     private List<SurveyGiveawayResponse> surveyGiveaways;
 
     @Builder
-    public AbstractSurveyResponse(Long id , String title, SurveyCategoryType surveyCategoryType,
+    public AbstractSurveyResponse(String content, String img,Long id , String title, SurveyCategoryType surveyCategoryType,
                                   List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
                                   int requiredTimeInSeconds, LocalDateTime startTime, LocalDateTime endTime,
                                   int headCount, int closedHeadCount, int questionCount, long winHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
         this.id = id;
+        this.img = img;
         this.title = title;
+        this.content = content;
         this.surveyCategoryType = surveyCategoryType;
         this.surveyTarget = surveyTarget;
         this.writerName = writerName;
@@ -85,6 +94,8 @@ public class AbstractSurveyResponse {
         return AbstractSurveyResponse.builder()
                 .id(survey.getId())
                 .title(survey.getTitle())
+                .content(survey.getContent())
+                .img(survey.getImg())
                 .surveyCategoryType(survey.getSurveyCategory().getType())
                 .surveyTarget(survey.getSurveyTargets().stream()
                         .map(surveyTarget1 -> {

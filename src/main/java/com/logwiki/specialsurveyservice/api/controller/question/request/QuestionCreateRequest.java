@@ -17,13 +17,12 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class QuestionCreateRequest {
 
-    @NotNull(message = "문제번호는 필수입니다.")
+    @NotNull(message = "문제 번호는 필수입니다.")
     private Long questionNumber;
 
-    @NotEmpty(message = "질문내용은 필수입니다.")
+    @NotEmpty(message = "질문 제목은 필수입니다.")
     private String title;
 
-    @NotEmpty(message = "질문 내용은 필수입니다.")
     private String content;
 
     private String imgAddress;
@@ -34,14 +33,19 @@ public class QuestionCreateRequest {
     @Valid
     private List<MultipleChoiceCreateRequest> multipleChoices;
 
+    @NotNull(message = "필수 답변 여부는 필수입니다.")
+    private Boolean essential;
+
     @Builder
-    public QuestionCreateRequest(Long questionNumber, String content, String imgAddress,
-            QuestionCategoryType type, List<MultipleChoiceCreateRequest> multipleChoices) {
+    public QuestionCreateRequest(String title, Long questionNumber, String content, String imgAddress,
+            QuestionCategoryType type, List<MultipleChoiceCreateRequest> multipleChoices, boolean essential) {
         this.questionNumber = questionNumber;
         this.content = content;
         this.imgAddress = imgAddress;
         this.type = type;
         this.multipleChoices = multipleChoices;
+        this.title = title;
+        this.essential = essential;
     }
 
 
@@ -49,7 +53,10 @@ public class QuestionCreateRequest {
         if (type == QuestionCategoryType.SHORT_FORM && multipleChoices != null) {
             throw new BaseException("주관식은 보기를 가질수 없습니다.", 3008);
         }
-        if (type == QuestionCategoryType.MULTIPLE_CHOICE && multipleChoices == null) {
+        if ((type == QuestionCategoryType.MULTIPLE_CHOICE ||
+                type == QuestionCategoryType.DROP_DOWN ||
+                type == QuestionCategoryType.CHECK_BOX) &&
+                multipleChoices == null) {
             throw new BaseException("객관식은 보기를 가져야합니다.", 3009);
         }
         if (multipleChoices != null) {
@@ -58,6 +65,7 @@ public class QuestionCreateRequest {
                     .title(title)
                     .content(content)
                     .imgAddress(imgAddress)
+                    .essential(essential)
                     .type(type)
                     .multipleChoices(multipleChoices.stream()
                             .map(MultipleChoiceCreateRequest::toServiceRequest)
@@ -69,6 +77,7 @@ public class QuestionCreateRequest {
                 .title(title)
                 .content(content)
                 .imgAddress(imgAddress)
+                .essential(essential)
                 .type(type)
                 .build();
     }

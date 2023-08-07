@@ -19,11 +19,12 @@ public class QuestionCreateServiceRequest {
     private String content;
     private String imgAddress;
     private QuestionCategoryType type;
+    private boolean essential;
     private List<MultipleChoiceCreateServiceRequest> multipleChoices;
 
     @Builder
     public QuestionCreateServiceRequest(Long questionNumber, String content,
-            String imgAddress, String title,
+            String imgAddress, String title, boolean essential,
             QuestionCategoryType type, List<MultipleChoiceCreateServiceRequest> multipleChoices) {
         this.title = title;
         this.questionNumber = questionNumber;
@@ -31,7 +32,7 @@ public class QuestionCreateServiceRequest {
         this.imgAddress = imgAddress;
         this.type = type;
         this.multipleChoices = multipleChoices;
-
+        this.essential = essential;
     }
 
     public Question toEntity(Survey survey) {
@@ -43,12 +44,12 @@ public class QuestionCreateServiceRequest {
                     .survey(survey)
                     .imgAddress(imgAddress)
                     .type(type)
+                    .essential(essential)
                     .build();
 
             question.addMultipleChoices(multipleChoices.stream()
-                    .map(multipleChoiceCreateServiceRequest -> {
-                        return multipleChoiceCreateServiceRequest.toEntity(question);
-                    }).collect(Collectors.toList()));
+                    .map(multipleChoiceCreateServiceRequest -> multipleChoiceCreateServiceRequest.toEntity(question)
+                    ).collect(Collectors.toList()));
 
             return question;
         }
@@ -58,6 +59,7 @@ public class QuestionCreateServiceRequest {
                 .content(content)
                 .imgAddress(imgAddress)
                 .survey(survey)
+                .essential(essential)
                 .type(type)
                 .build();
     }
@@ -70,12 +72,13 @@ public class QuestionCreateServiceRequest {
                     .content(content)
                     .imgAddress(imgAddress)
                     .type(type)
+                    .essential(essential)
                     .build();
 
             question.addMultipleChoices(multipleChoices.stream()
-                    .map(multipleChoiceCreateServiceRequest -> {
-                        return multipleChoiceCreateServiceRequest.toEntity(question);
-                    }).collect(Collectors.toList()));
+                    .map(multipleChoiceCreateServiceRequest ->
+                            multipleChoiceCreateServiceRequest.toEntity(question)
+                    ).collect(Collectors.toList()));
 
             return question;
         }
@@ -83,6 +86,7 @@ public class QuestionCreateServiceRequest {
                 .questionNumber(questionNumber)
                 .title(title)
                 .content(content)
+                .essential(essential)
                 .imgAddress(imgAddress)
                 .type(type)
                 .build();

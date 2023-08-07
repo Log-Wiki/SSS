@@ -18,14 +18,16 @@ public class QuestionResponse {
     private String title;
     private String content;
     private String imgAddress;
+    private boolean essential;
     private QuestionCategoryType type;
     private List<MultipleChoiceResponse> multipleChoices;
 
     @Builder
-    public QuestionResponse(Long id, String title, Long questionNumber, String content,
+    public QuestionResponse(boolean essential, Long id, String title, Long questionNumber, String content,
             String imgAddress, QuestionCategoryType type, List<MultipleChoiceResponse> multipleChoices) {
         this.id = id;
         this.questionNumber = questionNumber;
+        this.essential = essential;
         this.title = title;
         this.content = content;
         this.imgAddress = imgAddress;
@@ -44,6 +46,7 @@ public class QuestionResponse {
                     .title(question.getTitle())
                     .content(question.getContent())
                     .imgAddress(question.getImgAddress())
+                    .essential(question.isEssential())
                     .type(question.getType())
                     .build();
         }
@@ -53,6 +56,7 @@ public class QuestionResponse {
                 .title(question.getTitle())
                 .content(question.getContent())
                 .imgAddress(question.getImgAddress())
+                .essential(question.isEssential())
                 .type(question.getType())
                 .multipleChoices(question.getMultipleChoice()
                         .stream().map(MultipleChoiceResponse::from)

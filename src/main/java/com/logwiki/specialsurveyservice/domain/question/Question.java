@@ -29,10 +29,13 @@ public class Question {
 
     private String imgAddress;
 
+    private boolean essential;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+    @Enumerated(EnumType.STRING)
     private QuestionCategoryType type;
 
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -40,7 +43,7 @@ public class Question {
 
     @Builder
     public Question(String title, Long questionNumber, String content, String imgAddress, Survey survey,
-            QuestionCategoryType type, List<MultipleChoice> multipleChoice) {
+            QuestionCategoryType type, List<MultipleChoice> multipleChoice, boolean essential) {
         this.questionNumber = questionNumber;
         this.title = title;
         this.content = content;
@@ -48,6 +51,7 @@ public class Question {
         this.survey = survey;
         this.type = type;
         this.multipleChoice = multipleChoice;
+        this.essential = essential;
     }
 
     public void updateQuestion(QuestionModifyServiceRequest questionModifyServiceRequest) {
