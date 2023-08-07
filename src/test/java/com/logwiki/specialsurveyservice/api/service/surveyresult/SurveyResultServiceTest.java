@@ -231,7 +231,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
 
     @Nested
     @DisplayName("즉시당첨 설문 응답 결과 확인 테스트")
-    class QuestionGetSurveyResult {
+    class SurveyResultCheck {
         @Nested
         @DisplayName("실패 테스트")
         class Fail {
@@ -329,9 +329,196 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
 
                 assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(false);
             }
+
+            @DisplayName("당첨된 결과인 경우 isWin 은 true 이다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void isWinTrue() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(1, 1, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, false);
+
+                assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(true);
+            }
+
+
         }
     }
 
+    @Nested
+    @DisplayName("마이페이지 설문 당첨결과 확인 테스트")
+    class MyPageSurveyResultCheck {
+        @Nested
+        @DisplayName("실패 테스트")
+        class Fail {
+
+            @DisplayName("없는 설문을 조회할시 에러를 반환한다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void emptySurveyIsThrowError() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(1L))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("없는 설문입니다.");
+            }
+
+            @DisplayName("응답한 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                survey.toClose();
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("미응답 설문입니다.");
+            }
+
+            @DisplayName("마감된 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckCloseSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마감되지 않은 설문은 결과를 확인할수 없습니다.");
+            }
+
+            @DisplayName("마이페이지에서 결과 확인은 노말타입 설문만 확인이 가능하다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canCheckTypeIsNormal() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마이페이지 당첨 결과는 노말 타입만 확인이 가능합니다.");
+            }
+
+            @DisplayName("미응답 설문은 결과를 확인 할 수 없다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void canNotCheckResultNoAnsweredSurvey() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+                Survey survey = getSurvey(0, 100, surveyCategory);
+                surveyRepository.save(survey);
+
+                assertThatThrownBy(() -> surveyResultService.patchSurveyResult(survey.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessage("마감되지 않은 설문은 결과를 확인할수 없습니다.");
+            }
+        }
+
+        @Nested
+        @DisplayName("성공 테스트")
+        class Success {
+            @DisplayName("당첨된 결과인 경우 isWin 은 true 이다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void isWinTrue() {
+                // given
+                setAuthority();
+                saveAccountYJ();
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(1, 1, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, true);
+
+                assertThat(surveyResultService.patchSurveyResult(survey.getId()).isWin()).isEqualTo(true);
+            }
+        }
+    }
 
     private Survey getSurvey(int headCount, int closedHeadCount, SurveyCategory surveyCategory) {
         Survey survey = Survey.builder()
