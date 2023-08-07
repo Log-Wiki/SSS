@@ -108,7 +108,11 @@ jacocoTestReport {
                               "**/*Response*",
                               "**/*Interceptor*",
                               "**/*Exception*",
-                              "com/logwiki/specialsurveyservice/jwt/*"] + Qdomains)
+                              "com/logwiki/specialsurveyservice/jwt/*",
+                              "com/logwiki/specialsurveyservice/api/controller/message/*",
+                              "com/logwiki/specialsurveyservice/api/service/message/*",
+                              "com/logwiki/specialsurveyservice/api/controller/sse/*",
+                              "com/logwiki/specialsurveyservice/api/service/sse/*"] + Qdomains)
         }))
     }
     finalizedBy 'jacocoTestCoverageVerification'
@@ -138,7 +142,11 @@ jacocoTestCoverageVerification {
                         "**/*Response*",
                         "**/*Interceptor*",
                         "**/*Exception*",
-                        "com/logwiki/specialsurveyservice/jwt/*"] + Qdomains
+                        "com/logwiki/specialsurveyservice/jwt/*",
+                        "com/logwiki/specialsurveyservice/api/controller/message/*",
+                        "com/logwiki/specialsurveyservice/api/service/message/*",
+                        "com/logwiki/specialsurveyservice/api/controller/sse/*",
+                        "com/logwiki/specialsurveyservice/api/service/sse/*"] + Qdomains
         }
     }
 }
