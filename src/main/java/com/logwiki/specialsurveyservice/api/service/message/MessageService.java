@@ -38,8 +38,13 @@ import java.util.Random;
 @Service
 public class MessageService {
     private final MessageAuthRedisRepository messageAuthRedisRepository;
+    private final static String CERTSUCCESS = "회원가입 문자인증 성공";
+    private final static String CERTFAIL = "회원가입 문자인증 실패";
     private final static int SUCCESS = 202;
+    private final static int RANDBOUND = 999999;
     private final static int DEFAULT = 0;
+    @Value("${sender.phone-number}")
+    private String senderPhoneNumber;
     @Value("${apikey.naver-accesskey}")
     private String accessKey;
     @Value("${apikey.naver-secretkey}")
@@ -313,7 +318,7 @@ public class MessageService {
     public ShortMessageSendServiceRequest makeCertMessage(String phoneNumber) {
         List<Message> messages = new ArrayList<>();
         Random random = new SecureRandom();
-        String certCode = String.valueOf(random.nextInt(999999));
+        String certCode = String.valueOf(random.nextInt(RANDBOUND));
 
         MessageAuth messageAuth = MessageAuth.builder()
                 .phoneNumber(phoneNumber)
@@ -323,27 +328,27 @@ public class MessageService {
         messageAuthRedisRepository.save(messageAuth);
 
         messages.add(Message.builder()
-                .to("01055014037")
-                .content(certCode)
+                .to(phoneNumber)
+                .content("[SuperSurveyService] 인증번호 : " + certCode + " \n인증번호를 입력해 주세요")
                 .build()
         );
         ShortMessageSendServiceRequest request =
                 ShortMessageSendServiceRequest.builder()
+                        .from(senderPhoneNumber)
                         .messages(messages)
-                        .from("01055014037")
-                        .content("공통인증메세지")
+                        .content("회원가입 인증 공통 문자")
                         .build();
         return request;
     }
 
-    public boolean checkCertAuthCode(SmsCertAuthRequest smsCertAuthRequest) {
+    public String checkCertAuthCode(SmsCertAuthRequest smsCertAuthRequest) {
         Optional<MessageAuth> messageAuthOptional = messageAuthRedisRepository.findByPhoneNumber(smsCertAuthRequest.getPhoneNumber());
         if(messageAuthOptional.isPresent() == false) {
             throw new BaseException("인증 요청한 전화번호가 존재하지않습니다." , 2008);
         }
         if(smsCertAuthRequest.getCertAuthCode().equals(messageAuthOptional.get().getCertAuthCode())) {
-            return true;
+            return CERTSUCCESS;
         }
-        return false;
+        return CERTFAIL;
     }
 }

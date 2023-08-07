@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 public class MultimediaMessageSendServiceRequest {
     private MessageType type = MessageType.MULTIMEDIAMESSAGE;
-    @Value("{sender.phone-number}")
+    @Value("${sender.phone-number}")
     private String from;
     private String content;
     List<Message> messages;

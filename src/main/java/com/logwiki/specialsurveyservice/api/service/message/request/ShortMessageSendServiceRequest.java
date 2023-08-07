@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 public class ShortMessageSendServiceRequest {
     private MessageType type = MessageType.SHORTMESSAGE;
-    @Value("{sender.phone-number}")
+    @Value("${sender.phone-number}")
     private String from;
     private String content;
     List<Message> messages;
@@ -23,8 +23,5 @@ public class ShortMessageSendServiceRequest {
         this.content = content;
         this.messages = messages;
     }
-
-
-
 
 }

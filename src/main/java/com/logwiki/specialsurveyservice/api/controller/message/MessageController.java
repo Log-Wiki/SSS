@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class MessageController {
-
+    private static final String CERTREPLY = "인증문자 전송완료";
     private final MessageService messageService;
 
     @PostMapping("/message/sms")
@@ -38,7 +38,7 @@ public class MessageController {
     @PostMapping ("/message/cert/signup/send")
     public ApiResponse<?> registCertSend(@RequestBody SmsCertSendRequest smsCertSendRequest) {
         messageService.sendSMS(messageService.makeCertMessage(smsCertSendRequest.getPhoneNumber()));
-        return ApiUtils.success("CertCode sended");
+        return ApiUtils.success(CERTREPLY);
     }
 
     @PostMapping ("/message/cert/signup/auth")
