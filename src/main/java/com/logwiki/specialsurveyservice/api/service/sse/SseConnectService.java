@@ -47,7 +47,7 @@ public class SseConnectService {
                         .name("확률변동")
                         .data(data));
             } catch (IOException e) {
-                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 7001);
+                throw new BaseException("Sse 이벤트 데이터(확률) 송신 과정에서 IO 예외발생" , 7001);
             }
         });
     }
@@ -61,7 +61,7 @@ public class SseConnectService {
                         .name("응답인원추가")
                         .data(data));
             } catch (IOException e) {
-                throw new BaseException("Sse 이벤트 데이터 송신 과정에서 IO 예외발생" , 7001);
+                throw new BaseException("Sse 이벤트 데이터(인원추가) 송신 과정에서 IO 예외발생" , 7001);
             }
         });
     }
