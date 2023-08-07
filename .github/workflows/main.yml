@@ -30,6 +30,7 @@ jobs:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USER_NAME: ${{ secrets.DB_USER_NAME }}
           DB_USER_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
+          HOME_HOST: ${{ secrets.HOME_HOST }}
 
       - name: 스프링부트 애플리케이션 빌드 # (1)
         run: ./gradlew build
