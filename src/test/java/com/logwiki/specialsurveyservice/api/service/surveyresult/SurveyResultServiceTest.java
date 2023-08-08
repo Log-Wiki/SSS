@@ -5,6 +5,8 @@ import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.MyGiveawayResponse;
+import com.logwiki.specialsurveyservice.domain.account.Account;
+import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.authority.AuthorityRepository;
@@ -22,6 +24,7 @@ import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultReposito
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
+import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -54,17 +57,16 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     private TargetNumberRepository targetNumberRepository;
     @Autowired
     private GiveawayService giveawayService;
+    @Autowired
+    private AccountRepository accountRepository;
 
-
-    @Disabled
-    @DisplayName("'설문 번호, 회원 이메일, 작성 시간'을 이용하여 설문 응답 결과를 제출한다.")
+    @DisplayName("설문 번호와 설문 응답 시간을 이용하여 설문 응답 결과를 제출한다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
     void addSubmitResult() {
         // given
         setAuthority();
         saveAccountYJ();
-
 
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
@@ -79,18 +81,147 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         surveyRepository.save(survey);
 
         int submitOrder = surveyResultService.createSubmitOrderIn(survey.getId());
-        LocalDateTime writeDateTime = LocalDateTime.now();
+        LocalDateTime answerDateTime = LocalDateTime.now();
 
         // when
-//        SurveyResultResponse surveyResultResponse = surveyResultService.addSubmitResult(
-//                survey.getId(), email, writeDateTime);
-//
-//        // then
-//        assertThat(surveyResultResponse)
-//                .extracting("endTime", "submitOrder")
-//                .contains(writeDateTime, submitOrder);
-//        assertThat(surveyResultResponse.getSurvey()).isEqualTo(survey);
-//        assertThat(surveyResultResponse.getAccount().getEmail()).isEqualTo(email);
+        SurveyResult surveyResult = surveyResultService.addSubmitResult(survey.getId(),
+                answerDateTime);
+
+        // then
+        assertThat(surveyResult)
+                .extracting("answerDateTime", "submitOrder")
+                .contains(answerDateTime, submitOrder);
+        assertThat(surveyResult.getSurvey()).isEqualTo(survey);
+    }
+
+    @DisplayName("설문이 닫혀 있으면 설문 응답 결과를 제출할 수 없다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void cannotAddSubmitResultWithClosedSurvey() {
+        // given
+        setAuthority();
+        saveAccountYJ();
+
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
+        Survey survey = Survey.builder()
+                .title("당신은 어떤 과일을 좋아하십니까?")
+                .startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().plusDays(3))
+                .headCount(0)
+                .closedHeadCount(10)
+                .writer(accountService.getCurrentAccountBySecurity().getId())
+                .type(surveyCategory)
+                .build();
+        survey.toClose();
+
+        TargetNumber targetNumber = TargetNumber.builder()
+                .number(3)
+                .survey(survey)
+                .build();
+        survey.addTargetNumbers(List.of(targetNumber));
+        surveyRepository.save(survey);
+
+        LocalDateTime answerDateTime = LocalDateTime.now();
+
+        // when // then
+        assertThatThrownBy(() -> surveyResultService.addSubmitResult(survey.getId(), answerDateTime))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("마감된 설문입니다.");
+    }
+
+    @DisplayName("이미 응답한 설문에 설문 응답 결과를 제출할 수 없다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void cannotAddSubmitResultToAlreadyAnsweredSurvey() {
+        // given
+        setAuthority();
+        saveAccountYJ();
+
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
+        Survey survey = getSurvey(50, 100, surveyCategory);
+
+        TargetNumber targetNumber = TargetNumber.builder()
+                .number(3)
+                .survey(survey)
+                .build();
+        survey.addTargetNumbers(List.of(targetNumber));
+        surveyRepository.save(survey);
+
+        LocalDateTime answerDateTime = LocalDateTime.now();
+
+        surveyResultService.addSubmitResult(survey.getId(), answerDateTime);
+
+        // when // then
+        assertThatThrownBy(() -> surveyResultService.addSubmitResult(survey.getId(), answerDateTime))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("이미 응답한 설문입니다.");
+    }
+
+    @DisplayName("설문에 응답할 때 상품에 당첨되는 경우, 사용자의 설문 당첨 횟수를 증가시키고 설문 응답의 당첨 여부를 참으로 바꾼다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void changeWinningGiveawayOfAccountCountAndWinOfSurveyResult() {
+        // given
+        setAuthority();
+        saveAccountYJ();
+
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
+        Survey survey = getSurvey(0, 1, surveyCategory);
+
+        TargetNumber targetNumber = TargetNumber.builder()
+                .number(1)
+                .survey(survey)
+                .build();
+        survey.addTargetNumbers(List.of(targetNumber));
+        surveyRepository.save(survey);
+
+        LocalDateTime answerDateTime = LocalDateTime.now();
+
+        surveyResultService.addSubmitResult(survey.getId(), answerDateTime);
+
+        // when // then
+        Optional<Account> account = accountRepository.findOneWithAuthoritiesByEmail(
+                "duswo0624@naver.com");
+        assertThat(account.get().getWinningGiveawayCount()).isOne();
+        SurveyResult surveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(
+                survey.getId(), account.get().getId());
+        assertThat(surveyResult.isWin()).isTrue();
+    }
+
+    @DisplayName("설문ID가 올바르지 않은 경우 설문 응답 결과를 제출할 수 없다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void cannotAddSubmitResultWithInvalidSurveyId() {
+        // given
+        setAuthority();
+        saveAccountYJ();
+
+        SurveyCategory surveyCategory = SurveyCategory.builder()
+                .type(SurveyCategoryType.NORMAL)
+                .build();
+        Survey survey = getSurvey(50, 100, surveyCategory);
+
+        TargetNumber targetNumber = TargetNumber.builder()
+                .number(3)
+                .survey(survey)
+                .build();
+        survey.addTargetNumbers(List.of(targetNumber));
+        surveyRepository.save(survey);
+
+        LocalDateTime answerDateTime = LocalDateTime.now();
+
+        surveyResultService.addSubmitResult(survey.getId(), answerDateTime);
+        Long invalidSurveyId = survey.getId() + 1L;
+        // when // then
+        assertThatThrownBy(() -> surveyResultService.addSubmitResult(invalidSurveyId, answerDateTime))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("설문조사 PK가 올바르지 않습니다.");
     }
 
     @DisplayName("특정 설문에 부여해야할 설문 응답 번호를 받는다.")
@@ -105,7 +236,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         SurveyCategory surveyCategory = SurveyCategory.builder()
                 .type(SurveyCategoryType.NORMAL)
                 .build();
-        //
+
         Survey survey = getSurvey(50, 100, surveyCategory);
 
 

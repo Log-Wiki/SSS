@@ -206,7 +206,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
     @DisplayName("존재하지 않는 나이성별 코드로는 설문을 작성할 수 없다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
-    void abc() {
+    void cannotAddSurveyWithInvalidAccountCode() {
         // given
         String email = "duswo0624@naver.com";
         AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
