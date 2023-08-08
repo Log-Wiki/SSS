@@ -13,7 +13,6 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
-import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
@@ -85,17 +84,41 @@ public class QuestionAnswerService {
         int minimumQuestionAnswerCnt = questions.size();
         Map<Long, Boolean> checkLinkNumber = new HashMap<>();
         for (Question question : questions) {
+            // 필수질문
             if (question.isEssential()) {
-                minimumQuestionAnswerCnt -= 1;
-                continue;
+                boolean isAnswered = true;
+                // 해당 질문이 연계 질문인데
+                // 해당하는 질문이 답변을 하지 말아아야 하는 경우 넘어감
+                if (checkLinkNumber.getOrDefault(question.getId(), false)) {
+                    // 하지만 답이 있는 경우에는 잘못 답변했다고 해야함
+                    for (QuestionAnswerCreateServiceRequest questionAnswer : dto) {
+                        if (questionAnswer.getQuestionId().equals(question.getId())) {
+                            throw new BaseException("연계질문으로 다른 답변을 선택했으므로 답변을 하면 안되는 답변이 존재합니다.", 3020);
+                        }
+                    }
+                    continue;
+                }
+                // 해당 질문이 연계질문으로 이어진적이 없음
+                for (QuestionAnswerCreateServiceRequest questionAnswer : dto) {
+                    if (questionAnswer.getQuestionId().equals(question.getId())) {
+                        for (MultipleChoice mc : question.getMultipleChoice()) {
+                            Long curNumber = mc.getId();
+                            Long answerNumber = questionAnswer.getMultipleChoiceAnswer();
+                            if (curNumber.equals(answerNumber)) {
+                                checkLinkNumber.put(mc.getLinkNumber(), false);
+                                continue;
+                            }
+                            checkLinkNumber.put(mc.getLinkNumber(), true);
+                        }
+                        isAnswered = false;
+                        break;
+                    }
+
+                }
+                if (isAnswered) {
+                    throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
+                }
             }
-            if (question.getType() == QuestionCategoryType.MULTIPLE_CHOICE ||
-                    question.getType() == QuestionCategoryType.CHECK_BOX) {
-                minimumQuestionAnswerCnt -= getMinusAnswerCnt(question.getMultipleChoice(), checkLinkNumber);
-            }
-        }
-        if (minimumQuestionAnswerCnt > dto.size()) {
-            throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
         }
     }
 

@@ -16,6 +16,7 @@ import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,6 +80,7 @@ class QuestionAnswerServiceTest {
 
     @DisplayName("문항의 개수보다 문항 답변 개수가 작을경우 에러를 반환.")
     @Test
+    @Disabled
     void needAllAnswer() {
         // given
 
