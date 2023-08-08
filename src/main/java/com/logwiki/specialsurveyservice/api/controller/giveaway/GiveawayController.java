@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.controller.giveaway;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
+import com.logwiki.specialsurveyservice.api.service.giveaway.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import jakarta.validation.Valid;
@@ -42,5 +43,10 @@ public class GiveawayController {
     @PatchMapping("/giveaway/{id}")
     public ApiResponse<GiveawayResponse> updateGiveaway(@PathVariable Long id, @Valid @RequestBody GiveawayRequest giveawayRequest) {
         return ApiUtils.success(giveawayService.updateGiveaway(id, giveawayRequest));
+    }
+
+    @GetMapping("/user/giveaways")
+    public ApiResponse<List<MyGiveawayResponse>> getMyGiveaways() {
+        return ApiUtils.success(giveawayService.getMyGiveaways());
     }
 }

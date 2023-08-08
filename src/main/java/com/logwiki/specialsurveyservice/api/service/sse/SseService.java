@@ -1,10 +1,18 @@
 package com.logwiki.specialsurveyservice.api.service.sse;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.sseemitter.EmitterRepository;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
+import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
+import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.IOException;
 import java.util.Map;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -13,8 +21,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SseConnectService {
+public class SseService {
+
     private final EmitterRepository emitterRepository;
+    private final SurveyRepository surveyRepository;
+    private final TargetNumberRepository targetNumberRepository;
+
+    private static final String LOSEPRODUCT = "꽝";
 
     public SseEmitter subscribe(Long randomNumber , Long survey_id,SseEmitter sseEmitter) {
         String id = survey_id + "_" + randomNumber + "_" + System.currentTimeMillis();
@@ -74,6 +87,32 @@ public class SseConnectService {
         });
     }
 
+    public void sendResultToSSE(Long surveyId, SurveyResult surveyResult, int submitOrder) {
+        Survey targetSurvey = surveyRepository.findById(surveyId).get();
+        SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
+        boolean resultSuccess = false;
 
+
+        String giveawayName = LOSEPRODUCT;
+
+        Optional<TargetNumber> targetNumber = targetNumberRepository.findFirstBySurveyAndNumber(
+                targetSurvey,
+                submitOrder);
+        if (targetNumber.isPresent()) {
+            giveawayName = targetNumber.get().getGiveaway().getName();
+            resultSuccess = true;
+        }
+
+        if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+            refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
+            if (targetSurvey.isClosed() == false) {
+                resultSuccess = false;
+                giveawayName = LOSEPRODUCT;
+            }
+
+        }
+        refreshSurveyFinisher(surveyResponse.getId(),
+                SurveyAnswerResponse.from(surveyResult, giveawayName, resultSuccess));
+    }
 
 }

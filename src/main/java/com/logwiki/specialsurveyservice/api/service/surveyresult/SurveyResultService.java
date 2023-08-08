@@ -2,10 +2,6 @@ package com.logwiki.specialsurveyservice.api.service.surveyresult;
 
 import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
-import com.logwiki.specialsurveyservice.api.service.sse.SseConnectService;
-import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
-import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
-import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.ResultPageResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
@@ -25,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +32,9 @@ public class SurveyResultService {
     private final SurveyRepository surveyRepository;
     private final AccountService accountService;
     private final TargetNumberRepository targetNumberRepository;
-    private final SseConnectService sseConnectService;
 
-    private static final String LOSEPRODUCT = "꽝";
     private final static boolean DEFAULT_WIN = false;
     private final static double DEFAULT_PROBABILITY = 0;
-    private final static double PARSE_100 = 100;
 
     public SurveyResult addSubmitResult(Long surveyId, LocalDateTime answerDateTime) {
         Survey survey = surveyRepository.findById(surveyId)
@@ -80,74 +72,8 @@ public class SurveyResultService {
         return surveyResult;
     }
 
-    public void sendResultToSSE(Long surveyId, SurveyResult surveyResult, int submitOrder) {
-        Survey targetSurvey = surveyRepository.findById(surveyId).get();
-        SurveyResponse surveyResponse = SurveyResponse.from(targetSurvey);
-        boolean resultSuccess = false;
-
-
-        String giveawayName = LOSEPRODUCT;
-
-        Optional<TargetNumber> targetNumber = targetNumberRepository.findFirstBySurveyAndNumber(
-                targetSurvey,
-                submitOrder);
-        if (targetNumber.isPresent()) {
-            giveawayName = targetNumber.get().getGiveaway().getName();
-            resultSuccess = true;
-        }
-
-        if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
-            sseConnectService.refreshSurveyProbability(surveyResponse.getId(), String.valueOf(surveyResponse.getWinningPercent()));
-            if (targetSurvey.isClosed() == false) {
-                resultSuccess = false;
-                giveawayName = LOSEPRODUCT;
-            }
-
-        }
-        sseConnectService.refreshSurveyFinisher(surveyResponse.getId(),
-                SurveyAnswerResponse.from(surveyResult, giveawayName, resultSuccess));
-    }
-
     public int createSubmitOrderIn(Long surveyId) {
         return surveyResultRepository.findSubmitCountBy(surveyId) + 1;
-    }
-
-    public List<MyGiveawayResponse> getMyGiveaways() {
-        Account account = accountService.getCurrentAccountBySecurity();
-        List<SurveyResult> surveyResults = surveyResultRepository.findSurveyResultsByAccount_Id(
-                account.getId());
-
-        List<SurveyResult> winSurveyResults = surveyResults.stream()
-                .filter(SurveyResult::isResponse)
-                .toList();
-
-        return winSurveyResults.stream()
-                .map(surveyResult -> {
-                            if (targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
-                                    surveyResult.getSubmitOrder(),
-                                    surveyResult.getSurvey().getId()) == null) {
-                                return MyGiveawayResponse.builder()
-                                        .win(surveyResult.isWin())
-                                        .userCheck(surveyResult.isUserCheck())
-                                        .surveyTitle(surveyResult.getSurvey().getTitle())
-                                        .surveyWriter(accountService.getUserNameById(surveyResult.getSurvey().getWriter()))
-                                        .probabilty(DEFAULT_PROBABILITY)
-                                        .answerDateTime(surveyResult.getAnswerDateTime())
-                                        .build();
-                            }
-                            return MyGiveawayResponse.of(
-                                    surveyResult,
-                                    targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
-                                                    surveyResult.getSubmitOrder(),
-                                                    surveyResult.getSurvey().getId())
-                                            .getGiveaway(),
-                                    accountService.getUserNameById(surveyResult.getSurvey().getWriter()),
-                                    (double) Math.min(100.0, (double) surveyResultRepository.findByGiveawaySurvey(surveyResult.getSurvey().getId(), surveyResult.getSubmitOrder())
-                                            .orElseGet(() -> 0) / surveyResult.getSurvey().getHeadCount() * PARSE_100)
-                            );
-                        }
-                )
-                .toList();
     }
 
     public ResultPageResponse getSurveyResult(Long surveyId) {
