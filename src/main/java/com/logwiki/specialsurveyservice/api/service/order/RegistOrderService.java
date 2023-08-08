@@ -1,5 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.order;
 
+import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
@@ -21,9 +23,11 @@ public class RegistOrderService {
 
   private final OrdersRepository orderRepository;
   private final GiveawayRepository giveawayRepository;
+  private final AccountService accountService;
   private static final boolean NotPaid = false;
   @Transactional
   public OrderResponse createOrder(OrderCreateServiceRequest request) {
+    Account account = accountService.getCurrentAccountBySecurity();
     int orderAmount = 0;
     for(OrderProductElement orderCreateRequest : request.getGiveaways()){
       Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(orderCreateRequest.getGiveawayName());
@@ -38,7 +42,7 @@ public class RegistOrderService {
     }
 
     Orders order = Orders.create(
-            request.getUserId() + "_" + request.getRequestTime(),
+            accountService.getCurrentAccountBySecurity().getEmail() + "_" + request.getRequestTime(),
             orderAmount,
             NotPaid
     );
