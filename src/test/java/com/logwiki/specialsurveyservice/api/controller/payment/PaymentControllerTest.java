@@ -44,11 +44,13 @@ class PaymentControllerTest extends ControllerTestSupport {
                 .isSucess(isSuccess).build();
         when(authenticationPaymentService.authenticatePayment(any())).thenReturn(response);
         mockMvc.perform(
+                //when
                         post("/api/payment/authentication")
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
                 )
+                //then
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))

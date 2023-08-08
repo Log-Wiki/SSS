@@ -58,11 +58,13 @@ class OrderControllerTest extends ControllerTestSupport {
         OrderCreateRequest orderCreateRequest = new OrderCreateRequest(orderProductElements);
         when(registOrderService.createOrder(any())).thenReturn(orderResponse);
         mockMvc.perform(
+                //when
                         post("/api/order/regist")
                                 .content(objectMapper.writeValueAsString(orderCreateRequest))
                                         .contentType(MediaType.APPLICATION_JSON)
                                                 .with(csrf())
                 )
+                //then
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))
@@ -84,11 +86,13 @@ class OrderControllerTest extends ControllerTestSupport {
         OrderCreateRequest orderCreateRequest = new OrderCreateRequest();
         when(registOrderService.createOrder(any())).thenReturn(orderResponse);
         mockMvc.perform(
+                //when
                         post("/api/order/regist")
                                 .content(objectMapper.writeValueAsString(orderCreateRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
                 )
+                //then
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("false"))
