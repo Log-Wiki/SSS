@@ -8,7 +8,6 @@ import com.logwiki.specialsurveyservice.domain.schedule.Schedule;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleRepository;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleRunType;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleType;
-import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
@@ -52,8 +51,12 @@ public class ScheduleService {
         JobKey jobKey = jobDetail.getKey();
         String name = jobKey.getName();
         String group = jobKey.getGroup();
+
         Date date = Date.from(dto.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
-        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+        LocalDateTime startDateTime = dto.getStartTime();
+
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            startDateTime = LocalDateTime.now().plusSeconds(5);
             date = Date.from(LocalDateTime.now().plusSeconds(5).atZone(ZoneId.systemDefault()).toInstant());
         }
 
@@ -63,7 +66,7 @@ public class ScheduleService {
         Schedule schedule = Schedule.builder()
                 .type(ScheduleType.START_SURVEY)
                 .run(ScheduleRunType.BEFORE_RUN)
-                .startTime(dto.getStartTime())
+                .startTime(startDateTime)
                 .surveyId(dto.getSurveyId())
                 .jobGroup(group)
                 .jobName(name).build();
@@ -99,7 +102,6 @@ public class ScheduleService {
     @Transactional
     public List<ScheduleResponse> getBeforeRunSchedule() throws SchedulerException {
         return scheduleRepository.findScheduleByRun(ScheduleRunType.BEFORE_RUN)
-                .orElseThrow(() -> new BaseException("동작전 스케줄러가 없습니다.", 6001))
                 .stream()
                 .map(ScheduleResponse::from)
                 .collect(Collectors.toList());
@@ -108,7 +110,6 @@ public class ScheduleService {
     @Transactional
     public List<ScheduleResponse> getSchedulesBySurveyId(Long surveyId) {
         return scheduleRepository.findScheduleBySurveyId(surveyId)
-                .orElseThrow(() -> new BaseException("등록된 스케줄러가 없습니다.", 6000))
                 .stream()
                 .map(ScheduleResponse::from)
                 .collect(Collectors.toList());
@@ -145,12 +146,8 @@ public class ScheduleService {
     }
 
     // Job 삭제
-    public void deleteJob(String jobName, String jobGroup) {
+    public void deleteJob(String jobName, String jobGroup) throws SchedulerException {
         JobKey jobKey = JobKey.jobKey(jobName, jobGroup);
-        try {
-            scheduler.deleteJob(jobKey);
-        } catch (SchedulerException e) {
-            throw new BaseException("해당 스케줄링이 없습니다.", 9999);
-        }
+        scheduler.deleteJob(jobKey);
     }
 }

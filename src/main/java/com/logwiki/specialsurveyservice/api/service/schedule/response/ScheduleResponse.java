@@ -53,7 +53,7 @@ public class ScheduleResponse {
                 .endTime(schedule.getEndTime())
                 .surveyId(schedule.getSurveyId())
                 .jobName(schedule.getJobName())
-                .jobGroup(schedule.getJobName())
+                .jobGroup(schedule.getJobGroup())
                 .build();
     }
 }
