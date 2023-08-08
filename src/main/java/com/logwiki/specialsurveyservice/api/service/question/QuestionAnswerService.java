@@ -4,6 +4,7 @@ package com.logwiki.specialsurveyservice.api.service.question;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionAnswerCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerResponse;
+import com.logwiki.specialsurveyservice.api.service.sse.SseService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.SurveyResultService;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
@@ -36,6 +37,7 @@ public class QuestionAnswerService {
     private final AccountService accountService;
     private final SurveyResultService surveyResultService;
     private final SurveyTargetRepository surveyTargetRepository;
+    private final SseService sseService;
 
     @Transactional
     public List<QuestionAnswerResponse> addQuestionAnswer(
@@ -49,7 +51,7 @@ public class QuestionAnswerService {
         checkAnsweredAllQuestions(questions, dto);
 
         SurveyResult surveyResult = surveyResultService.addSubmitResult(surveyId, answerDateTime);
-        surveyResultService.sendResultToSSE(surveyId, surveyResult, surveyResult.getSubmitOrder());
+        sseService.sendResultToSSE(surveyId, surveyResult, surveyResult.getSubmitOrder());
         return saveQuestionAnswer(answerDateTime, account, questions, dto);
     }
 
