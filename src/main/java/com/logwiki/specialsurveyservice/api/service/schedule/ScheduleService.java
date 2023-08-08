@@ -52,8 +52,12 @@ public class ScheduleService {
         JobKey jobKey = jobDetail.getKey();
         String name = jobKey.getName();
         String group = jobKey.getGroup();
+
         Date date = Date.from(dto.getStartTime().atZone(ZoneId.systemDefault()).toInstant());
-        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+        LocalDateTime startDateTime = dto.getStartTime();
+
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            startDateTime = LocalDateTime.now().plusSeconds(5);
             date = Date.from(LocalDateTime.now().plusSeconds(5).atZone(ZoneId.systemDefault()).toInstant());
         }
 
@@ -63,7 +67,7 @@ public class ScheduleService {
         Schedule schedule = Schedule.builder()
                 .type(ScheduleType.START_SURVEY)
                 .run(ScheduleRunType.BEFORE_RUN)
-                .startTime(dto.getStartTime())
+                .startTime(startDateTime)
                 .surveyId(dto.getSurveyId())
                 .jobGroup(group)
                 .jobName(name).build();
