@@ -369,7 +369,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 giveawayRepository.save(giveaway);
                 //설문 당첨 상품
                 surveyRepository.save(survey);
-                SurveyResult surveyResult = getSurveyResult(survey, 1, false);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, true);
 
                 assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(true);
             }
