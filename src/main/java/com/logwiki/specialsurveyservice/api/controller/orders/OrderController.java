@@ -24,9 +24,8 @@ public class OrderController {
 
     @PostMapping("/order/regist")
     public ApiResponse<OrderResponse> registOrder(
-            @RequestBody @Valid OrderCreateRequest orderCreateRequest,
-            Authentication authentication
+            @RequestBody @Valid OrderCreateRequest orderCreateRequest
     ) {
-        return ApiUtils.success(registOrderService.createOrder(orderCreateRequest.toServiceRequest(authentication.getName(),System.currentTimeMillis())));
+        return ApiUtils.success(registOrderService.createOrder(orderCreateRequest.toServiceRequest(System.currentTimeMillis())));
     }
 }
