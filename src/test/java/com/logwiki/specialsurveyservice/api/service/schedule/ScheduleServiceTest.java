@@ -5,6 +5,10 @@ import com.logwiki.specialsurveyservice.api.controller.schedule.request.Schedule
 import com.logwiki.specialsurveyservice.api.service.schedule.response.ScheduleResponse;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleRunType;
 import com.logwiki.specialsurveyservice.domain.schedule.ScheduleType;
+import com.logwiki.specialsurveyservice.domain.survey.Survey;
+import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,23 +17,27 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Transactional
 class ScheduleServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private ScheduleService scheduleService;
     @Autowired
     private Scheduler scheduler;
+    @Autowired
+    private SurveyRepository surveyRepository;
+    @Autowired
+    private EntityManager em;
 
     @DisplayName("설문 시작 스케줄러를 등록한다.")
     @Test
+    @Transactional
     void addStartSurveyScheduleTest() throws SchedulerException {
         Long surveyId = 1L;
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
@@ -46,6 +54,7 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
     @DisplayName("설문 종료 스케줄러를 등록한다.")
     @Test
+    @Transactional
     void addEndSurveyScheduleTest() throws SchedulerException {
         Long surveyId = 1L;
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
@@ -62,6 +71,7 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
     @DisplayName("시작시간이 현재보다 작으면 5초뒤 시간으로 스케줄러를 등록한다.")
     @Test
+    @Transactional
     void addStartSurveyScheduleAfter5SecondsTest() throws SchedulerException {
         Long surveyId = 1L;
         LocalDateTime nowDate = LocalDateTime.now();
@@ -80,6 +90,7 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
     @DisplayName("시작 , 종료 스케줄러를 모두 등록한다.")
     @Test
+    @Transactional
     void addScheduleAndCheckRegister() throws SchedulerException {
         Long surveyId = 1L;
         LocalDateTime nowDate = LocalDateTime.now();
@@ -94,6 +105,7 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
     @DisplayName("스케줄러 아이디로 스케줄러를 검색한다.")
     @Test
+    @Transactional
     void nothingSchedulerThrowError() throws SchedulerException {
         Long surveyId = 1L;
         LocalDateTime nowDate = LocalDateTime.now();
@@ -110,8 +122,9 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
     @DisplayName("스케줄러를 등록 후 삭제한다.")
     @Test
+    @Transactional
     void addSchedulerAndDeleteSchedule() throws SchedulerException {
-        Long surveyId = 1L;
+        Long surveyId = 12L;
         int Empty = 0;
         LocalDateTime nowDate = LocalDateTime.now();
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
@@ -123,6 +136,73 @@ class ScheduleServiceTest extends IntegrationTestSupport {
 
         assertAll(() -> {
             assertEquals(scheduler.getJobGroupNames().size(), Empty);
+        });
+    }
+
+    @DisplayName("설문 종료 스케줄러를 등록 후 삭제한다.")
+    @Test
+    @Transactional
+    void addEndSchedulerAndDeleteSchedule() throws SchedulerException {
+        Long surveyId = 12L;
+        int Empty = 0;
+        LocalDateTime nowDate = LocalDateTime.now();
+        ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
+                .surveyId(surveyId)
+                .startTime(LocalDateTime.now().minusSeconds(5))
+                .build();
+        ScheduleResponse scheduleResponse = scheduleService.addEndSurveySchedule(scheduleCreateRequest);
+        scheduleService.deleteJob(scheduleResponse.getJobName(), scheduleResponse.getJobGroup());
+
+        assertAll(() -> {
+            assertEquals(scheduler.getJobGroupNames().size(), Empty);
+        });
+    }
+
+    @DisplayName("스케줄러를 등록 후 START JOB 을 실행한다.")
+    @Test
+    @DirtiesContext
+    void addSchedulerAndRunJob() throws SchedulerException, InterruptedException {
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
+        LocalDateTime nowDate = LocalDateTime.now();
+        ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
+                .surveyId(surveyId)
+                .startTime(nowDate.plusSeconds(1))
+                .build();
+        ScheduleResponse scheduleResponse = scheduleService.addStartSurveySchedule(scheduleCreateRequest);
+        Survey survey1 = surveyRepository.findById(surveyId).orElseThrow();
+        System.out.println("survey = " + survey1.isClosed());
+        Thread.sleep(2000); //1초 대기
+        assertAll(() -> {
+            assertFalse(surveyRepository.findById(surveyId).orElseThrow().isClosed());
+        });
+    }
+
+    @DisplayName("스케줄러를 등록 후 END JOB 을 실행한다.")
+    @Test
+    @DirtiesContext
+    void addSchedulerAndRunEndJob() throws SchedulerException, InterruptedException {
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
+        LocalDateTime nowDate = LocalDateTime.now();
+        ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
+                .surveyId(surveyId)
+                .startTime(nowDate.plusSeconds(1))
+                .build();
+        ScheduleResponse scheduleResponse = scheduleService.addEndSurveySchedule(scheduleCreateRequest);
+        Survey survey1 = surveyRepository.findById(surveyId).orElseThrow();
+        System.out.println("survey = " + survey1.isClosed());
+        Thread.sleep(2000); //1초 대기
+        assertAll(() -> {
+            assertTrue(surveyRepository.findById(surveyId).orElseThrow().isClosed());
         });
     }
 
