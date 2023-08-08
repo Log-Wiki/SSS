@@ -3,7 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.giveaway;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
-import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
+import com.logwiki.specialsurveyservice.api.service.giveaway.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
