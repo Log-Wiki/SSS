@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.giveaway.request.GiveawayRequest;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
+import com.logwiki.specialsurveyservice.api.service.giveaway.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -344,6 +346,59 @@ class GiveawayControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value("false"))
                 .andExpect(jsonPath("$.apiError.message").value("상품 가격은 필수(양수)입니다."))
                 .andExpect(jsonPath("$.apiError.status").value(1000));
+    }
+
+    @DisplayName("나의 당첨 상품 목록을 조회한다.")
+    @WithMockUser
+    @Test
+    void getMyGiveaways() throws Exception {
+
+        GiveawayType giveawayType1 = GiveawayType.COFFEE;
+        String giveawayName1 = "스타벅스 아이스 아메리카노";
+        MyGiveawayResponse myGiveawayResponse1 = MyGiveawayResponse
+                .builder()
+                .win(true)
+                .userCheck(true)
+                .surveyId(1L)
+                .surveyTitle("당신은 어떤 과일을 좋아하십니까?")
+                .probabilty(10D)
+                .giveawayId(1L)
+                .giveawayType(GiveawayType.COFFEE)
+                .giveawayName("스타벅스 아이스 아메리카노")
+                .surveyWriter("최연재")
+                .answerDateTime(LocalDateTime.now().minusDays(1))
+                .build();
+        GiveawayType giveawayType2 = GiveawayType.CHICKEN;
+        String giveawayName2 = "뿌링클";
+        MyGiveawayResponse myGiveawayResponse2 = MyGiveawayResponse
+                .builder()
+                .win(false)
+                .userCheck(false)
+                .surveyId(2L)
+                .surveyTitle("당신은 어떤 동물을 좋아하십니까?")
+                .probabilty(20D)
+                .giveawayId(2L)
+                .giveawayType(GiveawayType.CHICKEN)
+                .giveawayName("뿌링클")
+                .surveyWriter("최연재")
+                .answerDateTime(LocalDateTime.now())
+                .build();
+        List<MyGiveawayResponse> myGiveawayResponses = List.of(myGiveawayResponse1, myGiveawayResponse2);
+        when(giveawayService.getMyGiveaways()).thenReturn(myGiveawayResponses);
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/user/giveaways")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response[0].giveawayType").value(giveawayType1.toString()))
+                .andExpect(jsonPath("$.response[0].giveawayName").value(giveawayName1))
+                .andExpect(jsonPath("$.response[1].giveawayType").value(giveawayType2.toString()))
+                .andExpect(jsonPath("$.response[1].giveawayName").value(giveawayName2));
     }
 
     private static GiveawayResponse getGiveawayResponse(Long id, GiveawayType giveawayType, String name, int price) {
