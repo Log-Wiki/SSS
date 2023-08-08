@@ -11,8 +11,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Optional<Schedule> findScheduleByJobGroupAndJobName(String jobGroup, String jobName);
 
-    Optional<List<Schedule>> findScheduleBySurveyId(Long surveyId);
+    List<Schedule> findScheduleBySurveyId(Long surveyId);
 
-    Optional<List<Schedule>> findScheduleByRun(ScheduleRunType run);
+    List<Schedule> findScheduleByRun(ScheduleRunType run);
 
 }
