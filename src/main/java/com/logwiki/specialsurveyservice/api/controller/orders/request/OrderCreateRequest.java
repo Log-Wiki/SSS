@@ -18,13 +18,12 @@ public class OrderCreateRequest {
     private List<OrderProductElement> giveaways;
 
     @Builder
-    private OrderCreateRequest(List<OrderProductElement> giveaways) {
+    public OrderCreateRequest(List<OrderProductElement> giveaways) {
         this.giveaways = giveaways;
     }
     @Builder
-    public OrderCreateServiceRequest toServiceRequest(String userId , Long requestTime) {
+    public OrderCreateServiceRequest toServiceRequest(Long requestTime) {
         return OrderCreateServiceRequest.builder()
-                .userId(userId)
                 .giveaways(giveaways)
                 .requestTime(requestTime)
                 .build();
