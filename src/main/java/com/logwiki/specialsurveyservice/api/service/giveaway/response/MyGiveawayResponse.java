@@ -1,4 +1,4 @@
-package com.logwiki.specialsurveyservice.api.service.surveyresult.response;
+package com.logwiki.specialsurveyservice.api.service.giveaway.response;
 
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
