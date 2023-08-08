@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.surveyresult;
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
+import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.MyGiveawayResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
@@ -51,6 +52,8 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     private SurveyResultRepository surveyResultRepository;
     @Autowired
     private TargetNumberRepository targetNumberRepository;
+    @Autowired
+    private GiveawayService giveawayService;
 
 
     @Disabled
@@ -170,7 +173,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         // 상품 생성
         SurveyResult surveyResult = getSurveyResult(survey, 2, true);
 
-        List<MyGiveawayResponse> myGiveawayResponses = surveyResultService.getMyGiveaways();
+        List<MyGiveawayResponse> myGiveawayResponses = giveawayService.getMyGiveaways();
 
         double ZERO_PROBABILITY = 0;
         assertThat(myGiveawayResponses.get(0).getProbabilty()).isEqualTo(ZERO_PROBABILITY);
@@ -222,7 +225,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         // 상품 생성
         SurveyResult surveyResult = getSurveyResult(survey, 1, true);
 
-        List<MyGiveawayResponse> myGiveawayResponses = surveyResultService.getMyGiveaways();
+        List<MyGiveawayResponse> myGiveawayResponses = giveawayService.getMyGiveaways();
 
         double PROBABILITY_100 = 100;
 
