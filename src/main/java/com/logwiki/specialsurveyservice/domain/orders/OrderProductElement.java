@@ -7,8 +7,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@Data
-@lombok.Generated
 public class OrderProductElement {
     @NotNull(message = "경품 이름은 필수입니다.")
     private String giveawayName;
