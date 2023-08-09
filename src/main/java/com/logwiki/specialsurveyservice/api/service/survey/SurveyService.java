@@ -14,6 +14,8 @@ import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
+import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
+import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
@@ -54,6 +56,7 @@ public class SurveyService {
     private final SurveyResultRepository surveyResultRepository;
     private final TargetNumberRepository targetNumberRepository;
     private final AccountRepository accountRepository;
+    private final AccountSurveyRepository accountSurveyRepository;
 
     private static final String LOSEPRODUCT = "꽝";
 
@@ -159,9 +162,10 @@ public class SurveyService {
     public List<AbstractSurveyResponse> getRecommendNormalSurveyForUser() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.NORMAL);
 
-        sortByEndTime(surveys);
+        List<Survey> surveysWithoutAlreadyAnswered = deleteAlreadyAnsweredSurvey(surveys);
+        sortByEndTime(surveysWithoutAlreadyAnswered);
 
-        return surveys.stream()
+        return surveysWithoutAlreadyAnswered.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
@@ -170,9 +174,10 @@ public class SurveyService {
     public List<AbstractSurveyResponse> getRecommendInstantSurveyForUser() {
         List<Survey> surveys = getRecommendSurveysBySurveyCategoryType(SurveyCategoryType.INSTANT_WIN);
 
-        sortByWinningPercent(surveys);
+        List<Survey> surveysWithoutAlreadyAnswered = deleteAlreadyAnsweredSurvey(surveys);
+        sortByWinningPercent(surveysWithoutAlreadyAnswered);
 
-        return surveys.stream()
+        return surveysWithoutAlreadyAnswered.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
@@ -181,11 +186,25 @@ public class SurveyService {
     public List<AbstractSurveyResponse> getRecommendShortTimeSurveyForUser() {
         List<Survey> surveys = getAllRecommendSurveys();
 
-        sortByRequiredTimeForSurvey(surveys);
+        List<Survey> surveysWithoutAlreadyAnswered = deleteAlreadyAnsweredSurvey(surveys);
+        sortByRequiredTimeForSurvey(surveysWithoutAlreadyAnswered);
 
-        return surveys.stream()
+        return surveysWithoutAlreadyAnswered.stream()
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
+                .collect(Collectors.toList());
+    }
+
+    private List<Survey> deleteAlreadyAnsweredSurvey(List<Survey> surveys) {
+        Account account = accountService.getCurrentAccountBySecurity();
+
+        List<AccountSurvey> accountSurveys = accountSurveyRepository.findAllByAccountId(account.getId());
+        List<Long> answeredSurveyIds = accountSurveys.stream()
+                .map(accountSurvey -> accountSurvey.getSurvey().getId())
+                .collect(Collectors.toList());
+
+        return surveys.stream()
+                .filter(survey -> !answeredSurveyIds.contains(survey.getId()))
                 .collect(Collectors.toList());
     }
 
