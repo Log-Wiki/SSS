@@ -21,7 +21,7 @@ public class OrderCreateRequest {
     public OrderCreateRequest(List<OrderProductElement> giveaways) {
         this.giveaways = giveaways;
     }
-    @Builder
+
     public OrderCreateServiceRequest toServiceRequest(Long requestTime) {
         return OrderCreateServiceRequest.builder()
                 .giveaways(giveaways)
