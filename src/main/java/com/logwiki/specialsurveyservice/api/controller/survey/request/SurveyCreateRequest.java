@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -56,6 +57,23 @@ public class SurveyCreateRequest {
     @NotNull(message = "당첨 상품은 필수입니다.")
     @Size(min = 1, message = "당첨 상품은 최소 1개 이상이어야 합니다.")
     private List<GiveawayAssignRequest> giveaways;
+
+    @Builder
+    public SurveyCreateRequest(String title, String img, String content, LocalDateTime startTime, LocalDateTime endTime,
+            int headCount, int closedHeadCount, SurveyCategoryType type, List<AccountCodeType> surveyTarget,
+            List<QuestionCreateRequest> questions, List<GiveawayAssignRequest> giveaways) {
+        this.title = title;
+        this.img = img;
+        this.content = content;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.headCount = headCount;
+        this.closedHeadCount = closedHeadCount;
+        this.type = type;
+        this.surveyTarget = surveyTarget;
+        this.questions = questions;
+        this.giveaways = giveaways;
+    }
 
     // 상품코드 , 개수 필요할듯
     public SurveyCreateServiceRequest from() {
