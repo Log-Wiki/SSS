@@ -35,7 +35,7 @@ public class SseService {
         try {
             sseEmitter.send(SseEmitter.event()
                     .name("SSE연결")
-                    .data("SSE연결성공" , MediaType.TEXT_EVENT_STREAM)
+                    .data("SSE연결성공")
             );
         }
         catch (IOException e) {
