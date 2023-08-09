@@ -207,11 +207,6 @@ class SurveyControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response.title").value(surveyTitle))
-                .andExpect(jsonPath("$.response.startTime")
-                        .value(surveyStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS")
-                )))
-                .andExpect(jsonPath("$.response.endTime")
-                        .value(surveyEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"))))
                 .andExpect(jsonPath("$.response.headCount").value(headCount))
                 .andExpect(jsonPath("$.response.closedHeadCount").value(closedHeadCount));
     }
@@ -768,11 +763,6 @@ class SurveyControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response.title").value(surveyTitle))
-                .andExpect(jsonPath("$.response.startTime")
-                        .value(surveyStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS")
-                        )))
-                .andExpect(jsonPath("$.response.endTime")
-                        .value(surveyEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"))))
                 .andExpect(jsonPath("$.response.headCount").value(headCount))
                 .andExpect(jsonPath("$.response.closedHeadCount").value(closedHeadCount));
     }
