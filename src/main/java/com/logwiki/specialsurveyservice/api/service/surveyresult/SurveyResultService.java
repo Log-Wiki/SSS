@@ -55,13 +55,11 @@ public class SurveyResultService {
         SurveyResult surveyResult = SurveyResult.create(DEFAULT_WIN, answerDateTime, submitOrder, survey,
                 account);
 
-//        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
         if (survey.getTargetNumbers().stream()
                 .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder)) {
             account.increaseWinningGiveawayCount();
             surveyResult.winSurvey();
         }
-//        }
 
         account.increaseResponseSurveyCount();
         log.info("당첨여부 [{}][{}][{}]", survey.getId(), account.getEmail(), surveyResult.isWin());
@@ -69,6 +67,7 @@ public class SurveyResultService {
         surveyResultRepository.save(surveyResult);
 
         survey.addHeadCount();
+        survey.addSurveyResult(surveyResult); // TODO
 
         AccountSurvey accountSurvey = AccountSurvey
                 .builder()
