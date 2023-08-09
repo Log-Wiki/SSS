@@ -24,7 +24,6 @@ import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResultReposito
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,6 +33,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -170,7 +170,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
         saveAccountYJ();
 
         SurveyCategory surveyCategory = SurveyCategory.builder()
-                .type(SurveyCategoryType.NORMAL)
+                .type(SurveyCategoryType.INSTANT_WIN)
                 .build();
         Survey survey = getSurvey(0, 1, surveyCategory);
 
