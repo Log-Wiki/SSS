@@ -1228,7 +1228,35 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .build();
         return accountCreateServiceRequest;
     }
+    @DisplayName("설문이 존재하지 않으면 조회가 불가능합니다.")
+    @WithMockUser(username = "duswo0624@naver.com")
+    @Test
+    void getNoSurveyDetail() {
+        // given
+        String email = "duswo0624@naver.com";
+        String password = "1234";
+        AccountCodeType gender = AccountCodeType.MAN;
+        AccountCodeType age = AccountCodeType.TWENTIES;
+        String name = "최연재";
+        String phoneNumber = "010-1234-5678";
+        LocalDate birthday = LocalDate.of(1997, Month.JUNE, 24);
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password(password)
+                .gender(gender)
+                .age(age)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .birthday(birthday)
+                .build();
+        accountService.signup(accountCreateServiceRequest);
 
+        // when
+        // then
+        assertThatThrownBy(() -> surveyService.getSurveyDetail(-1L))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("없는 설문입니다.");
+    }
     @DisplayName("설문상세페이지에 필요한 설문 응답 로그들을 조회한다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
