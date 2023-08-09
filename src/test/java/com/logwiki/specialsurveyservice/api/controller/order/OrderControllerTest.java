@@ -6,7 +6,6 @@ import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateSer
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
 import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.domain.orders.Orders;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -29,20 +28,28 @@ class OrderControllerTest extends ControllerTestSupport {
     @Test
     void createOrder() throws Exception {
         // given
+        OrderProductElement orderProductElement = OrderProductElement
+                .builder()
+                .giveawayName("컴포즈커피")
+                .giveawayNumber(3)
+                .build();
         List<OrderProductElement> orderProductElements = new ArrayList<>();
-        orderProductElements.add(new OrderProductElement("컴포즈커피", 3));
+        orderProductElements.add(orderProductElement);
         String id = "testid";
         int orderAmount = 5000;
         boolean isVerificated = false;
         Orders Orders = new Orders(id, orderAmount, isVerificated);
         OrderResponse orderResponse = OrderResponse.from(Orders);
-        OrderCreateRequest orderCreateRequest = new OrderCreateRequest(orderProductElements);
+        OrderCreateRequest orderCreateRequest = OrderCreateRequest
+                .builder()
+                .giveaways(orderProductElements)
+                .build();
         OrderCreateServiceRequest request = orderCreateRequest.toServiceRequest(System.currentTimeMillis());
         when(registOrderService.createOrder(any())).thenReturn(orderResponse);
         mockMvc.perform(
                         //when
                         post("/api/order/regist")
-                                .content(objectMapper.writeValueAsString(request))
+                                .content(objectMapper.writeValueAsString(orderCreateRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
                 )

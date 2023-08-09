@@ -1,14 +1,12 @@
 package com.logwiki.specialsurveyservice.api.service.message;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.message.request.LongMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.message.request.ShortMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.domain.message.Message;
 import com.logwiki.specialsurveyservice.api.service.message.request.MultimediaMessageSendServiceRequest;
-import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -18,7 +16,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class SendMessageServiceTest extends IntegrationTestSupport {
     @Autowired
     MessageService messageService;

@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUp
 import com.logwiki.specialsurveyservice.domain.BaseEntity;
 import com.logwiki.specialsurveyservice.domain.accountauthority.AccountAuthority;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
+import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.authority.Authority;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import jakarta.persistence.*;
@@ -62,6 +63,9 @@ public class Account extends BaseEntity {
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<SurveyResult> surveyResults = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<AccountSurvey> accountSurveys = new ArrayList<>();
 
     @Builder
     public Account(String email, String password,
@@ -123,5 +127,9 @@ public class Account extends BaseEntity {
             this.name = accountUpdateRequest.getName();
         }
         return this;
+    }
+
+    public void addAccountSurvey(AccountSurvey accountSurvey) {
+        accountSurveys.add(accountSurvey);
     }
 }
