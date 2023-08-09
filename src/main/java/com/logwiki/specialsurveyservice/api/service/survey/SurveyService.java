@@ -258,35 +258,32 @@ public class SurveyService {
     }
 
     public List<SurveyAnswerResponse> getSurveyAnswers(Long surveyId) {
-        Optional<Survey> targetSurveyOptional = surveyRepository.findById(surveyId);
-        if(targetSurveyOptional.isEmpty()) {
-            throw new BaseException("없는 설문입니다.",3005);
-        }
-        Survey targetSurvey = targetSurveyOptional.get();
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() -> new BaseException("없는 설문입니다.",3005));
 
         List<SurveyAnswerResponse> surveyResponseResults = new ArrayList<>();
-        if(targetSurvey.getSurveyResults() != null) {
-            for (SurveyResult surveyResult : targetSurvey.getSurveyResults()) {
-                String giveawayName = LOSEPRODUCT;
-                boolean isWin = false;
+        for(SurveyResult surveyResult : survey.getSurveyResults()) {
 
-                Optional<TargetNumber> tn = targetNumberRepository.findFirstBySurveyAndNumber(
-                        targetSurvey, surveyResult.getSubmitOrder());
-                if (tn.isPresent()) {
-                    isWin = true;
-                    giveawayName = tn.get().getGiveaway().getName();
-                }
+            String giveawayName = LOSEPRODUCT;
+            boolean isWin = false;
 
-                if (targetSurvey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
-                    if(targetSurvey.isClosed() == false) {
-                        isWin = false;
-                        giveawayName = LOSEPRODUCT;
-                    }
-
-                }
-                surveyResponseResults.add(SurveyAnswerResponse.from(surveyResult,giveawayName,isWin));
+            TargetNumber targetNumber = targetNumberRepository.findTargetNumberByNumberAndSurvey_Id(
+                    surveyResult.getSubmitOrder(),
+                    surveyResult.getSurvey().getId());
+            if (targetNumber != null) {
+                isWin = true;
+                giveawayName = targetNumber.getGiveaway().getName();
             }
+
+            if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
+                if(!survey.isClosed()) {
+                    isWin = false;
+                    giveawayName = LOSEPRODUCT;
+                }
+            }
+
+            surveyResponseResults.add(SurveyAnswerResponse.from(surveyResult,giveawayName,isWin));
         }
+
         return surveyResponseResults;
     }
     public AbstractSurveyResponse getSurveyDetail(Long surveyId) {
