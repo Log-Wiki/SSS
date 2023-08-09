@@ -59,6 +59,8 @@ public class SurveyService {
     private final AccountSurveyRepository accountSurveyRepository;
 
     private static final String LOSEPRODUCT = "꽝";
+    private static final boolean HIDDEN_BOOLEAN_RESULT = false;
+    private static final String HIDDEN_GIVEAWAY_NAME_RESULT = LOSEPRODUCT;
 
     public SurveyResponse addSurvey(SurveyCreateServiceRequest dto) {
         Account account = accountService.getCurrentAccountBySecurity();
@@ -276,8 +278,8 @@ public class SurveyService {
 
             if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
                 if(!survey.isClosed()) {
-                    isWin = false;
-                    giveawayName = LOSEPRODUCT;
+                    isWin = HIDDEN_BOOLEAN_RESULT;
+                    giveawayName = HIDDEN_GIVEAWAY_NAME_RESULT;
                 }
             }
 
