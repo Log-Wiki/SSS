@@ -172,6 +172,43 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
 
     }
 
+    @DisplayName("존재하지 않는 IMPUID로 검증요청하는 경우 실패한다.")
+    @WithMockUser(username = "ksr4037@naver.com")
+    @Test
+    void nonImpUid() {
+        // given
+        String email = "ksr4037@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+        String userId = email;
+
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
+        giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
+        giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
+
+        OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().giveaways(giveaways)
+                .requestTime(CORRECTTIME).build();
+        OrderResponse saveOrder = registOrderService.createOrder(request);
+
+        // when
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , "-1");
+
+        // then
+        assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("iamport 응답 예외입니다.");
+    }
+
     private void setAuthority() {
         Authority userAuthority = Authority.builder()
                 .type(AuthorityType.ROLE_USER)

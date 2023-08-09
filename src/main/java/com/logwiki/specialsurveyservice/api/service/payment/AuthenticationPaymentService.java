@@ -45,10 +45,8 @@ public class AuthenticationPaymentService {
         IamportResponse<Payment> iamportResponse;
         try {
             iamportResponse = iamportClientApi.paymentByImpUid(request.getImpUid());
-        } catch (IamportResponseException e) {
+        } catch (IamportResponseException | IOException e) {
             throw new BaseException("iamport 응답 예외입니다." , 4002);
-        } catch (IOException e) {
-            throw new BaseException("iamport IO 예외입니다." , 4003);
         }
 
 
