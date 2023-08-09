@@ -51,6 +51,5 @@ insert into giveaway (price, name, giveaway_type, create_at, modified_at)
 values (1500, '컴포즈 아이스 아메리카노', 'COFFEE', now(), now());
 insert into giveaway (price, name, giveaway_type, create_at, modified_at)
 values (20000, 'BBQ후라이드치킨', 'CHICKEN', now(), now());
-insert into giveaway (price, name, giveaway_type, create_at, modified_at)
-values (1300, '컴포즈커피', 'COFFEE', now(), now());
+
 
