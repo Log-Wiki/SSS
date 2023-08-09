@@ -387,6 +387,8 @@ public class SurveyService {
     public AnswerPossibleType getAnswerPossible(Long surveyId) {
         Account account = accountService.getCurrentAccountBySecurity();
         SurveyResponse surveyResponse = this.getSurvey(surveyId);
+        Survey survey = surveyRepository.findById(surveyId).get();
+
         LocalDateTime currentTIme = LocalDateTime.now();
         if(checkLogin() == false) {
             return AnswerPossibleType.NOTLOGIN;
@@ -403,7 +405,7 @@ public class SurveyService {
         if(checkTimeOver(surveyResponse,currentTIme) == false) {
             return AnswerPossibleType.TIMEOVER;
         }
-        if(surveyResponse.isClosed() == false) {
+        if(survey.isClosed() == true) {
             return AnswerPossibleType.HEADFULL;
         }
 
