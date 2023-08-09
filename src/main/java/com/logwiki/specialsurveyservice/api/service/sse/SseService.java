@@ -51,10 +51,8 @@ public class SseService {
 
     public void refreshSurveyProbability(Long survey_id , String data) {
         Map<String, SseEmitter> targets = emitterRepository.findAllStartWithById(String.valueOf(survey_id));
-        log.info("확률전송");
         targets.forEach((key , value) -> {
             try {
-                log.info("확률변동 개별");
                 value.send(SseEmitter.event()
                         .id(String.valueOf(survey_id))
                         .name("확률변동")
@@ -70,10 +68,8 @@ public class SseService {
 
     public void refreshSurveyFinisher(Long survey_id , SurveyAnswerResponse data) {
         Map<String, SseEmitter> targets = emitterRepository.findAllStartWithById(String.valueOf(survey_id));
-        log.info("응답데이터 전송");
         targets.forEach((key , value) -> {
             try {
-                log.info("개별데이터 전송");
                 value.send(SseEmitter.event()
                         .id(String.valueOf(survey_id))
                         .name("응답인원추가")
