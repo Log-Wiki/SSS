@@ -15,6 +15,7 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
@@ -318,5 +319,75 @@ public class SurveyService {
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
+    }
+    public boolean checkLogin() {
+        Account account;
+        try {
+            account = accountService.getCurrentAccountBySecurity();
+        }
+        catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkPastHistory(Account account, Long surveyId) {
+        Optional<SurveyResult> result = account.getSurveyResults().stream()
+                .filter(s -> s.getSurvey().getId().equals(surveyId))
+                .findFirst();
+
+        if(result.isPresent()) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkType(Account account , Long surveyId) {
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
+                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
+                .getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
+                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
+                .getId();
+        int checks = surveyRepository.checkSurveyPossible(surveyId,genderId,ageId);
+        if(checks == 0) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkTimeBefore(SurveyResponse surveyResponse, LocalDateTime currentTime) {
+        if(surveyResponse.getStartTime().isAfter(currentTime)) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkTimeOver(SurveyResponse surveyResponse, LocalDateTime currentTime) {
+        if(surveyResponse.getEndTime().isBefore(currentTime)) {
+            return false;
+        }
+        return true;
+    }
+    public AnswerPossibleType getAnswerPossible(Long surveyId) {
+        Account account = accountService.getCurrentAccountBySecurity();
+        SurveyResponse surveyResponse = this.getSurvey(surveyId);
+        LocalDateTime currentTIme = LocalDateTime.now();
+        if(checkLogin() == false) {
+            return AnswerPossibleType.NOTLOGIN;
+        }
+        if(checkType(account , surveyId) == false) {
+            return AnswerPossibleType.TYPENOTMATCH;
+        }
+        if(checkPastHistory(account,surveyId) == false) {
+            return AnswerPossibleType.DIDANSWER;
+        }
+        if(checkTimeBefore(surveyResponse,currentTIme) == false){
+            return AnswerPossibleType.TIMEBEFORE;
+        }
+        if(checkTimeOver(surveyResponse,currentTIme) == false) {
+            return AnswerPossibleType.TIMEOVER;
+        }
+        if(surveyResponse.isClosed() == false) {
+            return AnswerPossibleType.HEADFULL;
+        }
+
+        return AnswerPossibleType.CANANSWER;
     }
 }

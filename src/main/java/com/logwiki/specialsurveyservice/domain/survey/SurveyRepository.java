@@ -47,5 +47,16 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             nativeQuery = true)
     List<Survey> findRecommendSurveyForAnonymous();
 
+    @Query(value = "SELECT COUNT(*) FROM survey sur "
+            + "WHERE sur.ID = :surveyId "
+            + "AND :genderId IN (SELECT st.ACCOUNT_CODE_ID "
+                                    + "FROM SURVEY_TARGET st "
+                                    + "WHERE st.SURVEY_ID = sur.ID) "
+            + "AND :ageId IN (SELECT st.ACCOUNT_CODE_ID "
+                                    + "FROM SURVEY_TARGET st "
+                                    + "WHERE st.SURVEY_ID = sur.ID) ",
+            nativeQuery = true)
+    int checkSurveyPossible(@Param("surveyId") Long surveyId, @Param("genderId") Long genderId, @Param("ageId") Long ageId);
+
     List<Survey> findAllByWriter(Long writerId);
 }
