@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.Sur
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.ResultPageResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
+import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
@@ -68,6 +69,13 @@ public class SurveyResultService {
         surveyResultRepository.save(surveyResult);
 
         survey.addHeadCount();
+
+        AccountSurvey accountSurvey = AccountSurvey
+                .builder()
+                .survey(survey)
+                .account(account)
+                .build();
+        account.addAccountSurvey(accountSurvey);
 
         return surveyResult;
     }
