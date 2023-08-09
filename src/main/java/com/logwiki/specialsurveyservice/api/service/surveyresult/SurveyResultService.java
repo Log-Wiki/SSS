@@ -67,7 +67,7 @@ public class SurveyResultService {
         surveyResultRepository.save(surveyResult);
 
         survey.addHeadCount();
-        survey.addSurveyResult(surveyResult); // TODO
+        survey.addSurveyResult(surveyResult); // TODO 트랜잭션 때문에 값이 바로 들어가지 않는건가요? SurveyServiceTest의 getSurveyAnswers()와 연관된 문제
 
         AccountSurvey accountSurvey = AccountSurvey
                 .builder()
