@@ -13,6 +13,7 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
+import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
@@ -37,6 +38,7 @@ public class QuestionAnswerService {
     private final SurveyResultService surveyResultService;
     private final SurveyTargetRepository surveyTargetRepository;
     private final SseService sseService;
+    private final SurveyRepository surveyRepository;
 
     @Transactional
     public List<QuestionAnswerResponse> addQuestionAnswer(
@@ -105,10 +107,10 @@ public class QuestionAnswerService {
                             Long curNumber = mc.getId();
                             Long answerNumber = questionAnswer.getMultipleChoiceAnswer();
                             if (curNumber.equals(answerNumber)) {
-                                checkLinkNumber.put(mc.getLinkNumber(), false);
+                                checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), false);
                                 continue;
                             }
-                            checkLinkNumber.put(mc.getLinkNumber(), true);
+                            checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), true);
                         }
                         isAnswered = false;
                         break;
