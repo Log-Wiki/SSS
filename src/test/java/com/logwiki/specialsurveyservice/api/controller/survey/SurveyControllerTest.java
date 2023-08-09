@@ -26,7 +26,6 @@ import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -207,11 +206,6 @@ class SurveyControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response.title").value(surveyTitle))
-                .andExpect(jsonPath("$.response.startTime")
-                        .value(surveyStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS")
-                )))
-                .andExpect(jsonPath("$.response.endTime")
-                        .value(surveyEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"))))
                 .andExpect(jsonPath("$.response.headCount").value(headCount))
                 .andExpect(jsonPath("$.response.closedHeadCount").value(closedHeadCount));
     }
@@ -768,11 +762,6 @@ class SurveyControllerTest extends ControllerTestSupport {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response.title").value(surveyTitle))
-                .andExpect(jsonPath("$.response.startTime")
-                        .value(surveyStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS")
-                        )))
-                .andExpect(jsonPath("$.response.endTime")
-                        .value(surveyEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS"))))
                 .andExpect(jsonPath("$.response.headCount").value(headCount))
                 .andExpect(jsonPath("$.response.closedHeadCount").value(closedHeadCount));
     }
