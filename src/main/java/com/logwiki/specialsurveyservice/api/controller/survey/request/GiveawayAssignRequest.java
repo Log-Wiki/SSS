@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.controller.survey.request;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,12 @@ public class GiveawayAssignRequest {
 
     @Positive(message = "당첨 상품 수량은 필수(양수)입니다.")
     private int count;
+
+    @Builder
+    public GiveawayAssignRequest(Long id, int count) {
+        this.id = id;
+        this.count = count;
+    }
 
     public GiveawayAssignServiceRequest toServiceRequest() {
         return GiveawayAssignServiceRequest.builder()
