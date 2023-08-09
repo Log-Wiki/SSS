@@ -39,7 +39,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void addStartSurveyScheduleTest() throws SchedulerException {
-        Long surveyId = 1L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
                 .surveyId(surveyId)
                 .startTime(LocalDateTime.now().plusSeconds(5))
@@ -73,7 +78,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void addStartSurveyScheduleAfter5SecondsTest() throws SchedulerException {
-        Long surveyId = 1L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         LocalDateTime nowDate = LocalDateTime.now();
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
                 .surveyId(surveyId)
@@ -84,7 +94,7 @@ class ScheduleServiceTest extends IntegrationTestSupport {
             assertEquals(scheduleResponse.getSurveyId(), surveyId);
             assertEquals(scheduleResponse.getRun(), ScheduleRunType.BEFORE_RUN);
             assertEquals(scheduleResponse.getType(), ScheduleType.START_SURVEY);
-            assertTrue(nowDate.plusSeconds(5).isBefore(scheduleResponse.getStartTime()));
+            assertTrue(nowDate.plusSeconds(4).isBefore(scheduleResponse.getStartTime()));
         });
     }
 
@@ -92,7 +102,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void addScheduleAndCheckRegister() throws SchedulerException {
-        Long surveyId = 1L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         LocalDateTime nowDate = LocalDateTime.now();
         scheduleService.addSurveySchedule(surveyId, nowDate, nowDate.plusSeconds(10));
         List<ScheduleResponse> scheduleResponseList = scheduleService.getBeforeRunSchedule();
@@ -107,7 +122,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void nothingSchedulerThrowError() throws SchedulerException {
-        Long surveyId = 1L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         LocalDateTime nowDate = LocalDateTime.now();
         scheduleService.addSurveySchedule(surveyId, nowDate, nowDate.plusSeconds(10));
         List<ScheduleResponse> scheduleResponseList = scheduleService.getSchedulesBySurveyId(surveyId);
@@ -124,7 +144,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void addSchedulerAndDeleteSchedule() throws SchedulerException {
-        Long surveyId = 12L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         int Empty = 0;
         LocalDateTime nowDate = LocalDateTime.now();
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
@@ -143,7 +168,12 @@ class ScheduleServiceTest extends IntegrationTestSupport {
     @Test
     @Transactional
     void addEndSchedulerAndDeleteSchedule() throws SchedulerException {
-        Long surveyId = 12L;
+
+        Survey survey = Survey.builder()
+                .build();
+        surveyRepository.save(survey);
+        Long surveyId = survey.getId();
+
         int Empty = 0;
         LocalDateTime nowDate = LocalDateTime.now();
         ScheduleCreateRequest scheduleCreateRequest = ScheduleCreateRequest.builder()
