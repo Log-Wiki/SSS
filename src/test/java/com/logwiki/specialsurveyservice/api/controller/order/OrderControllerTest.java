@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.controller.order;
 
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.orders.request.OrderCreateRequest;
+import com.logwiki.specialsurveyservice.api.service.order.request.OrderCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.order.response.OrderResponse;
 import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.domain.orders.Orders;
@@ -26,7 +27,6 @@ class OrderControllerTest extends ControllerTestSupport {
     @DisplayName("주문 등록 테스트")
     @WithMockUser
     @Test
-    @Disabled
     void createOrder() throws Exception {
         // given
         List<OrderProductElement> orderProductElements = new ArrayList<>();
@@ -37,11 +37,12 @@ class OrderControllerTest extends ControllerTestSupport {
         Orders Orders = new Orders(id, orderAmount, isVerificated);
         OrderResponse orderResponse = OrderResponse.from(Orders);
         OrderCreateRequest orderCreateRequest = new OrderCreateRequest(orderProductElements);
+        OrderCreateServiceRequest request = orderCreateRequest.toServiceRequest(System.currentTimeMillis());
         when(registOrderService.createOrder(any())).thenReturn(orderResponse);
         mockMvc.perform(
                         //when
                         post("/api/order/regist")
-                                .content(objectMapper.writeValueAsString(orderCreateRequest))
+                                .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
                 )
