@@ -55,13 +55,13 @@ public class SurveyResultService {
         SurveyResult surveyResult = SurveyResult.create(DEFAULT_WIN, answerDateTime, submitOrder, survey,
                 account);
 
-//        if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
         if (survey.getTargetNumbers().stream()
                 .anyMatch(targetNumber -> targetNumber.getNumber() == submitOrder)) {
-            account.increaseWinningGiveawayCount();
+            if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.INSTANT_WIN)) {
+                account.increaseWinningGiveawayCount();
+            }
             surveyResult.winSurvey();
         }
-//        }
 
         account.increaseResponseSurveyCount();
         log.info("당첨여부 [{}][{}][{}]", survey.getId(), account.getEmail(), surveyResult.isWin());
@@ -69,6 +69,7 @@ public class SurveyResultService {
         surveyResultRepository.save(surveyResult);
 
         survey.addHeadCount();
+        survey.addSurveyResult(surveyResult); // TODO 트랜잭션 때문에 값이 바로 들어가지 않는건가요? SurveyServiceTest의 getSurveyAnswers()와 연관된 문제
 
         AccountSurvey accountSurvey = AccountSurvey
                 .builder()
@@ -89,7 +90,7 @@ public class SurveyResultService {
 
         Survey survey = surveyRepository.findById(surveyId).orElseThrow(() ->
                 new BaseException("없는 설문입니다.", 3005));
-        
+
         if (survey.getSurveyCategory().getType().equals(SurveyCategoryType.NORMAL)) {
             throw new BaseException("즉시 당첨만 확인이 가능합니다.", 3015);
         }
@@ -147,6 +148,9 @@ public class SurveyResultService {
             }
 
             surveyResult.checkResult();
+            if (surveyResult.isWin()) {
+                account.increaseWinningGiveawayCount();
+            }
             return SurveyResultResponse.from(surveyResult);
 
         }

@@ -123,6 +123,10 @@ public class Survey extends BaseEntity {
         this.surveyCategory = surveyCategory;
     }
 
+    public void addSurveyResult(SurveyResult surveyResult) {
+        surveyResults.add(surveyResult);
+    }
+
     public void toOpen() {
         this.closed = false;
     }
