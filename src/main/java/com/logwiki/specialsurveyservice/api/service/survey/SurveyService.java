@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
@@ -17,6 +18,8 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.question.Question;
+import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategory;
@@ -57,6 +60,7 @@ public class SurveyService {
     private final TargetNumberRepository targetNumberRepository;
     private final AccountRepository accountRepository;
     private final AccountSurveyRepository accountSurveyRepository;
+    private final QuestionAnswerService questionAnswerService;
 
     private static final String LOSEPRODUCT = "꽝";
     private static final boolean HIDDEN_BOOLEAN_RESULT = false;
@@ -336,5 +340,64 @@ public class SurveyService {
                 .map(survey
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
+    }
+
+    public boolean checkPastHistory(Account account, Long surveyId) {
+        SurveyResult checkSurveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
+        if(checkSurveyResult != null) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkType(Account account , Long surveyId) {
+
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
+                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
+                .getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
+                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
+                .getId();
+        int checks = surveyRepository.checkSurveyPossible(surveyId,genderId,ageId);
+        if(checks == 0) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkTimeBefore(SurveyResponse surveyResponse, LocalDateTime currentTime) {
+        if(surveyResponse.getStartTime().isAfter(currentTime)) {
+            return false;
+        }
+        return true;
+    }
+    public boolean checkTimeOver(SurveyResponse surveyResponse, LocalDateTime currentTime) {
+        if(surveyResponse.getEndTime().isBefore(currentTime)) {
+            return false;
+        }
+        return true;
+    }
+    public AnswerPossibleType getAnswerPossible(Long surveyId) {
+        Account account = accountService.getCurrentAccountBySecurity();
+        SurveyResponse surveyResponse = this.getSurvey(surveyId);
+        Survey survey = surveyRepository.findById(surveyId).get();
+
+        LocalDateTime currentTIme = LocalDateTime.now();
+
+        if(checkType(account , surveyId) == false) {
+            return AnswerPossibleType.TYPENOTMATCH;
+        }
+        if(checkPastHistory(account,surveyId) == false) {
+            return AnswerPossibleType.DIDANSWER;
+        }
+        if(checkTimeBefore(surveyResponse,currentTIme) == false){
+            return AnswerPossibleType.TIMEBEFORE;
+        }
+        if(checkTimeOver(surveyResponse,currentTIme) == false) {
+            return AnswerPossibleType.TIMEOVER;
+        }
+        if(survey.getHeadCount() >= survey.getClosedHeadCount()) {
+            return AnswerPossibleType.HEADFULL;
+        }
+
+        return AnswerPossibleType.CANANSWER;
     }
 }

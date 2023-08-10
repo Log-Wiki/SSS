@@ -56,7 +56,8 @@ public class PrdSecurityConfig {
                                 "/api/survey/detail/**",
                                 "/api/survey/answer/log/**",
                                 "/api/duplicate/email",
-                                "/api/duplicate/phone-number")
+                                "/api/duplicate/phone-number",
+                                "/api/survey/possible/*")
                         .permitAll()
                         .anyRequest().authenticated())
 

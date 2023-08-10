@@ -7,6 +7,7 @@ import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurv
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
+import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -90,5 +91,10 @@ public class SurveyController {
     @GetMapping("/survey/answered")
     public ApiResponse<List<AbstractSurveyResponse>> getAnsweredSurveys() {
         return ApiUtils.success(surveyService.getAnsweredSurveys());
+    }
+
+    @GetMapping("/survey/possible/{surveyId}")
+    public ApiResponse<AnswerPossibleType> getAnswerPossible(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyService.getAnswerPossible(surveyId));
     }
 }

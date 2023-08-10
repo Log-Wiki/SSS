@@ -24,6 +24,7 @@ import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyRespon
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
+import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import com.logwiki.specialsurveyservice.domain.surveycategory.SurveyCategoryType;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -876,5 +877,23 @@ class SurveyControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response[0].title").value(surveyTitle))
                 .andExpect(jsonPath("$.response[0].content").value(surveyContent));
+    }
+
+    @DisplayName("설문 응답이 가능한지 검사한다.")
+    @WithMockUser
+    @Test
+    void surveyCheckAnswerPossible() throws Exception {
+        Long surveyId = 1L;
+        // given
+        when(surveyService.getAnswerPossible(surveyId)).thenReturn(AnswerPossibleType.CANANSWER);
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/survey/possible/" + surveyId)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+
     }
 }
