@@ -2,6 +2,7 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
@@ -17,6 +18,7 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
@@ -58,6 +60,7 @@ public class SurveyService {
     private final TargetNumberRepository targetNumberRepository;
     private final AccountRepository accountRepository;
     private final AccountSurveyRepository accountSurveyRepository;
+    private final QuestionAnswerService questionAnswerService;
 
     private static final String LOSEPRODUCT = "꽝";
     private static final boolean HIDDEN_BOOLEAN_RESULT = false;
@@ -338,27 +341,16 @@ public class SurveyService {
                         -> AbstractSurveyResponse.from(survey, accountService.getUserNameById(survey.getWriter())))
                 .collect(Collectors.toList());
     }
-    public boolean checkLogin() {
-        Account account;
-        try {
-            account = accountService.getCurrentAccountBySecurity();
-        }
-        catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-    public boolean checkPastHistory(Account account, Long surveyId) {
-        Optional<SurveyResult> result = account.getSurveyResults().stream()
-                .filter(s -> s.getSurvey().getId().equals(surveyId))
-                .findFirst();
 
-        if(result.isPresent()) {
+    public boolean checkPastHistory(Account account, Long surveyId) {
+        SurveyResult checkSurveyResult = surveyResultRepository.findSurveyResultBySurvey_IdAndAccount_Id(surveyId, account.getId());
+        if(checkSurveyResult != null) {
             return false;
         }
         return true;
     }
     public boolean checkType(Account account , Long surveyId) {
+
         Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
                 .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
                 .getId();
@@ -389,9 +381,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findById(surveyId).get();
 
         LocalDateTime currentTIme = LocalDateTime.now();
-        if(checkLogin() == false) {
-            return AnswerPossibleType.NOTLOGIN;
-        }
+
         if(checkType(account , surveyId) == false) {
             return AnswerPossibleType.TYPENOTMATCH;
         }
