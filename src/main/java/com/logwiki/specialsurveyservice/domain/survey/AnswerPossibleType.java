@@ -18,8 +18,6 @@ public enum AnswerPossibleType {
     DIDANSWER("이미응답하였음"),
     @JsonProperty("HEADFULL")
     HEADFULL("응답인원마감"),
-    @JsonProperty("NOTLOGIN")
-    NOTLOGIN("로그인않됨"),
     @JsonProperty("TYPENOTMATCH")
     TYPENOTMATCH("설문대상이아님"),
     @JsonProperty("CANANSWER")
