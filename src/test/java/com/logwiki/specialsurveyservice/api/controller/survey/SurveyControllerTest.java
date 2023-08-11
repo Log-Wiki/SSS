@@ -17,9 +17,11 @@ import com.logwiki.specialsurveyservice.api.controller.survey.request.SurveyCrea
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.GiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.giveaway.response.SurveyGiveawayResponse;
 import com.logwiki.specialsurveyservice.api.service.question.response.MultipleChoiceResponse;
+import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerStatisticsResponse;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionResponse;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.StatisticsSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
@@ -894,6 +896,147 @@ class SurveyControllerTest extends ControllerTestSupport {
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
 
+    @DisplayName("설문 통계를 가져온다.")
+    @WithMockUser
+    @Test
+    void getStatistics() throws Exception {
+        // given
+        String multipleChoice1Content = "사과";
+        Long multipleChoice1LinkNumber = 0L;
+
+        String multipleChoice2Content = "배";
+        Long multipleChoice2LinkNumber = 0L;
+
+        Long question1Number = 1L;
+        String question1Title = "당신은 어떤 과일을 좋아하십니까?";
+        QuestionCategoryType question1QuestionCategoryType = QuestionCategoryType.MULTIPLE_CHOICE;
+
+        Long question2Number = 2L;
+        String question2Title = "당신은 어떤 음료를 좋아하십니까?";
+        QuestionCategoryType question2QuestionCategoryType = QuestionCategoryType.SHORT_FORM;
+
+        int giveawayCount = 10;
+
+        String surveyTitle = "당신은 어떤 종류의 과일과 음료를 좋아하나요?";
+        LocalDateTime surveyStartTime = LocalDateTime.now().plusDays(1);
+        LocalDateTime surveyEndTime = LocalDateTime.now().plusDays(3);
+        int headCount = 0;
+        int closedHeadCount = 100;
+        SurveyCategoryType surveyCategoryType = SurveyCategoryType.INSTANT_WIN;
+        List<AccountCodeType> surveyTarget = List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.TWENTIES);
+
+        MultipleChoiceResponse multipleChoiceResponse1 = MultipleChoiceResponse
+                .builder()
+                .id(1L)
+                .content(multipleChoice1Content)
+                .linkNumber(multipleChoice1LinkNumber)
+                .build();
+
+        MultipleChoiceResponse multipleChoiceResponse2 = MultipleChoiceResponse
+                .builder()
+                .id(1L)
+                .content(multipleChoice2Content)
+                .linkNumber(multipleChoice2LinkNumber)
+                .build();
+
+        QuestionResponse questionResponse1 = QuestionResponse
+                .builder()
+                .id(1L)
+                .questionNumber(question1Number)
+                .title(question1Title)
+                .content(null)
+                .imgAddress(null)
+                .essential(true)
+                .type(question1QuestionCategoryType)
+                .multipleChoices(List.of(multipleChoiceResponse1, multipleChoiceResponse2))
+                .build();
+
+        QuestionResponse questionResponse2 = QuestionResponse
+                .builder()
+                .id(1L)
+                .questionNumber(question2Number)
+                .title(question2Title)
+                .content(null)
+                .imgAddress(null)
+                .essential(true)
+                .type(question2QuestionCategoryType)
+                .multipleChoices(null)
+                .build();
+
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String giveawayName = "스타벅스 아이스 아메리카노";
+        int giveawayPrice = 4500;
+        GiveawayResponse giveawayResponse = GiveawayResponse
+                .builder()
+                .id(1L)
+                .giveawayType(giveawayType)
+                .name(giveawayName)
+                .price(giveawayPrice)
+                .build();
+
+        SurveyGiveawayResponse surveyGiveawayResponse = SurveyGiveawayResponse
+                .builder()
+                .id(1L)
+                .count(giveawayCount)
+                .giveawayResponse(giveawayResponse)
+                .build();
+
+        QuestionAnswerStatisticsResponse questionAnswerStatisticsResponse1
+                = QuestionAnswerStatisticsResponse
+                .builder()
+                .questionId(1L)
+                .questionCategoryType(questionResponse1.getType())
+                .answers(List.of("1", "2", "3", "3"))
+                .build();
+
+        QuestionAnswerStatisticsResponse questionAnswerStatisticsResponse2
+                = QuestionAnswerStatisticsResponse
+                .builder()
+                .questionId(1L)
+                .questionCategoryType(questionResponse2.getType())
+                .answers(List.of("포카리 스웨트", "파워에이드", "코카콜라", "사이다"))
+                .build();
+
+        Long surveyId = 1L;
+        StatisticsSurveyResponse statisticsSurveyResponse = StatisticsSurveyResponse
+                .builder()
+                .id(surveyId)
+                .title(surveyTitle)
+                .content(null)
+                .startTime(surveyStartTime)
+                .endTime(surveyEndTime)
+                .img(null)
+                .headCount(headCount)
+                .closedHeadCount(closedHeadCount)
+                .writerName("최연재")
+                .totalGiveawayCount(giveawayCount)
+                .requiredTimeInSeconds(30)
+                .closed(true)
+                .surveyCategoryType(surveyCategoryType)
+                .questions(List.of(questionResponse1, questionResponse2))
+                .surveyGiveaways(List.of(surveyGiveawayResponse))
+                .surveyTarget(surveyTarget)
+                .questionAnswers(List.of(questionAnswerStatisticsResponse1, questionAnswerStatisticsResponse2))
+                .build();
+
+        when(surveyService.getStatistics(surveyId)).thenReturn(statisticsSurveyResponse);
+
+        // when // then
+        mockMvc.perform(
+                        get("/api/survey/statistics/{surveyId}", surveyId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.title").value(surveyTitle))
+                .andExpect(jsonPath("$.response.headCount").value(headCount))
+                .andExpect(jsonPath("$.response.closedHeadCount").value(closedHeadCount))
+                .andExpect(jsonPath("$.response.questionAnswers.size()").value(2))
+                .andExpect(jsonPath("$.response.questionAnswers[0].questionCategoryType").value(questionResponse1.getType().toString()))
+                .andExpect(jsonPath("$.response.questionAnswers[1].questionCategoryType").value(questionResponse2.getType().toString()));
     }
 }
