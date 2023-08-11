@@ -2,11 +2,12 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
-import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
+import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerStatisticsResponse;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.StatisticsSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.TargetNumberService;
 import com.logwiki.specialsurveyservice.api.service.targetnumber.request.TargetNumberCreateServiceRequest;
@@ -19,6 +20,9 @@ import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.question.Question;
+import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
+import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
+import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.domain.survey.AnswerPossibleType;
 import com.logwiki.specialsurveyservice.domain.survey.Survey;
 import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
@@ -60,7 +64,7 @@ public class SurveyService {
     private final TargetNumberRepository targetNumberRepository;
     private final AccountRepository accountRepository;
     private final AccountSurveyRepository accountSurveyRepository;
-    private final QuestionAnswerService questionAnswerService;
+    private final QuestionAnswerRepository questionAnswerRepository;
 
     private static final String LOSEPRODUCT = "꽝";
     private static final boolean HIDDEN_BOOLEAN_RESULT = false;
@@ -399,5 +403,55 @@ public class SurveyService {
         }
 
         return AnswerPossibleType.CANANSWER;
+    }
+
+    public StatisticsSurveyResponse getStatistics(Long surveyId) {
+
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(() -> new BaseException("없는 설문입니다.", 3005));
+        String writerName = accountService.getUserNameById(survey.getWriter());
+        Account account = accountService.getCurrentAccountBySecurity();
+        if(!account.getName().equals(writerName)) {
+            throw new BaseException("설문 작성자만 설문 통계를 확인할 수 있습니다.", 3021);
+        }
+
+        List<QuestionAnswerStatisticsResponse> questionAnswers = new ArrayList<>();
+        for(Question question : survey.getQuestions()) {
+
+            List<String> questionAnswerResponse = getQuestionAnswerResponse(question.getId(), question.getType());
+
+            QuestionAnswerStatisticsResponse questionAnswerStatisticsResponse = QuestionAnswerStatisticsResponse
+                    .builder()
+                    .questionId(question.getId())
+                    .questionCategoryType(question.getType())
+                    .answers(questionAnswerResponse)
+                    .build();
+
+            questionAnswers.add(questionAnswerStatisticsResponse);
+        }
+
+        return StatisticsSurveyResponse.from(survey, writerName, questionAnswers);
+    }
+
+    private List<String> getQuestionAnswerResponse(Long questionId, QuestionCategoryType questionType) {
+        List<QuestionAnswer> questionAnswer = questionAnswerRepository.findAllByQuestion_Id(
+                questionId);
+
+        List<String> questionAnswerResponse = new ArrayList<>();
+        if((questionType == QuestionCategoryType.MULTIPLE_CHOICE)
+                || (questionType == QuestionCategoryType.DROP_DOWN)
+                || (questionType == QuestionCategoryType.CHECK_BOX)) {
+            questionAnswerResponse = questionAnswer.stream()
+                    .map(questionAnswer1 -> questionAnswer1.getAnswerNumber().toString())
+                    .collect(Collectors.toList());
+        }
+        else if((questionType == QuestionCategoryType.SHORT_FORM)
+                || (questionType == QuestionCategoryType.DATE_FORM)
+                || (questionType == QuestionCategoryType.TIME_FORM)) {
+            questionAnswerResponse = questionAnswer.stream()
+                    .map(questionAnswer1 -> questionAnswer1.getShortFormAnswer().toString())
+                    .collect(Collectors.toList());
+        }
+
+        return questionAnswerResponse;
     }
 }

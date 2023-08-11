@@ -4,6 +4,7 @@ import com.logwiki.specialsurveyservice.api.controller.survey.request.SurveyCrea
 import com.logwiki.specialsurveyservice.api.service.schedule.ScheduleService;
 import com.logwiki.specialsurveyservice.api.service.survey.SurveyService;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.StatisticsSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
@@ -96,5 +97,10 @@ public class SurveyController {
     @GetMapping("/survey/possible/{surveyId}")
     public ApiResponse<AnswerPossibleType> getAnswerPossible(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getAnswerPossible(surveyId));
+    }
+
+    @GetMapping("/survey/statistics/{surveyId}")
+    public ApiResponse<StatisticsSurveyResponse> getStatistics(@PathVariable Long surveyId) {
+        return ApiUtils.success(surveyService.getStatistics(surveyId));
     }
 }
