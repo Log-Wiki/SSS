@@ -57,7 +57,8 @@ public class LocalSecurityConfig {
                                 "/api/survey/detail/*",
                                 "/api/survey/answer/log/*",
                                 "/api/duplicate/email",
-                                "/api/duplicate/phone-number")
+                                "/api/duplicate/phone-number",
+                                "/api/survey/possible/*")
                         .permitAll()
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated())
