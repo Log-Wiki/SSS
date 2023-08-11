@@ -5,7 +5,6 @@ import com.logwiki.specialsurveyservice.api.controller.giveaway.request.Giveaway
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
-import com.logwiki.specialsurveyservice.api.service.auth.AuthService;
 import com.logwiki.specialsurveyservice.api.service.giveaway.GiveawayService;
 import com.logwiki.specialsurveyservice.api.service.question.QuestionAnswerService;
 import com.logwiki.specialsurveyservice.api.service.question.request.MultipleChoiceCreateServiceRequest;
@@ -15,6 +14,7 @@ import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerRes
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.request.SurveyCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.survey.response.AbstractSurveyResponse;
+import com.logwiki.specialsurveyservice.api.service.survey.response.StatisticsSurveyResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.response.SurveyResponse;
 import com.logwiki.specialsurveyservice.domain.account.AccountRepository;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCode;
@@ -37,7 +37,6 @@ import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.Collection;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -89,8 +88,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private AuthService authService;
-    @Autowired
     private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @BeforeEach
@@ -103,7 +100,7 @@ class SurveyServiceTest extends IntegrationTestSupport {
     @DisplayName("설문 이름, 시작 시간, 마감 시간, 설문 인원, 설문 마감 인원, 설문 타입, 질문 목록, 당첨 상품 목록, 설문 대상자를 이용하여 설문을 등록한다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
-    void addSurvey() throws SchedulerException {
+    void addSurvey() {
         // given
         String email = "duswo0624@naver.com";
         String password = "1234";
@@ -2358,9 +2355,6 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .giveaways(giveawayAssignServiceRequests)
                 .build();
 
-
-
-
         SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
         surveyRepository.findById(saveSurvey.getId()).get().toOpen();
 
@@ -2393,6 +2387,252 @@ class SurveyServiceTest extends IntegrationTestSupport {
                             AnswerPossibleType.HEADFULL);
                 })
         );
+    }
+
+    @DisplayName("객관식 설문의 설문 통계를 조회한다.")
+    @WithMockUser(username = "writer@naver.com")
+    @Test
+    void getMultipleChoiceStatistics() {
+        // given
+        String writerEmail = "writer@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest1 = getAccountCreateServiceRequest(
+                writerEmail, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연구", "010-1234-5678",
+                LocalDate.of(1997, Month.JUNE, 24));
+        accountService.signup(accountCreateServiceRequest1);
+
+        MultipleChoiceCreateServiceRequest multipleChoice1 = MultipleChoiceCreateServiceRequest
+                .builder()
+                .content("사과")
+                .linkNumber(0L)
+                .build();
+        MultipleChoiceCreateServiceRequest multipleChoice2 = MultipleChoiceCreateServiceRequest
+                .builder()
+                .content("배")
+                .linkNumber(0L)
+                .build();
+
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
+                .questionNumber(1L)
+                .content("좋아하는 과일을 선택해주세요.")
+                .imgAddress(null)
+                .type(QuestionCategoryType.MULTIPLE_CHOICE)
+                .multipleChoices(List.of(multipleChoice1, multipleChoice2))
+                .build();
+        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(questionCreateServiceRequestByShortForm);
+
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String giveawayName = "스타벅스 아메리카노";
+        int price = 4500;
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(giveawayType)
+                .name(giveawayName)
+                .price(price)
+                .build();
+        giveawayService.createGiveaway(request);
+        Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(giveawayName);
+        Long giveawayId = giveaway.get().getId();
+        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+                .id(giveawayId)
+                .count(1)
+                .build();
+        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+
+        LocalDateTime now = LocalDateTime.now();
+        String surveyTitle = "당신은 어떤 과일을 좋아하나요?";
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title(surveyTitle)
+                .startTime(now.minusDays(1))
+                .endTime(now.plusDays(1))
+                .headCount(0)
+                .surveyTarget(List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.TWENTIES))
+                .closedHeadCount(3)
+                .type(SurveyCategoryType.NORMAL)
+                .questions(questionCreateServiceRequests)
+                .giveaways(giveawayAssignServiceRequests)
+                .build();
+
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
+        surveyRepository.findById(saveSurvey.getId()).get().toOpen();
+
+        QuestionAnswerCreateServiceRequest questionAnswerCreateServiceRequest
+                = QuestionAnswerCreateServiceRequest
+                .builder()
+                .questionId(saveSurvey.getQuestions().get(0).getId())
+                .multipleChoiceAnswer(1L)
+                .shorFormAnswer(null)
+                .build();
+        questionAnswerService.addQuestionAnswer(LocalDateTime.now(), saveSurvey.getId(), List.of(questionAnswerCreateServiceRequest));
+
+        // when
+        StatisticsSurveyResponse statisticsSurveyResponse = surveyService.getStatistics(saveSurvey.getId());
+
+        // then
+        assertThat(statisticsSurveyResponse.getTitle()).isEqualTo(surveyTitle);
+        assertThat(statisticsSurveyResponse.getQuestionAnswers().size()).isOne();
+    }
+
+    @DisplayName("주관식 설문의 설문 통계를 조회한다.")
+    @WithMockUser(username = "writer@naver.com")
+    @Test
+    void getShortFormStatistics() {
+        // given
+        String writerEmail = "writer@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest1 = getAccountCreateServiceRequest(
+                writerEmail, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연구", "010-1234-5678",
+                LocalDate.of(1997, Month.JUNE, 24));
+        accountService.signup(accountCreateServiceRequest1);
+
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
+                .questionNumber(1L)
+                .content("좋아하는 과일을 작성해주세요.")
+                .imgAddress(null)
+                .type(QuestionCategoryType.SHORT_FORM)
+                .build();
+        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(questionCreateServiceRequestByShortForm);
+
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String giveawayName = "스타벅스 아메리카노";
+        int price = 4500;
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(giveawayType)
+                .name(giveawayName)
+                .price(price)
+                .build();
+        giveawayService.createGiveaway(request);
+        Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(giveawayName);
+        Long giveawayId = giveaway.get().getId();
+        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+                .id(giveawayId)
+                .count(1)
+                .build();
+        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+
+        LocalDateTime now = LocalDateTime.now();
+        String surveyTitle = "당신은 어떤 과일을 좋아하나요?";
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title(surveyTitle)
+                .startTime(now.minusDays(1))
+                .endTime(now.plusDays(1))
+                .headCount(0)
+                .surveyTarget(List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.TWENTIES))
+                .closedHeadCount(3)
+                .type(SurveyCategoryType.NORMAL)
+                .questions(questionCreateServiceRequests)
+                .giveaways(giveawayAssignServiceRequests)
+                .build();
+
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
+        surveyRepository.findById(saveSurvey.getId()).get().toOpen();
+
+        QuestionAnswerCreateServiceRequest questionAnswerCreateServiceRequest
+                = QuestionAnswerCreateServiceRequest
+                .builder()
+                .questionId(saveSurvey.getQuestions().get(0).getId())
+                .multipleChoiceAnswer(null)
+                .shorFormAnswer("치즈케익")
+                .build();
+        questionAnswerService.addQuestionAnswer(LocalDateTime.now(), saveSurvey.getId(), List.of(questionAnswerCreateServiceRequest));
+
+        // when
+        StatisticsSurveyResponse statisticsSurveyResponse = surveyService.getStatistics(saveSurvey.getId());
+
+        // then
+        assertThat(statisticsSurveyResponse.getTitle()).isEqualTo(surveyTitle);
+        assertThat(statisticsSurveyResponse.getQuestionAnswers().size()).isOne();
+    }
+
+    @DisplayName("존재하지 않는 설문의 설문 통계는 조회할 수 없다.")
+    @WithMockUser(username = "writer@naver.com")
+    @Test
+    void getSurveyStatisticsWithInvalidSurveyId() {
+        // given
+        Long invalidSurveyId = 1L;
+
+        // when // then
+        assertThatThrownBy(() -> surveyService.getStatistics(invalidSurveyId))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("없는 설문입니다.");
+    }
+
+    @DisplayName("설문 작성자만 설문 통계를 확인할 수 있다.")
+    @WithMockUser(username = "writer@naver.com")
+    @Test
+    void getStatisticsByNonWriter() {
+        // given
+        String writerEmail = "writer@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest1 = getAccountCreateServiceRequest(
+                writerEmail, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연구", "010-1234-5678",
+                LocalDate.of(1997, Month.JUNE, 24));
+        accountService.signup(accountCreateServiceRequest1);
+
+        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
+                .questionNumber(1L)
+                .content("좋아하는 과일을 작성해주세요.")
+                .imgAddress(null)
+                .type(QuestionCategoryType.SHORT_FORM)
+                .build();
+        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(questionCreateServiceRequestByShortForm);
+
+        GiveawayType giveawayType = GiveawayType.COFFEE;
+        String giveawayName = "스타벅스 아메리카노";
+        int price = 4500;
+        GiveawayRequest request = GiveawayRequest.builder()
+                .giveawayType(giveawayType)
+                .name(giveawayName)
+                .price(price)
+                .build();
+        giveawayService.createGiveaway(request);
+        Optional<Giveaway> giveaway = giveawayRepository.findGiveawayByName(giveawayName);
+        Long giveawayId = giveaway.get().getId();
+        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+                .id(giveawayId)
+                .count(1)
+                .build();
+        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+
+        LocalDateTime now = LocalDateTime.now();
+        String surveyTitle = "당신은 어떤 과일을 좋아하나요?";
+        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+                .title(surveyTitle)
+                .startTime(now.minusDays(1))
+                .endTime(now.plusDays(1))
+                .headCount(0)
+                .surveyTarget(List.of(AccountCodeType.MAN, AccountCodeType.WOMAN, AccountCodeType.TWENTIES))
+                .closedHeadCount(3)
+                .type(SurveyCategoryType.NORMAL)
+                .questions(questionCreateServiceRequests)
+                .giveaways(giveawayAssignServiceRequests)
+                .build();
+
+        SurveyResponse saveSurvey = surveyService.addSurvey(surveyCreateServiceRequest);
+        surveyRepository.findById(saveSurvey.getId()).get().toOpen();
+
+        QuestionAnswerCreateServiceRequest questionAnswerCreateServiceRequest
+                = QuestionAnswerCreateServiceRequest
+                .builder()
+                .questionId(saveSurvey.getQuestions().get(0).getId())
+                .multipleChoiceAnswer(null)
+                .shorFormAnswer("치즈케익")
+                .build();
+        questionAnswerService.addQuestionAnswer(LocalDateTime.now(), saveSurvey.getId(), List.of(questionAnswerCreateServiceRequest));
+
+        String anotherUserEmail = "duswo0624@naver.com";
+        String anotherUserPassword = "1234";
+        AccountCreateServiceRequest accountCreateServiceRequest2 = getAccountCreateServiceRequest(
+                anotherUserEmail, anotherUserPassword, AccountCodeType.WOMAN, AccountCodeType.TWENTIES, "최연재", "010-9999-8888",
+                LocalDate.of(1997, Month.JUNE, 24));
+        accountService.signup(accountCreateServiceRequest2);
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(anotherUserEmail, anotherUserPassword);
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // when
+        assertThatThrownBy(() -> surveyService.getStatistics(saveSurvey.getId()))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("설문 작성자만 설문 통계를 확인할 수 있습니다.");
     }
 
 
