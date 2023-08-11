@@ -21,7 +21,9 @@ public enum AnswerPossibleType {
     @JsonProperty("TYPENOTMATCH")
     TYPENOTMATCH("설문대상이아님"),
     @JsonProperty("CANANSWER")
-    CANANSWER("설문응답가능");
+    CANANSWER("설문응답가능"),
+    @JsonProperty("NEEDLOGIN")
+    NEEDLOGIN("로그인하지않음");
 
     private final String text;
 
