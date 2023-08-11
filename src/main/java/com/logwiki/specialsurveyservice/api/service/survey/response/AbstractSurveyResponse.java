@@ -39,12 +39,13 @@ public class AbstractSurveyResponse {
     private int questionCount;
     private long winHeadCount;
     private List<SurveyGiveawayResponse> surveyGiveaways;
+    private boolean isClosed;
 
     @Builder
     public AbstractSurveyResponse(String content, String img,Long id , String title, SurveyCategoryType surveyCategoryType,
                                   List<AccountCodeType> surveyTarget, String writerName, Double winningPercent,
                                   int requiredTimeInSeconds, LocalDateTime startTime, LocalDateTime endTime,
-                                  int headCount, int closedHeadCount, int questionCount, long winHeadCount, List<SurveyGiveawayResponse> surveyGiveaways) {
+                                  int headCount, int closedHeadCount, int questionCount, long winHeadCount, List<SurveyGiveawayResponse> surveyGiveaways, boolean isClosed) {
         this.id = id;
         this.img = img;
         this.title = title;
@@ -61,6 +62,7 @@ public class AbstractSurveyResponse {
         this.questionCount = questionCount;
         this.winHeadCount = winHeadCount;
         this.surveyGiveaways = surveyGiveaways;
+        this.isClosed = isClosed;
     }
 
     public static AbstractSurveyResponse from(Survey survey, String writerName) {
@@ -114,6 +116,7 @@ public class AbstractSurveyResponse {
                 .surveyGiveaways(survey.getSurveyGiveaways().stream()
                         .map(SurveyGiveawayResponse::from)
                         .collect(Collectors.toList()))
+                .isClosed(survey.isClosed())
                 .build();
     }
 }
