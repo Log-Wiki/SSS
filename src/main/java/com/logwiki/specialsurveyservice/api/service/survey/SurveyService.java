@@ -377,9 +377,6 @@ public class SurveyService {
         return true;
     }
     public AnswerPossibleType getAnswerPossible(Long surveyId) {
-        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")){
-            return AnswerPossibleType.NEEDLOGIN;
-        }
         Account account = accountService.getCurrentAccountBySecurity();
 
         SurveyResponse surveyResponse = this.getSurvey(surveyId);
