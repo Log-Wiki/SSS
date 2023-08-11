@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -376,7 +377,11 @@ public class SurveyService {
         return true;
     }
     public AnswerPossibleType getAnswerPossible(Long surveyId) {
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")){
+            return AnswerPossibleType.NEEDLOGIN;
+        }
         Account account = accountService.getCurrentAccountBySecurity();
+
         SurveyResponse surveyResponse = this.getSurvey(surveyId);
         Survey survey = surveyRepository.findById(surveyId).get();
 
