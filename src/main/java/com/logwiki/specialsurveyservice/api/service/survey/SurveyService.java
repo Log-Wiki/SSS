@@ -19,6 +19,8 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
+import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoiceRepository;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
@@ -65,6 +67,7 @@ public class SurveyService {
     private final AccountRepository accountRepository;
     private final AccountSurveyRepository accountSurveyRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final MultipleChoiceRepository multipleChoiceRepository;
 
     private static final String LOSEPRODUCT = "꽝";
     private static final boolean HIDDEN_BOOLEAN_RESULT = false;
@@ -435,22 +438,25 @@ public class SurveyService {
     }
 
     private List<String> getQuestionAnswerResponse(Long questionId, QuestionCategoryType questionType) {
-        List<QuestionAnswer> questionAnswer = questionAnswerRepository.findAllByQuestion_Id(
+        List<QuestionAnswer> questionAnswers = questionAnswerRepository.findAllByQuestion_Id(
                 questionId);
 
         List<String> questionAnswerResponse = new ArrayList<>();
         if((questionType == QuestionCategoryType.MULTIPLE_CHOICE)
                 || (questionType == QuestionCategoryType.DROP_DOWN)
                 || (questionType == QuestionCategoryType.CHECK_BOX)) {
-            questionAnswerResponse = questionAnswer.stream()
-                    .map(questionAnswer1 -> questionAnswer1.getAnswerNumber().toString())
-                    .collect(Collectors.toList());
+            for(QuestionAnswer questionAnswer : questionAnswers) {
+                Optional<MultipleChoice> multipleChoice = multipleChoiceRepository.findById(questionAnswer.getAnswerNumber());
+                if(multipleChoice.isPresent()) {
+                    questionAnswerResponse.add(multipleChoice.get().getContent());
+                }
+            }
         }
         else if((questionType == QuestionCategoryType.SHORT_FORM)
                 || (questionType == QuestionCategoryType.DATE_FORM)
                 || (questionType == QuestionCategoryType.TIME_FORM)) {
-            questionAnswerResponse = questionAnswer.stream()
-                    .map(questionAnswer1 -> questionAnswer1.getShortFormAnswer().toString())
+            questionAnswerResponse = questionAnswers.stream()
+                    .map(questionAnswer -> questionAnswer.getShortFormAnswer().toString())
                     .collect(Collectors.toList());
         }
 
