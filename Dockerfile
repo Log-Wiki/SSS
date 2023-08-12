@@ -6,4 +6,6 @@ ARG ENVIRONMENT
 
 ENV SPRIING_PROFIlES_ACTIVE=${ENVIRONMENT}
 
+ENV TZ Asia/Seoul
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
