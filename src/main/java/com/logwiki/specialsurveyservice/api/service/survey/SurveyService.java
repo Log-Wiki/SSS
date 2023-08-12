@@ -43,7 +43,6 @@ import java.util.Optional;
 import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -424,6 +423,7 @@ public class SurveyService {
             QuestionAnswerStatisticsResponse questionAnswerStatisticsResponse = QuestionAnswerStatisticsResponse
                     .builder()
                     .questionId(question.getId())
+                    .questionNumber(question.getQuestionNumber())
                     .questionCategoryType(question.getType())
                     .answers(questionAnswerResponse)
                     .build();
