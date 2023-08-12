@@ -987,6 +987,7 @@ class SurveyControllerTest extends ControllerTestSupport {
                 = QuestionAnswerStatisticsResponse
                 .builder()
                 .questionId(1L)
+                .questionNumber(1L)
                 .questionCategoryType(questionResponse1.getType())
                 .answers(List.of("1", "2", "3", "3"))
                 .build();
@@ -994,7 +995,8 @@ class SurveyControllerTest extends ControllerTestSupport {
         QuestionAnswerStatisticsResponse questionAnswerStatisticsResponse2
                 = QuestionAnswerStatisticsResponse
                 .builder()
-                .questionId(1L)
+                .questionId(2L)
+                .questionNumber(2L)
                 .questionCategoryType(questionResponse2.getType())
                 .answers(List.of("포카리 스웨트", "파워에이드", "코카콜라", "사이다"))
                 .build();

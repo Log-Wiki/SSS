@@ -11,15 +11,17 @@ import lombok.NoArgsConstructor;
 public class QuestionAnswerStatisticsResponse {
 
     private Long questionId;
+    private Long questionNumber;
     private QuestionCategoryType questionCategoryType;
     private List<String> answers;
 
     @Builder
     public QuestionAnswerStatisticsResponse(Long questionId,
+            Long questionNumber,
             QuestionCategoryType questionCategoryType,
             List<String> answers) {
-
         this.questionId = questionId;
+        this.questionNumber = questionNumber;
         this.questionCategoryType = questionCategoryType;
         this.answers = answers;
     }
