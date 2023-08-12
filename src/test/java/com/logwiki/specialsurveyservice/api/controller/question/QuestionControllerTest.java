@@ -3,7 +3,9 @@ package com.logwiki.specialsurveyservice.api.controller.question;
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionAnswerCreateRequest;
 import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionAnswersCreateRequest;
+import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionModifyRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerResponse;
+import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -202,5 +205,33 @@ class QuestionControllerTest extends ControllerTestSupport {
         }
     }
 
+    @DisplayName("질문 문항의 내용, 이미지 주소, 타입을 수정한다.")
+    @WithMockUser
+    @Test
+    void questionModify() throws Exception {
+        String updateContent = "새로운 내용";
+        String updateImgAddress = "newImageAddress";
+        QuestionCategoryType updateQuestionCategoryType = QuestionCategoryType.CHECK_BOX;
+        QuestionModifyRequest questionModifyRequest = QuestionModifyRequest
+                .builder()
+                .content(updateContent)
+                .imgAddress(updateImgAddress)
+                .type(updateQuestionCategoryType)
+                .build();
 
+        Long questionId = 1L;
+
+        mockMvc.perform(
+                        put("/api/question/{id}", questionId)
+                                .content(objectMapper.writeValueAsString(questionModifyRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.content").value(updateContent))
+                .andExpect(jsonPath("$.response.imgAddress").value(updateImgAddress))
+                .andExpect(jsonPath("$.response.type").value(updateQuestionCategoryType.toString()));
+    }
 }
