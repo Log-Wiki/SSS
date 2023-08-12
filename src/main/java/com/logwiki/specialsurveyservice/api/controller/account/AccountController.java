@@ -4,6 +4,8 @@ import com.logwiki.specialsurveyservice.api.controller.account.request.AccountCr
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
 import com.logwiki.specialsurveyservice.api.controller.account.request.CheckDuplicateEmailRequest;
 import com.logwiki.specialsurveyservice.api.controller.account.request.CheckDuplicatePhoneNumberRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.FindEmailRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.UpdatePasswordRequest;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
@@ -51,5 +53,15 @@ public class AccountController {
     @PostMapping("/duplicate/phone-number")
     public ApiResponse<DuplicateResponse> checkDuplicatePhoneNumber(@Valid @RequestBody CheckDuplicatePhoneNumberRequest checkDuplicatePhoneNumberRequest) {
         return ApiUtils.success(accountService.checkDuplicatePhoneNumber(checkDuplicatePhoneNumberRequest.getPhoneNumber()));
+    }
+
+    @PostMapping("/user/find/email")
+    public ApiResponse<AccountResponse> getUserByPhoneNumber(@Valid @RequestBody FindEmailRequest findEmailRequest) {
+        return ApiUtils.success(accountService.getUserByPhoneNumber(findEmailRequest.getPhoneNumber()));
+    }
+
+    @PatchMapping("/user/update/password")
+    public ApiResponse<AccountResponse> update(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        return ApiUtils.success(accountService.updatePassword(updatePasswordRequest));
     }
 }
