@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.service.surveyresult;
 import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.ResultPageResponse;
+import com.logwiki.specialsurveyservice.api.service.surveyresult.response.WinningAccountResponse;
 import com.logwiki.specialsurveyservice.domain.account.Account;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
@@ -16,6 +17,7 @@ import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumber;
 import com.logwiki.specialsurveyservice.domain.targetnumber.TargetNumberRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -156,5 +158,18 @@ public class SurveyResultService {
         }
 
         throw new BaseException("마감되지 않은 설문은 결과를 확인할수 없습니다.", 3016);
+    }
+
+    public List<WinningAccountResponse> getWinningUsers(Long surveyId) {
+        surveyRepository.findById(surveyId).orElseThrow(() -> new BaseException("없는 설문입니다.", 3005));
+
+        List<SurveyResult> surveyResults = surveyResultRepository.findAllBySurvey_IdAndWin(surveyId, true);
+        List<Account> accounts = surveyResults.stream()
+                .map(SurveyResult::getAccount)
+                .toList();
+
+        return accounts.stream()
+                .map(WinningAccountResponse::from)
+                .collect(Collectors.toList());
     }
 }
