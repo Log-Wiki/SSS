@@ -84,6 +84,7 @@ public class QuestionAnswerService {
     private void checkAnsweredAllQuestions(List<Question> questions, List<QuestionAnswerCreateServiceRequest> dto) {
 
         Map<Long, Boolean> checkLinkNumber = new HashMap<>();
+        checkLinkNumber.put(0L, false);
         for (Question question : questions) {
             // 필수질문
             if (question.isEssential()) {
@@ -102,6 +103,7 @@ public class QuestionAnswerService {
                 // 해당 질문이 연계질문으로 이어진적이 없음
                 for (QuestionAnswerCreateServiceRequest questionAnswer : dto) {
                     if (questionAnswer.getQuestionId().equals(question.getId())) {
+                        isAnswered = false;
                         for (MultipleChoice mc : question.getMultipleChoice()) {
                             Long curNumber = mc.getId();
                             Long answerNumber = questionAnswer.getMultipleChoiceAnswer();
@@ -109,12 +111,12 @@ public class QuestionAnswerService {
                                 checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), false);
                                 continue;
                             }
+                            if (checkLinkNumber.containsKey(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId())) {
+                                continue;
+                            }
                             checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), true);
                         }
-                        isAnswered = false;
-                        break;
                     }
-
                 }
                 if (isAnswered) {
                     throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
