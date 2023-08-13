@@ -6,6 +6,7 @@ import com.logwiki.specialsurveyservice.api.utils.ApiResponse;
 import com.logwiki.specialsurveyservice.api.utils.ApiUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class SurveyResultController {
     }
 
     @GetMapping("/survey-result/users/{surveyId}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ApiResponse<List<WinningAccountResponse>> getWinningUsers(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyResultService.getWinningUsers(surveyId));
     }
