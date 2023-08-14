@@ -92,7 +92,7 @@ class PaymentControllerTest extends ControllerTestSupport {
         mockMvc.perform(
 
                         //when
-                get("/api/payment/1")
+                get("/api/payment/" + surveyId)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(csrf())
