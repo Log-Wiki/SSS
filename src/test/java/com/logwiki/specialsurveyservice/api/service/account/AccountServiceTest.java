@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.UpdatePasswordRequest;
+import com.logwiki.specialsurveyservice.api.controller.auth.request.LoginRequest;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
@@ -25,6 +27,9 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +42,8 @@ class AccountServiceTest extends IntegrationTestSupport {
     private AuthorityRepository authorityRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @BeforeEach
     void setUp() {
@@ -500,6 +507,106 @@ class AccountServiceTest extends IntegrationTestSupport {
     void getUserNameByInvalidUserId() {
         Long invalidUserId = 1L;
         assertThatThrownBy(() -> accountService.getUserNameById(invalidUserId))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("존재하지 않는 유저입니다.");
+    }
+
+    @DisplayName("핸드폰 번호를 이용하여 유저를 조회한다.")
+    @Test
+    void getUserByPhoneNumber() {
+        // given
+        String phoneNumber = "010-1111-2222";
+        String email = "duswo0624@naver.com";
+        String name = "최연재";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name(name)
+                .phoneNumber(phoneNumber)
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+
+        accountService.signup(accountCreateServiceRequest);
+
+        // when
+        AccountResponse accountResponse = accountService.getUserByPhoneNumber(phoneNumber);
+
+        // then
+        assertThat(accountResponse.getEmail()).isEqualTo(email);
+        assertThat(accountResponse.getName()).isEqualTo(name);
+    }
+
+    @DisplayName("조회하려고 하는 핸드폰 번호를 가진 유저가 없는 경우, 핸드폰 번호로 유저를 조회할 수 없다.")
+    @Test
+    void cannotGetUserByPhoneNumberWithInvalidPhoneNumber() {
+        // given
+        String invalidPhoneNumber = "010-1111-2222";
+
+        // when // then
+        assertThatThrownBy(() -> accountService.getUserByPhoneNumber(invalidPhoneNumber))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("존재하지 않는 유저입니다.");
+    }
+
+    @DisplayName("이메일과 재설정할 비밀번호를 이용하여 회원의 비밀번호를 재설정한다.")
+    @Test
+    void updatePassword() {
+        // given
+        String email = "duswo0624@naver.com";
+        String name = "최연재";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name(name)
+                .phoneNumber("010-1111-2222")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+
+        accountService.signup(accountCreateServiceRequest);
+
+        String updatePassword = "4321";
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest
+                .builder()
+                .email(email)
+                .password(updatePassword)
+                .build();
+
+        // when
+        accountService.updatePassword(updatePasswordRequest);
+
+        // then
+        LoginRequest loginRequest = LoginRequest
+                .builder()
+                .email(email)
+                .password(updatePassword)
+                .build();
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+
+        Authentication authenticate = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+        assertThat(authenticate.getName()).isEqualTo(email);
+    }
+
+    @DisplayName("존재하지 않는 유저 이메일을 이용해서 유저의 비밀번호를 재설정할 수 없다.")
+    @Test
+    void cannotUpdatePasswordWithInvalidEmail() {
+        // given
+        String InvalidEmail = "duswo0624@naver.com";
+        String updatePassword = "4321";
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest
+                .builder()
+                .email(InvalidEmail)
+                .password(updatePassword)
+                .build();
+
+        // when
+        assertThatThrownBy(() -> accountService.updatePassword(updatePasswordRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("존재하지 않는 유저입니다.");
     }
