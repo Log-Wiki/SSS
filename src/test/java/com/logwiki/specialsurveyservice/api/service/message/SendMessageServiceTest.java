@@ -93,7 +93,9 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
                 }
             }
         }
-        String fileID = messageService.registImageToNCP("더미치킨.jpg",fileBody);
+        System.out.println(fileBody);
+//        String fileID = messageService.registImageToNCP("더미치킨.jpg",fileBody);
+
         Message mms = Message.builder()
                 .to("01055014037")
                 .subject("연재용 MMS 제목")
@@ -101,13 +103,13 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
                 .build();
         List<Message> messages = new ArrayList<>();
         messages.add(mms);
-        List<String> fileNames = new ArrayList<>();
-        fileNames.add(fileID);
+
         int responseCode = messageService.sendMMS(MultimediaMessageSendServiceRequest.builder()
                         .from("01055014037")
                         .content("공통MMS내용")
                         .messages(messages)
-                        .files(fileNames)
+                        .fileName("더미치킨.jpg")
+                        .fileBody(fileBody)
                         .subject("공통 MMS 주제")
                 .build());
         assertThat(responseCode).isEqualTo(202);

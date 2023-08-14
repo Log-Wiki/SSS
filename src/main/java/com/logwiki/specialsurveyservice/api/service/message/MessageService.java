@@ -222,11 +222,11 @@ public class MessageService {
         }
 
         JSONArray fileArr = new JSONArray();
-        for (String fileId : request.getFiles()) {
-            JSONObject fileIdJson = new JSONObject();
-            fileIdJson.put("fileId", fileId);
-            fileArr.add(fileIdJson);
-        }
+        String fileId = this.registImageToNCP(request.getFileName() , request.getFileBody());
+
+        JSONObject fileIdJson = new JSONObject();
+        fileIdJson.put("fileId", fileId);
+        fileArr.add(fileIdJson);
         bodyJson.put("files", fileArr);
 
         bodyJson.put("messages", toArr);
