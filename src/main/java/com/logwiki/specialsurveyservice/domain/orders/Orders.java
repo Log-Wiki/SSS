@@ -17,13 +17,19 @@ public class Orders extends BaseEntity {
   @Id
   private String orderId;
 
+  private String impUid;
+
+  private Long surveyId;
+
   private Integer orderAmount;
 
   private Boolean isVerificated;
 
   @Builder
-  public Orders(String orderId , Integer orderAmount , Boolean isVerificated) {
+  public Orders(String orderId, Long surveyId , String impUid , Integer orderAmount , Boolean isVerificated) {
      this.orderId = orderId;
+     this.surveyId = surveyId;
+     this.impUid = impUid;
      this.orderAmount = orderAmount;
      this.isVerificated = isVerificated;
   }
@@ -35,4 +41,5 @@ public class Orders extends BaseEntity {
                 .isVerificated(isVerificated)
                 .build();
     }
+
 }

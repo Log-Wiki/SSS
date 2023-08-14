@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PaymentAuthenticationServiceRequest {
+    private Long surveyId;
 
     private String orderId;
 
@@ -14,7 +15,8 @@ public class PaymentAuthenticationServiceRequest {
 
 
     @Builder
-    private PaymentAuthenticationServiceRequest(String orderId , String impUid) {
+    private PaymentAuthenticationServiceRequest(Long surveyId, String orderId , String impUid) {
+        this.surveyId = surveyId;
         this.orderId = orderId;
         this.impUid = impUid;
     }

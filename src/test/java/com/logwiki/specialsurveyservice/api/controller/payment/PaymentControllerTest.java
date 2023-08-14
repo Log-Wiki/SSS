@@ -3,6 +3,7 @@ package com.logwiki.specialsurveyservice.api.controller.payment;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,11 +17,13 @@ import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResp
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.orders.OrderProductElement;
 import com.logwiki.specialsurveyservice.domain.orders.Orders;
+import com.siot.IamportRestClient.response.Payment;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.test.context.support.WithMockUser;
 
 class PaymentControllerTest extends ControllerTestSupport {
@@ -32,8 +35,10 @@ class PaymentControllerTest extends ControllerTestSupport {
         String orderId = "orderId";
         String impUid = "impUid";
         int orderAmount = 5000;
+        Long surveyId = 1L;
         String isSuccess = "paid";
         PaymentAuthenticationRequest request = PaymentAuthenticationRequest.builder()
+                .surveyId(surveyId)
                 .orderId(orderId)
                 .impUid(impUid)
                 .build();
@@ -59,6 +64,42 @@ class PaymentControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response.imp_uid").value(impUid))
                 .andExpect(jsonPath("$.response.isSucess").value(isSuccess))
         ;
+
+    }
+
+    @DisplayName("결제 조회 테스트")
+    @WithMockUser
+    @Test
+    void getPaymentInfoTest() throws Exception {
+        // given
+        String orderId = "orderId";
+        String impUid = "impUid";
+        int orderAmount = 5000;
+        String isSuccess = "paid";
+        Long surveyId = 1L;
+        PaymentAuthenticationRequest request = PaymentAuthenticationRequest.builder()
+                .orderId(orderId)
+                .surveyId(surveyId)
+                .impUid(impUid)
+                .build();
+        PaymentResponse response = PaymentResponse.builder()
+                .impUid(impUid)
+                .orderId(orderId)
+                .orderAmount(orderAmount)
+                .isSucess(isSuccess).build();
+        Payment payment = new Payment();
+        when(authenticationPaymentService.getPaymentInfo(any())).thenReturn(payment);
+        mockMvc.perform(
+
+                        //when
+                get("/api/payment/" + surveyId)
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                //then
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 }

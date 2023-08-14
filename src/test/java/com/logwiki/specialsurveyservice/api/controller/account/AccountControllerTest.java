@@ -15,6 +15,8 @@ import com.logwiki.specialsurveyservice.api.controller.account.request.AccountCr
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
 import com.logwiki.specialsurveyservice.api.controller.account.request.CheckDuplicateEmailRequest;
 import com.logwiki.specialsurveyservice.api.controller.account.request.CheckDuplicatePhoneNumberRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.FindEmailRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.UpdatePasswordRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
 import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
@@ -460,6 +462,93 @@ class AccountControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.success").value("true"))
                 .andExpect(jsonPath("$.response.duplicate").value(isDuplicate))
         ;
+    }
+
+    @DisplayName("핸드폰 번호를 이용하여 유저 정보를 가져온다.")
+    @WithMockUser
+    @Test
+    void getUserByPhoneNumber() throws Exception {
+        // given
+        String phoneNumber = "010-1111-2222";
+        FindEmailRequest findEmailRequest = FindEmailRequest
+                .builder()
+                .phoneNumber(phoneNumber)
+                .build();
+
+        String email = "duswo0624@naver.com";
+        AccountResponse accountResponse = AccountResponse
+                .builder()
+                .id(1L)
+                .email(email)
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber(phoneNumber)
+                .responseSurveyCount(10)
+                .createSurveyCount(10)
+                .winningGiveawayCount(2)
+                .point(10)
+                .birthday(LocalDate.of(1997, 6, 24))
+                .refreshToken("refreshToken")
+                .build();
+
+        when(accountService.getUserByPhoneNumber(findEmailRequest.getPhoneNumber())).thenReturn(accountResponse);
+
+        // when // then
+        mockMvc.perform(
+                        post("/api/user/find/email")
+                                .content(objectMapper.writeValueAsString(findEmailRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.email").value(email));
+    }
+
+    @DisplayName("이메일과 재설정할 비밀번호를 이용하여 비밀번호를 재설정한다.")
+    @WithMockUser
+    @Test
+    void updatePassword() throws Exception {
+        // given
+        String email = "duswo0624@naver.com";
+        String updatePassword = "1234";
+        UpdatePasswordRequest updatePasswordRequest = UpdatePasswordRequest
+                .builder()
+                .email(email)
+                .password(updatePassword)
+                .build();
+
+        AccountResponse accountResponse = AccountResponse
+                .builder()
+                .id(1L)
+                .email(email)
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1111-2222")
+                .responseSurveyCount(10)
+                .createSurveyCount(10)
+                .winningGiveawayCount(2)
+                .point(10)
+                .birthday(LocalDate.of(1997, 6, 24))
+                .refreshToken("refreshToken")
+                .build();
+
+        when(accountService.updatePassword(any())).thenReturn(accountResponse);
+
+        // when // then
+        mockMvc.perform(
+                        patch("/api/user/update/password")
+                                .content(objectMapper.writeValueAsString(updatePasswordRequest))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response.email").value(email));
     }
 
     private AccountCreateRequest createAccountCreateRequest(String email, String password,
