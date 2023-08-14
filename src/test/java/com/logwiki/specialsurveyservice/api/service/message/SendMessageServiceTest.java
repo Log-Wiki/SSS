@@ -36,7 +36,6 @@ public class SendMessageServiceTest extends IntegrationTestSupport {
         ShortMessageSendServiceRequest request =
                 ShortMessageSendServiceRequest.builder()
                 .messages(messages)
-                .from("01055014037")
                 .content("테스트보내기")
                 .build();
 
