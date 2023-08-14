@@ -470,6 +470,9 @@ public class SurveyService {
     public Boolean sendRecommendMessage(Long surveyId) {
         SurveyResponse surveyResponse = this.getSurvey(surveyId);
         List<Account> accounts = accountRepository.findRecommendAccounts(surveyId);
+        if(accounts.size() == 0) {
+            throw new BaseException("추천대상이 존재하지 않습니다." , 8006);
+        }
         List<Message> messages = new ArrayList<>();
         for(Account account : accounts) {
             messages.add(Message.builder().to(account.getPhoneNumber().replaceAll("-","")).build());
@@ -479,7 +482,7 @@ public class SurveyService {
         ShortMessageSendServiceRequest messageRequest = new ShortMessageSendServiceRequest();
         messageService.sendSMS(ShortMessageSendServiceRequest.builder()
                 .content("설문 추천 드려요!!!! \n"
-                        + "http://221.164.64.185:3000/api/survey/detail/"
+                        + "i9e107.p.ssafy.io/surveydetail/"
                         + surveyId )
                 .messages(messages)
                 .build());
