@@ -27,7 +27,7 @@ public class SurveyResultController {
     }
 
     @GetMapping("/survey-result/users/{surveyId}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ApiResponse<List<WinningAccountResponse>> getWinningUsers(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyResultService.getWinningUsers(surveyId));
     }
