@@ -7,6 +7,7 @@ import com.logwiki.specialsurveyservice.api.controller.giveaway.GiveawayControll
 import com.logwiki.specialsurveyservice.api.controller.orders.OrderController;
 import com.logwiki.specialsurveyservice.api.controller.payment.PaymentController;
 import com.logwiki.specialsurveyservice.api.controller.question.QuestionController;
+import com.logwiki.specialsurveyservice.api.controller.schedule.ScheduleController;
 import com.logwiki.specialsurveyservice.api.controller.survey.SurveyController;
 import com.logwiki.specialsurveyservice.api.controller.surveyresult.SurveyResultController;
 import com.logwiki.specialsurveyservice.api.controller.userdetail.UserDetailController;
@@ -38,7 +39,8 @@ import org.springframework.test.web.servlet.MockMvc;
         QuestionController.class,
         OrderController.class,
         PaymentController.class,
-        SurveyController.class
+        SurveyController.class,
+        ScheduleController.class
 })
 public abstract class ControllerTestSupport {
 
