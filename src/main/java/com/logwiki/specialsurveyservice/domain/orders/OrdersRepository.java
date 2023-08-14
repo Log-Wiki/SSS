@@ -9,4 +9,6 @@ public interface OrdersRepository extends JpaRepository<Orders, String> {
 
 
   Optional<Orders> findOneByOrderId(String OrderId);
+
+  Optional<Orders> findOneBySurveyId(Long SurveyId);
 }
