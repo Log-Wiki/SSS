@@ -21,8 +21,12 @@ import com.logwiki.specialsurveyservice.api.service.payment.response.PaymentResp
 import com.logwiki.specialsurveyservice.domain.giveaway.Giveaway;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import com.logwiki.specialsurveyservice.domain.orders.Orders;
+import com.logwiki.specialsurveyservice.domain.orders.OrdersRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.response.Payment;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,8 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
     AuthorityRepository authorityRepository;
     @Autowired
     AccountCodeRepository accountCodeRepository;
+    @Autowired
+    OrdersRepository ordersRepository;
 
     private final static String IMPUID = "imp_780428188220";
     private final static int CORRECTPRICE = 43900;
@@ -89,7 +95,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // when
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L ,userId + "_" + CORRECTTIME , IMPUID);
         PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
 
 
@@ -127,7 +133,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME+1 , IMPUID);
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L, userId + "_" + CORRECTTIME+1 , IMPUID);
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
@@ -163,7 +169,7 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
 
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , IMPUID);
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L, userId + "_" + CORRECTTIME , IMPUID);
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
@@ -201,13 +207,139 @@ public class AuthenticationPaymentServiceTest extends IntegrationTestSupport {
         OrderResponse saveOrder = registOrderService.createOrder(request);
 
         // when
-        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(userId + "_" + CORRECTTIME , "-1");
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L, userId + "_" + CORRECTTIME , "-1");
 
         // then
         assertThatThrownBy(() ->  authenticationPaymentService.authenticatePayment(request1.toServiceRequest()))
                 .isInstanceOf(BaseException.class)
                 .hasMessage("iamport 응답 예외입니다.");
     }
+
+
+    @DisplayName("설문ID를 사용하여 결제 내역을 확인한다.")
+    @WithMockUser(username = "ksr4037@naver.com")
+    @Test
+    void getPaymentInfo() {
+        // given
+        String email = "ksr4037@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+        String userId = email;
+
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
+        giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
+        giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
+
+        OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().giveaways(giveaways)
+                .requestTime(CORRECTTIME).build();
+        OrderResponse saveOrder = registOrderService.createOrder(request);
+
+        // when
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L ,userId + "_" + CORRECTTIME , IMPUID);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
+
+        Payment payment = authenticationPaymentService.getPaymentInfo(1L);
+
+
+        // then
+        assertThat(payment).isNotNull();
+        assertThat(payment)
+                .extracting("imp_uid", "merchant_uid", "amount", "status")
+                .contains(IMPUID, userId + "_" + CORRECTTIME, new BigDecimal(CORRECTPRICE) , "paid");
+    }
+
+    @DisplayName("설문ID에 해당하는 주문내역이 존재해야한다.")
+    @WithMockUser(username = "ksr4037@naver.com")
+    @Test
+    void getPaymentInfoWithNoSurveyId() {
+        // given
+        String email = "ksr4037@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+        String userId = email;
+
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
+        giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
+        giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
+
+        OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().giveaways(giveaways)
+                .requestTime(CORRECTTIME).build();
+        OrderResponse saveOrder = registOrderService.createOrder(request);
+
+        // when
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L ,userId + "_" + CORRECTTIME , IMPUID);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
+
+        //then
+        assertThatThrownBy(() -> authenticationPaymentService.getPaymentInfo(2L))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("설문아이디에 해당하는 주문내역이 존재하지 않습니다.");
+
+
+    }
+
+    @DisplayName("존재하지 않는 IMPUID로 결제정보를 조회하는 경우 실패한다.")
+    @WithMockUser(username = "ksr4037@naver.com")
+    @Test
+    void getPaymentInfoBynonImpUid() {
+        // given
+        String email = "ksr4037@naver.com";
+        AccountCreateServiceRequest accountCreateServiceRequest = AccountCreateServiceRequest.builder()
+                .email(email)
+                .password("1234")
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1234-5678")
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+        accountService.signup(accountCreateServiceRequest);
+        String userId = email;
+
+        List<OrderProductElement> giveaways = new ArrayList<>();
+        giveaways.add(new OrderProductElement("컴포즈커피",3));
+        giveaways.add(new OrderProductElement("BBQ후라이드치킨",2));
+        giveawayRepository.save(new Giveaway(GiveawayType.COFFEE,"컴포즈커피",1300));
+        giveawayRepository.save(new Giveaway(GiveawayType.CHICKEN,"BBQ후라이드치킨",20000));
+
+        OrderCreateServiceRequest request = OrderCreateServiceRequest.builder().giveaways(giveaways)
+                .requestTime(CORRECTTIME).build();
+        OrderResponse saveOrder = registOrderService.createOrder(request);
+
+        PaymentAuthenticationRequest request1 = new PaymentAuthenticationRequest(1L, userId + "_" + CORRECTTIME , IMPUID);
+        PaymentResponse paymentResponse = authenticationPaymentService.authenticatePayment(request1.toServiceRequest());
+        ordersRepository.save(Orders.builder()
+                        .surveyId(1L)
+                        .orderId(userId + "_" + CORRECTTIME)
+                        .impUid("-1")
+                .build());
+        // when
+        // then
+        assertThatThrownBy(() -> authenticationPaymentService.getPaymentInfo(1L))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("iamport 응답 예외입니다.");
+    }
+
 
     private void setAuthority() {
         Authority userAuthority = Authority.builder()
