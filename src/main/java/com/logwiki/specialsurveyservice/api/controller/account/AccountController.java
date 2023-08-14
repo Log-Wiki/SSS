@@ -61,7 +61,7 @@ public class AccountController {
     }
 
     @PatchMapping("/user/update/password")
-    public ApiResponse<AccountResponse> update(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+    public ApiResponse<AccountResponse> updatePassword(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
         return ApiUtils.success(accountService.updatePassword(updatePasswordRequest));
     }
 }
