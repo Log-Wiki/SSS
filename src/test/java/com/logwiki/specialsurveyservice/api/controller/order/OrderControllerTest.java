@@ -38,8 +38,8 @@ class OrderControllerTest extends ControllerTestSupport {
         String id = "testid";
         int orderAmount = 5000;
         boolean isVerificated = false;
-        Orders Orders = new Orders(id, orderAmount, isVerificated);
-        OrderResponse orderResponse = OrderResponse.from(Orders);
+        Orders orders = Orders.create(id, orderAmount, isVerificated);
+        OrderResponse orderResponse = OrderResponse.from(orders);
         OrderCreateRequest orderCreateRequest = OrderCreateRequest
                 .builder()
                 .giveaways(orderProductElements)
@@ -70,8 +70,8 @@ class OrderControllerTest extends ControllerTestSupport {
         String id = "testid";
         int orderAmount = 5000;
         boolean isVerificated = false;
-        Orders Orders = new Orders(id, orderAmount, isVerificated);
-        OrderResponse orderResponse = OrderResponse.from(Orders);
+        Orders orders = Orders.create(id, orderAmount, isVerificated);
+        OrderResponse orderResponse = OrderResponse.from(orders);
         OrderCreateRequest orderCreateRequest = new OrderCreateRequest();
         when(registOrderService.createOrder(any())).thenReturn(orderResponse);
         mockMvc.perform(
