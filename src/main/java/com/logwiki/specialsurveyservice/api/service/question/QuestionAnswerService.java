@@ -13,7 +13,6 @@ import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswer;
 import com.logwiki.specialsurveyservice.domain.questionanswer.QuestionAnswerRepository;
-import com.logwiki.specialsurveyservice.domain.survey.SurveyRepository;
 import com.logwiki.specialsurveyservice.domain.surveyresult.SurveyResult;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTarget;
 import com.logwiki.specialsurveyservice.domain.surveytarget.SurveyTargetRepository;
@@ -38,22 +37,21 @@ public class QuestionAnswerService {
     private final SurveyResultService surveyResultService;
     private final SurveyTargetRepository surveyTargetRepository;
     private final SseService sseService;
-    private final SurveyRepository surveyRepository;
 
     @Transactional
     public List<QuestionAnswerResponse> addQuestionAnswer(
             LocalDateTime answerDateTime,
             Long surveyId,
             List<QuestionAnswerCreateServiceRequest> dto) {
-        Account account = accountService.getCurrentAccountBySecurity();
+
         List<Question> questions = findQuestionsBySurveyId(surveyId);
 
-        checkIsTarget(account, surveyId);
+        checkIsTarget(surveyId);
         checkAnsweredAllQuestions(questions, dto);
 
         SurveyResult surveyResult = surveyResultService.addSubmitResult(surveyId, answerDateTime);
         sseService.sendResultToSSE(surveyId, surveyResult, surveyResult.getSubmitOrder());
-        return saveQuestionAnswer(answerDateTime, account, questions, dto);
+        return saveQuestionAnswer(answerDateTime, questions, dto);
     }
 
     private List<Question> findQuestionsBySurveyId(Long surveyId) {
@@ -64,7 +62,8 @@ public class QuestionAnswerService {
         return questions;
     }
 
-    private void checkIsTarget(Account account, Long surveyId) {
+    private void checkIsTarget(Long surveyId) {
+        Account account = accountService.getCurrentAccountBySecurity();
         List<AccountCodeType> accountGenderAgeType = new ArrayList<>();
         accountGenderAgeType.add(account.getGender());
         accountGenderAgeType.add(account.getAge());
@@ -83,8 +82,9 @@ public class QuestionAnswerService {
     }
 
     private void checkAnsweredAllQuestions(List<Question> questions, List<QuestionAnswerCreateServiceRequest> dto) {
-        int minimumQuestionAnswerCnt = questions.size();
+
         Map<Long, Boolean> checkLinkNumber = new HashMap<>();
+        checkLinkNumber.put(0L, false);
         for (Question question : questions) {
             // 필수질문
             if (question.isEssential()) {
@@ -103,6 +103,7 @@ public class QuestionAnswerService {
                 // 해당 질문이 연계질문으로 이어진적이 없음
                 for (QuestionAnswerCreateServiceRequest questionAnswer : dto) {
                     if (questionAnswer.getQuestionId().equals(question.getId())) {
+                        isAnswered = false;
                         for (MultipleChoice mc : question.getMultipleChoice()) {
                             Long curNumber = mc.getId();
                             Long answerNumber = questionAnswer.getMultipleChoiceAnswer();
@@ -110,12 +111,12 @@ public class QuestionAnswerService {
                                 checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), false);
                                 continue;
                             }
+                            if (checkLinkNumber.containsKey(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId())) {
+                                continue;
+                            }
                             checkLinkNumber.put(questions.get(Math.max(Math.toIntExact(mc.getLinkNumber() - 1), 0)).getId(), true);
                         }
-                        isAnswered = false;
-                        break;
                     }
-
                 }
                 if (isAnswered) {
                     throw new BaseException("모든 문항에 답변을 해야합니다.", 3001);
@@ -124,26 +125,12 @@ public class QuestionAnswerService {
         }
     }
 
-    private int getMinusAnswerCnt(List<MultipleChoice> multipleChoices, Map<Long, Boolean> checkLinkNumber) {
-        final int DEFAULT_ANSWER_CNT = 1;
-        int curLinkQuestionCnt = 0;
-        for (MultipleChoice multipleChoice : multipleChoices) {
-            Long curLinkNumber = multipleChoice.getLinkNumber();
-            if (curLinkNumber != 0 &&
-                    checkLinkNumber.getOrDefault(curLinkNumber, true)) {
-                curLinkQuestionCnt += 1;
-                checkLinkNumber.put(curLinkNumber, false);
-            }
-        }
-        return Math.max(curLinkQuestionCnt - DEFAULT_ANSWER_CNT, 0);
-    }
-
     private List<QuestionAnswerResponse> saveQuestionAnswer(
             LocalDateTime answerDateTime,
-            Account account,
             List<Question> questions,
             List<QuestionAnswerCreateServiceRequest> dto) {
 
+        Account account = accountService.getCurrentAccountBySecurity();
         List<QuestionAnswerResponse> result = new ArrayList<>();
 
         for (QuestionAnswerCreateServiceRequest answer : dto) {

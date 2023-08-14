@@ -91,6 +91,7 @@ public class GiveawayService {
                                 return MyGiveawayResponse.builder()
                                         .win(surveyResult.isWin())
                                         .userCheck(surveyResult.isUserCheck())
+                                        .surveyId(surveyResult.getSurvey().getId())
                                         .surveyTitle(surveyResult.getSurvey().getTitle())
                                         .surveyWriter(accountService.getUserNameById(surveyResult.getSurvey().getWriter()))
                                         .probabilty(DEFAULT_PROBABILITY)

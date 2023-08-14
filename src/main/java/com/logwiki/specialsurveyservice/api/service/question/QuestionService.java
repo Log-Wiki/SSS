@@ -1,10 +1,8 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
-import com.logwiki.specialsurveyservice.api.service.question.request.QuestionCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionModifyServiceRequest;
 import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
-import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryRepository;
 import com.logwiki.specialsurveyservice.exception.BaseException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +13,6 @@ import org.springframework.stereotype.Service;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final QuestionCategoryRepository questionCategoryRepository;
-
-    public Question addQuestion(QuestionCreateServiceRequest questionCreateServiceRequest) {
-        return questionCreateServiceRequest.toEntity();
-    }
 
     @Transactional
     public void modifyQuestion(QuestionModifyServiceRequest dto) {

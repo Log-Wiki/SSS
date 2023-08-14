@@ -30,4 +30,6 @@ public interface SurveyResultRepository extends JpaRepository<SurveyResult, Long
             nativeQuery = true
     )
     Optional<Integer> findByGiveawaySurvey(@Param("surveyId") Long surveyId, @Param("targetNumber") int targetNumber);
+
+    List<SurveyResult> findAllBySurvey_IdAndWin(Long surveyId, boolean win);
 }

@@ -1,92 +1,89 @@
 package com.logwiki.specialsurveyservice.api.service.question;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.logwiki.specialsurveyservice.api.controller.question.request.MultipleChoiceCreateRequest;
-import com.logwiki.specialsurveyservice.api.controller.question.request.QuestionCreateRequest;
+import com.logwiki.specialsurveyservice.IntegrationTestSupport;
 import com.logwiki.specialsurveyservice.api.service.question.request.QuestionModifyServiceRequest;
+import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
+import com.logwiki.specialsurveyservice.domain.question.Question;
 import com.logwiki.specialsurveyservice.domain.question.QuestionRepository;
 import com.logwiki.specialsurveyservice.domain.questioncategory.QuestionCategoryType;
 import com.logwiki.specialsurveyservice.exception.BaseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-@ExtendWith(MockitoExtension.class)
-class QuestionServiceTest {
+@Transactional
+class QuestionServiceTest extends IntegrationTestSupport {
 
-    @InjectMocks
+    @Autowired
     private QuestionService questionService;
-
-    @Mock
+    @Autowired
     private QuestionRepository questionRepository;
 
-    @DisplayName("객관식 문항은 보기를 가지지 않을경우 에러를 반환")
-    @Test
-    void multipleChoiceNeedMultipleChoice() {
-        // given
-        List<MultipleChoiceCreateRequest> list = new ArrayList<>();
-        list.add(MultipleChoiceCreateRequest
-                .builder()
-                .linkNumber(1L)
-                .content("내용1")
-                .build());
-
-        Assertions.assertThrows(BaseException.class, () -> {
-            questionService.addQuestion(QuestionCreateRequest.builder()
-                    .questionNumber(1L)
-                    .content("문항1")
-                    .type(QuestionCategoryType.MULTIPLE_CHOICE)
-                    .imgAddress(null)
-                    .multipleChoices(null)
-                    .build().toServiceRequest());
-        });
-    }
-
-    @DisplayName("주관식 문항은 보기를 가질 경우 에러를 반환")
-    @Test
-    void shorFormCantHaveMultipleChoice() {
-        // given
-        List<MultipleChoiceCreateRequest> list = new ArrayList<>();
-        list.add(MultipleChoiceCreateRequest
-                .builder()
-                .linkNumber(1L)
-                .content("내용1")
-                .build());
-
-        Assertions.assertThrows(BaseException.class, () -> {
-            questionService.addQuestion(QuestionCreateRequest.builder()
-                    .questionNumber(1L)
-                    .content("문항1")
-                    .type(QuestionCategoryType.SHORT_FORM)
-                    .imgAddress(null)
-                    .multipleChoices(list)
-                    .build()
-                    .toServiceRequest());
-        });
-    }
-
-    @DisplayName("문항을 찾지 못할 경우 에러를 반환")
+    @DisplayName("문항을 찾지 못할 경우 에러를 반환한다.")
     @Test
     void notFoundQuestionThrowError() {
         // given
-        QuestionModifyServiceRequest dto = new QuestionModifyServiceRequest();
+        Long invalidId = 1L;
+        QuestionModifyServiceRequest invalidQuestionModifyServiceRequest = QuestionModifyServiceRequest
+                .builder()
+                .id(invalidId)
+                .build();
+
+        // when // then
+        Assertions.assertThatThrownBy(() -> questionService.modifyQuestion(invalidQuestionModifyServiceRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessage("문항을 찾을 수 없습니다.");
+    }
+
+    @DisplayName("질문의 내용, 이미지 주소, 타입을 할 수 있다.")
+    @Test
+    void modifyQuestion() {
+        // given
+        MultipleChoice multipleChoice = MultipleChoice
+                .builder()
+                .content("다중 선택 내용")
+                .linkNumber(0L)
+                .build();
+
+        Question question = Question
+                .builder()
+                .questionNumber(1L)
+                .title("질문 title입니다.")
+                .content("질문 content입니다.")
+                .imgAddress("tempAddress")
+                .type(QuestionCategoryType.MULTIPLE_CHOICE)
+                .essential(true)
+                .multipleChoice(List.of(multipleChoice))
+                .build();
+
+        Question savedQuestion = questionRepository.save(question);
+        Long questionId = savedQuestion.getId();
+
+        String updateContent = "새로운 내용";
+        String updateImgAddress = "newImgAddress";
+        QuestionCategoryType updateQuestionCategoryType = QuestionCategoryType.CHECK_BOX;
+        QuestionModifyServiceRequest questionModifyServiceRequest = QuestionModifyServiceRequest
+                .builder()
+                .id(questionId)
+                .content(updateContent)
+                .imgAddress(updateImgAddress)
+                .type(updateQuestionCategoryType)
+                .build();
 
         // when
-        when(questionRepository.findById(any())).thenReturn(Optional.ofNullable(null));
+        questionService.modifyQuestion(questionModifyServiceRequest);
 
         // then
-        Assertions.assertThrows(BaseException.class, () -> {
-            questionService.modifyQuestion(dto);
-        });
+        Question updatedQuestion = questionRepository.findById(questionId).get();
+        assertThat(updatedQuestion.getContent()).isEqualTo(updateContent);
+        assertThat(updatedQuestion.getImgAddress()).isEqualTo(updateImgAddress);
+        assertThat(updatedQuestion.getType()).isEqualTo(updateQuestionCategoryType);
+
     }
 
 }

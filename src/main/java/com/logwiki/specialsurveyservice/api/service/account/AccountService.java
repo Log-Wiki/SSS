@@ -1,6 +1,7 @@
 package com.logwiki.specialsurveyservice.api.service.account;
 
 import com.logwiki.specialsurveyservice.api.controller.account.request.AccountUpdateRequest;
+import com.logwiki.specialsurveyservice.api.controller.account.request.UpdatePasswordRequest;
 import com.logwiki.specialsurveyservice.api.service.account.request.AccountCreateServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.account.response.AccountResponse;
 import com.logwiki.specialsurveyservice.api.service.account.response.DuplicateResponse;
@@ -34,7 +35,7 @@ public class AccountService {
                 != null) {
             throw new BaseException("동일한 이메일로 가입되어 있는 계정이 존재합니다.", 2001);
         }
-        if(accountRepository.findOneWithAuthoritiesByPhoneNumber(request.getPhoneNumber()).orElse(null)
+        if (accountRepository.findOneWithAuthoritiesByPhoneNumber(request.getPhoneNumber()).orElse(null)
                 != null) {
             throw new BaseException("동일한 휴대폰 번호로 가입되어 있는 계정이 존재합니다.", 2007);
         }
@@ -72,12 +73,13 @@ public class AccountService {
     public AccountResponse updateAccount(AccountUpdateRequest accountUpdateRequest) {
         Account account = getCurrentAccountBySecurity();
 
-        if(accountUpdateRequest.getPassword() != null) {
+        if (accountUpdateRequest.getPassword() != null) {
             accountUpdateRequest.encodePassword(passwordEncoder.encode(accountUpdateRequest.getPassword()));
         }
 
-        if(accountUpdateRequest.getPhoneNumber() != null) {
-            if(accountRepository.findOneWithAuthoritiesByPhoneNumber(accountUpdateRequest.getPhoneNumber()).orElse(null)
+        if (accountUpdateRequest.getPhoneNumber() != null) {
+            if (accountRepository.findOneWithAuthoritiesByPhoneNumber(accountUpdateRequest.getPhoneNumber())
+                    .orElse(null)
                     != null) {
                 throw new BaseException("동일한 휴대폰 번호로 가입되어 있는 계정이 존재합니다.", 2007);
             }
@@ -114,4 +116,24 @@ public class AccountService {
                 .build();
     }
 
+    public AccountResponse getUserByPhoneNumber(String phoneNumber) {
+        return AccountResponse.from(
+                accountRepository.findOneWithAuthoritiesByPhoneNumber(phoneNumber)
+                        .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000)));
+    }
+
+    @Transactional
+    public AccountResponse updatePassword(UpdatePasswordRequest updatePasswordRequest) {
+        Account account = accountRepository.findOneWithAuthoritiesByEmail(updatePasswordRequest.getEmail())
+                .orElseThrow(() -> new BaseException("존재하지 않는 유저입니다.", 2000));
+
+        AccountUpdateRequest accountUpdateRequest = AccountUpdateRequest
+                .builder()
+                .password(passwordEncoder.encode(updatePasswordRequest.getPassword()))
+                .build();
+
+        Account updatedAccount = account.update(accountUpdateRequest);
+
+        return AccountResponse.from(updatedAccount);
+    }
 }

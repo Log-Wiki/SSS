@@ -11,8 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.logwiki.specialsurveyservice.ControllerTestSupport;
 import com.logwiki.specialsurveyservice.api.controller.surveyresult.response.SurveyResultResponse;
 import com.logwiki.specialsurveyservice.api.service.surveyresult.response.ResultPageResponse;
+import com.logwiki.specialsurveyservice.api.service.surveyresult.response.WinningAccountResponse;
+import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -83,5 +87,55 @@ class SurveyResultControllerTest extends ControllerTestSupport {
                 .andExpect(jsonPath("$.response.win").value(isWin))
                 .andExpect(jsonPath("$.response.submitOrder").value(submitOrder))
                 .andExpect(jsonPath("$.response.userCheck").value(userCheck));
+    }
+
+    @DisplayName("설문 ID를 이용하여 당첨자 목록을 조회한다.")
+    @WithMockUser
+    @Test
+    void getWinningUsers() throws Exception {
+
+        String winningAccountEmail1 = "duswo0624@naver.com";
+        WinningAccountResponse winningAccountResponse1 = WinningAccountResponse
+                .builder()
+                .email(winningAccountEmail1)
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("최연재")
+                .phoneNumber("010-1111-2222")
+                .responseSurveyCount(10)
+                .createSurveyCount(2)
+                .winningGiveawayCount(3)
+                .point(0)
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+
+        String winningAccountEmail2 = "kwon1111@naver.com";
+        WinningAccountResponse winningAccountResponse2 = WinningAccountResponse
+                .builder()
+                .email(winningAccountEmail2)
+                .gender(AccountCodeType.MAN)
+                .age(AccountCodeType.TWENTIES)
+                .name("근짱")
+                .phoneNumber("010-2222-3333")
+                .responseSurveyCount(10)
+                .createSurveyCount(2)
+                .winningGiveawayCount(3)
+                .point(0)
+                .birthday(LocalDate.of(1997, 6, 24))
+                .build();
+
+        Long surveyId = 1L;
+        when(surveyResultService.getWinningUsers(surveyId)).thenReturn(
+                List.of(winningAccountResponse1, winningAccountResponse2));
+
+        mockMvc.perform(
+                        get("/api/survey-result/users/{surveyId}", surveyId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value("true"))
+                .andExpect(jsonPath("$.response[0].email").value(winningAccountEmail1))
+                .andExpect(jsonPath("$.response[1].email").value(winningAccountEmail2));
     }
 }
