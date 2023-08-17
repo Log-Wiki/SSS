@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface AccountCodeRepository extends JpaRepository<AccountCode, Long> {
 
-    Optional<AccountCode> findAccountCodeByType(AccountCodeType accountCodeType);
+    AccountCode findAccountCodeByType(AccountCodeType accountCodeType);
 }

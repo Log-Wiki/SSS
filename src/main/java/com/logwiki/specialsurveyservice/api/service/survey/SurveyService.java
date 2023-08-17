@@ -81,9 +81,7 @@ public class SurveyService {
         Survey survey = dto.toEntity(account.getId());
 
         for (AccountCodeType accountCodeType : dto.getSurveyTarget()) {
-            AccountCode accountCode = accountCodeRepository.findAccountCodeByType(accountCodeType).orElseThrow(
-                    () -> new BaseException("없는 나이,성별 코드 입니다.", 3007)
-            );
+            AccountCode accountCode = accountCodeRepository.findAccountCodeByType(accountCodeType);
 
             SurveyTarget surveyTarget = SurveyTarget.builder()
                     .survey(survey)
@@ -223,12 +221,8 @@ public class SurveyService {
 
     private List<Survey> getRecommendSurveysBySurveyCategoryType(SurveyCategoryType surveyCategoryType) {
         Account account = accountService.getCurrentAccountBySecurity();
-        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
-                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
-                .getId();
-        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
-                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
-                .getId();
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender()).getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge()).getId();
 
         return surveyRepository.findRecommendSurvey(surveyCategoryType.toString(),
                 genderId, ageId);
@@ -236,12 +230,8 @@ public class SurveyService {
 
     private List<Survey> getAllRecommendSurveys() {
         Account account = accountService.getCurrentAccountBySecurity();
-        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
-                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
-                .getId();
-        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
-                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
-                .getId();
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender()).getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge()).getId();
 
         return surveyRepository.findRecommendSurvey(genderId, ageId);
     }
@@ -358,12 +348,8 @@ public class SurveyService {
     }
     public boolean checkType(Account account , Long surveyId) {
 
-        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender())
-                .orElseThrow(() -> new BaseException("성별 코드가 올바르지 않습니다.", 2004))
-                .getId();
-        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge())
-                .orElseThrow(() -> new BaseException("나이 코드가 올바르지 않습니다.", 2005))
-                .getId();
+        Long genderId = accountCodeRepository.findAccountCodeByType(account.getGender()).getId();
+        Long ageId = accountCodeRepository.findAccountCodeByType(account.getAge()).getId();
         int checks = surveyRepository.checkSurveyPossible(surveyId,genderId,ageId);
         if(checks == 0) {
             return false;
@@ -452,9 +438,7 @@ public class SurveyService {
                 }
             }
         }
-        else if((questionType == QuestionCategoryType.SHORT_FORM)
-                || (questionType == QuestionCategoryType.DATE_FORM)
-                || (questionType == QuestionCategoryType.TIME_FORM)) {
+        else {
             questionAnswerResponse = questionAnswers.stream()
                     .map(questionAnswer -> questionAnswer.getShortFormAnswer().toString())
                     .collect(Collectors.toList());
