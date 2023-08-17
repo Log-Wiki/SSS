@@ -120,7 +120,6 @@ public class SurveyResultService {
         for (SurveyGiveaway value : surveyGiveaway) {
             if (value.getGiveaway().getId().equals(giveaway.getId())) {
                 probability = (double) survey.getHeadCount() / (double) value.getCount();
-                break;
             }
         }
 
