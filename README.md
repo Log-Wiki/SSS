@@ -16,20 +16,13 @@
 
 # 💻 Developer
 
-<div align="center">
-<table>
-  <tr>
-    <td align="center"><br /><p><b>박슬빈</b></p></<small>🍀 Back-End Developer</small></td>
-    <td align="center"><br /><p><b>최연재</b></p></<small>🍀 Back-End Developer</small></td>
-    <td align="center"><br /><p><b>권선근</b></p></<small>🍀 Back-End Developer</small></td>
-  </tr> 
-  <tr>
-    <td align="center"><br /><p><b>곽보선</b></p></<small>🍀 Front-End Developer</small></td>
-    <td align="center"><br /><p><b>전대현</b></p></<small>🍀 Front-End Developer</small></td>
-    <td align="center"><br /><p><b>신종혁</b></p></<small>🍀 Front-End Developer</small></td>
-  </tr>
-</table>
-</div>
+| **박슬빈👑** | **최연재** | **권선근** |
+|:---------:|:-------:|:-------:|
+|  BackEnd  | BackEnd | BackEnd |
+
+| **곽보선**  | **신종혁**  | **전대현**  |
+|:--------:|:--------:|:--------:|
+| FrontEnd | FrontEnd | FrontEnd |
 
 <br>
 
@@ -117,7 +110,7 @@ Quartz 라이브러리를 사용하게 되었습니다.
 
 - 프로젝트의 목표는 실 사용자를 받자였습니다.
 - 안정적인 서비스를 제공하기 위해 최대한 많은 커스텀 에러 코드와 테스트 코드를 작성하기 위해 노력했습니다.
-- 그 결과 223개의 테스트 코드를 작성, 약 60개 커스텀 에러 코드를 만들었습니다.
+- 그 결과 223개의 테스트 코드를 작성, jacoco 라인 커버리지 100% 달성, 약 60개 커스텀 에러 코드를 만들었습니다.
 
 <!-- Stack Icon Refernces -->
 
