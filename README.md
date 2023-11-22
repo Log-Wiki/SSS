@@ -35,8 +35,6 @@
 
 ## 사용 기술 스택
 
----
-
 | Java(17.0.7) | SpringBoot(3.1.1) | SpringSecurity |
 |:------------:|:-----------------:|:--------------:|
 |   ![java]    |     ![Spring]     |  ![security]   |
@@ -63,13 +61,10 @@
 
 # ERD
 
----
-
 ![erd]
 
 # 🎉기능 목록
 
----
 <details>
   <summary>본문확인</summary>
 
@@ -86,11 +81,8 @@
 <li>설문 당첨자 목록 로그 확인 기능</li>
 
 </details>
-<br>
 
 # 🧱 아키텍처
-
----
 
 ![architecture]
 
@@ -98,7 +90,6 @@
 
 ## Redis
 
----
 ![redis_img]
 <br>
 설문에 당첨 상품이 있다는 조건 때문에 본인 인증을 통해 1인 1계정만 가입할 수 있도록 하는것이 중요했습니다.<br>
@@ -107,7 +98,6 @@ RDBMS에 저장하는 것은 적합하지 않다고 판단해 TTL을 지원해�
 
 ## Quartz
 
----
 ![quartz]
 <br>
 설문 시작 마감 이라는 상태를 동적으로 변경을 하는 스케줄링 작업이 필요했습니다. 동적으로 변한다는 특징 때문에 @Scheduled 어노테이션으로는 부족하다고 생각하여
@@ -116,7 +106,18 @@ Quartz 라이브러리를 사용하게 되었습니다.
 
 <br>
 
-https://github.com/f-lab-edu/event-recommender-festa
+# ⚙ 테스트 코드, 커스텀 에러 코드
+
+![testcode]
+<br>
+<img src="./images/error1.PNG" width="300" height="300"/>
+<img src="./images/error2.PNG" width="300" height="300"/>
+
+<br>
+
+- 프로젝트의 목표는 실 사용자를 받자였습니다.
+- 안정적인 서비스를 제공하기 위해 최대한 많은 커스텀 에러 코드와 테스트 코드를 작성하기 위해 노력했습니다.
+- 그 결과 223개의 테스트 코드를 작성, 약 60개 커스텀 에러 코드를 만들었습니다.
 
 <!-- Stack Icon Refernces -->
 
@@ -145,3 +146,10 @@ https://github.com/f-lab-edu/event-recommender-festa
 [redis_img]: /images/redis_image.png
 
 [quartz]: /images/quartz.jpg
+
+[testcode]: /images/testcode.PNG
+
+[error1]: /images/error1.PNG
+
+[error2]: /images/error2.PNG
+
