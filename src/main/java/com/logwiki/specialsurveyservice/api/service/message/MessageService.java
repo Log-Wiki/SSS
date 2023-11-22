@@ -17,7 +17,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
@@ -80,6 +79,10 @@ public class MessageService {
 
     public int sendSMS(ShortMessageSendServiceRequest request) {
         int responseCode = DEFAULT;
+        String from = request.getFrom();
+        if(from == null) {
+            from = senderPhoneNumber;
+        }
         String timestamp = Long.toString(System.currentTimeMillis());
         String hostNameUrl = "https://sens.apigw.ntruss.com";
         String requestUrl = "/sms/v2/services/" + messageServiceKey + "/messages";
@@ -90,7 +93,7 @@ public class MessageService {
         JSONArray toArr = new JSONArray();
 
         bodyJson.put("type", request.getType().getText());
-        bodyJson.put("from", request.getFrom());
+        bodyJson.put("from", from);
         bodyJson.put("content", request.getContent());
 
         for (Message message : request.getMessages()) {
@@ -134,6 +137,10 @@ public class MessageService {
 
     public int sendLMS(LongMessageSendServiceRequest request) {
         int responseCode = DEFAULT;
+        String from = request.getFrom();
+        if(from == null) {
+            from = senderPhoneNumber;
+        }
         String timestamp = Long.toString(System.currentTimeMillis());
         String hostNameUrl = "https://sens.apigw.ntruss.com";
         String requestUrl = "/sms/v2/services/" + messageServiceKey + "/messages";
@@ -144,7 +151,7 @@ public class MessageService {
         JSONArray toArr = new JSONArray();
 
         bodyJson.put("type", request.getType().getText());
-        bodyJson.put("from", request.getFrom());
+        bodyJson.put("from", from);
         bodyJson.put("content", request.getContent());
 
         for (Message message : request.getMessages()) {
@@ -188,6 +195,10 @@ public class MessageService {
 
     public int sendMMS(MultimediaMessageSendServiceRequest request) {
         int responseCode = DEFAULT;
+        String from = request.getFrom();
+        if(from == null) {
+            from = senderPhoneNumber;
+        }
         String timestamp = Long.toString(System.currentTimeMillis());
         String hostNameUrl = "https://sens.apigw.ntruss.com";
         String requestUrl = "/sms/v2/services/" + messageServiceKey + "/messages";
@@ -198,7 +209,7 @@ public class MessageService {
         JSONArray toArr = new JSONArray();
 
         bodyJson.put("type", request.getType().getText());
-        bodyJson.put("from", request.getFrom());
+        bodyJson.put("from", from);
         bodyJson.put("content", request.getContent());
         bodyJson.put("subject", request.getSubject());
 
@@ -211,11 +222,11 @@ public class MessageService {
         }
 
         JSONArray fileArr = new JSONArray();
-        for (String fileId : request.getFiles()) {
-            JSONObject fileIdJson = new JSONObject();
-            fileIdJson.put("fileId", fileId);
-            fileArr.add(fileIdJson);
-        }
+        String fileId = this.registImageToNCP(request.getFileName() , request.getFileBody());
+
+        JSONObject fileIdJson = new JSONObject();
+        fileIdJson.put("fileId", fileId);
+        fileArr.add(fileIdJson);
         bodyJson.put("files", fileArr);
 
         bodyJson.put("messages", toArr);
@@ -324,7 +335,6 @@ public class MessageService {
         );
         ShortMessageSendServiceRequest request =
                 ShortMessageSendServiceRequest.builder()
-                        .from(senderPhoneNumber)
                         .messages(messages)
                         .content("회원가입 인증 공통 문자")
                         .build();

@@ -105,4 +105,10 @@ public class SurveyController {
     public ApiResponse<StatisticsSurveyResponse> getStatistics(@PathVariable Long surveyId) {
         return ApiUtils.success(surveyService.getStatistics(surveyId));
     }
+
+    @PostMapping("/survey/recommend/message/{surveyId}")
+    public ApiResponse<?> sendRecommendMessage(@PathVariable Long surveyId) {
+
+        return ApiUtils.success(surveyService.sendRecommendMessage(surveyId));
+    }
 }

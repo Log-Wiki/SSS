@@ -2,6 +2,8 @@ package com.logwiki.specialsurveyservice.api.service.survey;
 
 
 import com.logwiki.specialsurveyservice.api.service.account.AccountService;
+import com.logwiki.specialsurveyservice.api.service.message.MessageService;
+import com.logwiki.specialsurveyservice.api.service.message.request.ShortMessageSendServiceRequest;
 import com.logwiki.specialsurveyservice.api.service.question.response.QuestionAnswerStatisticsResponse;
 import com.logwiki.specialsurveyservice.api.service.sse.response.SurveyAnswerResponse;
 import com.logwiki.specialsurveyservice.api.service.survey.request.GiveawayAssignServiceRequest;
@@ -19,6 +21,7 @@ import com.logwiki.specialsurveyservice.domain.accountcode.AccountCodeType;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurvey;
 import com.logwiki.specialsurveyservice.domain.accountsurvey.AccountSurveyRepository;
 import com.logwiki.specialsurveyservice.domain.giveaway.GiveawayRepository;
+import com.logwiki.specialsurveyservice.domain.message.Message;
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoice;
 import com.logwiki.specialsurveyservice.domain.multiplechoice.MultipleChoiceRepository;
 import com.logwiki.specialsurveyservice.domain.question.Question;
@@ -68,6 +71,7 @@ public class SurveyService {
     private final AccountSurveyRepository accountSurveyRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final MultipleChoiceRepository multipleChoiceRepository;
+    private final MessageService messageService;
 
     private static final String LOSEPRODUCT = "꽝";
     private static final boolean HIDDEN_BOOLEAN_RESULT = false;
@@ -461,5 +465,28 @@ public class SurveyService {
         }
 
         return questionAnswerResponse;
+    }
+
+    public Boolean sendRecommendMessage(Long surveyId) {
+        SurveyResponse surveyResponse = this.getSurvey(surveyId);
+        List<Account> accounts = accountRepository.findRecommendAccounts(surveyId);
+        if(accounts.size() == 0) {
+            throw new BaseException("추천대상이 존재하지 않습니다." , 8006);
+        }
+        List<Message> messages = new ArrayList<>();
+        for(Account account : accounts) {
+            messages.add(Message.builder().to(account.getPhoneNumber().replaceAll("-","")).build());
+            log.info(account.getName() + " " + account.getGender() + " " + account.getAge());
+        }
+
+        ShortMessageSendServiceRequest messageRequest = new ShortMessageSendServiceRequest();
+        messageService.sendSMS(ShortMessageSendServiceRequest.builder()
+                .content("설문 추천 드려요!!!! \n"
+                        + "i9e107.p.ssafy.io/surveydetail/"
+                        + surveyId )
+                .messages(messages)
+                .build());
+
+        return true;
     }
 }

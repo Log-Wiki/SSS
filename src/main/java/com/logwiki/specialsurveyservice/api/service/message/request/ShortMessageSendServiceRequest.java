@@ -17,11 +17,12 @@ public class ShortMessageSendServiceRequest {
     List<Message> messages;
 
     @Builder
-    ShortMessageSendServiceRequest(String from , String content , List<Message> messages ) {
+    ShortMessageSendServiceRequest(String content , List<Message> messages ) {
         this.type = MessageType.SHORTMESSAGE;
-        this.from = from;
         this.content = content;
         this.messages = messages;
     }
+
+
 
 }

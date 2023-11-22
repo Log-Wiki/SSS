@@ -17,16 +17,19 @@ public class MultimediaMessageSendServiceRequest {
     private String content;
     List<Message> messages;
     private String subject;
-    List<String> files;
+    String fileName;
+    String fileBody;
 
     @Builder
-    MultimediaMessageSendServiceRequest( String from , String content , List<Message> messages , String subject , List<String> files) {
+    MultimediaMessageSendServiceRequest( String from , String content , List<Message> messages , String subject , String fileName,
+    String fileBody) {
         this.type = MessageType.MULTIMEDIAMESSAGE;
         this.from = from;
         this.content = content;
         this.messages = messages;
         this.subject = subject;
-        this.files = files;
+        this.fileName = fileName;
+        this.fileBody = fileBody;
     }
 
 
