@@ -1,12 +1,16 @@
 name: SSS develop CI/CD
+
 on:
-  push:
-    branches: [ main,develop ]
+  pull_request:
+    types: [ closed ]
+    branches:
+      - develop
 
 jobs:
   deploy:
     #테스트
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     steps:
       - name: 저장소 Checkout
         uses: actions/checkout@v3
