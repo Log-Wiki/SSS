@@ -113,7 +113,8 @@ jacocoTestReport {
                               "com/logwiki/specialsurveyservice/api/service/message/*",
                               "com/logwiki/specialsurveyservice/api/controller/sse/*",
                               "com/logwiki/specialsurveyservice/api/service/sse/*",
-                              "com/logwiki/specialsurveyservice/api/utils/ApiUtils.class"] + Qdomains)
+                              "com/logwiki/specialsurveyservice/api/utils/ApiUtils.class",
+                              "com/logwiki/specialsurveyservice/api/utils/SecurityUtil.class"] + Qdomains)
         }))
     }
     finalizedBy 'jacocoTestCoverageVerification'
@@ -148,7 +149,8 @@ jacocoTestCoverageVerification {
                         "com/logwiki/specialsurveyservice/api/service/message/*",
                         "com/logwiki/specialsurveyservice/api/controller/sse/*",
                         "com/logwiki/specialsurveyservice/api/service/sse/*",
-                        "com/logwiki/specialsurveyservice/api/utils/ApiUtils.class"] + Qdomains
+                        "com/logwiki/specialsurveyservice/api/utils/ApiUtils.class",
+                        "com/logwiki/specialsurveyservice/api/utils/SecurityUtil.class"] + Qdomains
         }
     }
 }

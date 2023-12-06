@@ -38,7 +38,6 @@ import com.logwiki.specialsurveyservice.exception.BaseException;
 import java.util.Collection;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -233,55 +232,55 @@ class SurveyServiceTest extends IntegrationTestSupport {
                 .hasMessage("인증 정보가 등록되어 있지 않습니다.");
     }
 
-    @DisplayName("존재하지 않는 나이성별 코드로는 설문을 작성할 수 없다.")
-    @WithMockUser(username = "duswo0624@naver.com")
-    @Test
-    @Disabled
-    void cannotAddSurveyWithInvalidAccountCode() {
-        // given
-        String email = "duswo0624@naver.com";
-        AccountCreateServiceRequest accountCreateServiceRequest = getAccountCreateServiceRequest(
-                email, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재",
-                "010-1234-5678",
-                LocalDate.of(1997, 6, 24));
-        accountService.signup(accountCreateServiceRequest);
-
-        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
-                .questionNumber(1L)
-                .content("바나나를 좋아하는 이유는 무엇인가요?")
-                .imgAddress(null)
-                .type(QuestionCategoryType.SHORT_FORM)
-                .multipleChoices(null)
-                .build();
-        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(
-                questionCreateServiceRequestByShortForm);
-
-        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
-                .id(1L)
-                .count(10)
-                .build();
-        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
-
-        AccountCodeType accountCodeType = AccountCodeType.MAN;
-        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
-                .title("당신은 어떤 과일을 좋아하나요?")
-                .startTime(LocalDateTime.now().minusDays(1))
-                .endTime(LocalDateTime.now().plusDays(1))
-                .headCount(0)
-                .surveyTarget(List.of(accountCodeType))
-                .closedHeadCount(100)
-                .type(SurveyCategoryType.INSTANT_WIN)
-                .questions(questionCreateServiceRequests)
-                .giveaways(giveawayAssignServiceRequests)
-                .build();
-
-        accountCodeRepository.delete(accountCodeRepository.findAccountCodeByType(accountCodeType));
-
-        // when // then
-        assertThatThrownBy(() -> surveyService.addSurvey(surveyCreateServiceRequest))
-                .isInstanceOf(BaseException.class)
-                .hasMessage("없는 나이,성별 코드 입니다.");
-    }
+//    @DisplayName("존재하지 않는 나이성별 코드로는 설문을 작성할 수 없다.")
+//    @WithMockUser(username = "duswo0624@naver.com")
+//    @Test
+//    @Disabled
+//    void cannotAddSurveyWithInvalidAccountCode() {
+//        // given
+//        String email = "duswo0624@naver.com";
+//        AccountCreateServiceRequest accountCreateServiceRequest = getAccountCreateServiceRequest(
+//                email, "1234", AccountCodeType.MAN, AccountCodeType.TWENTIES, "최연재",
+//                "010-1234-5678",
+//                LocalDate.of(1997, 6, 24));
+//        accountService.signup(accountCreateServiceRequest);
+//
+//        QuestionCreateServiceRequest questionCreateServiceRequestByShortForm = QuestionCreateServiceRequest.builder()
+//                .questionNumber(1L)
+//                .content("바나나를 좋아하는 이유는 무엇인가요?")
+//                .imgAddress(null)
+//                .type(QuestionCategoryType.SHORT_FORM)
+//                .multipleChoices(null)
+//                .build();
+//        List<QuestionCreateServiceRequest> questionCreateServiceRequests = List.of(
+//                questionCreateServiceRequestByShortForm);
+//
+//        GiveawayAssignServiceRequest giveawayAssignServiceRequest = GiveawayAssignServiceRequest.builder()
+//                .id(1L)
+//                .count(10)
+//                .build();
+//        List<GiveawayAssignServiceRequest> giveawayAssignServiceRequests = List.of(giveawayAssignServiceRequest);
+//
+//        AccountCodeType accountCodeType = AccountCodeType.MAN;
+//        SurveyCreateServiceRequest surveyCreateServiceRequest = SurveyCreateServiceRequest.builder()
+//                .title("당신은 어떤 과일을 좋아하나요?")
+//                .startTime(LocalDateTime.now().minusDays(1))
+//                .endTime(LocalDateTime.now().plusDays(1))
+//                .headCount(0)
+//                .surveyTarget(List.of(accountCodeType))
+//                .closedHeadCount(100)
+//                .type(SurveyCategoryType.INSTANT_WIN)
+//                .questions(questionCreateServiceRequests)
+//                .giveaways(giveawayAssignServiceRequests)
+//                .build();
+//
+//        accountCodeRepository.delete(accountCodeRepository.findAccountCodeByType(accountCodeType));
+//
+//        // when // then
+//        assertThatThrownBy(() -> surveyService.addSurvey(surveyCreateServiceRequest))
+//                .isInstanceOf(BaseException.class)
+//                .hasMessage("없는 나이,성별 코드 입니다.");
+//    }
 
     @DisplayName("설문을 제작할 때는 등록된 당첨 상품을 사용해야 한다.")
     @WithMockUser(username = "duswo0624@naver.com")

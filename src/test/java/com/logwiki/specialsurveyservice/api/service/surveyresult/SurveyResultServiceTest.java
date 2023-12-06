@@ -332,7 +332,7 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
     @DisplayName("당첨이 상품이1개 참여인원 1명 일시에 확률은 100프로다.")
     @WithMockUser(username = "duswo0624@naver.com")
     @Test
-    void winProbability100Percent() {
+    void winProbability100Percent1() {
         // given
         setAuthority();
         saveAccountYJ("duswo0624@naver.com");
@@ -526,6 +526,61 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 assertThat(surveyResultService.getSurveyResult(survey.getId()).isWin()).isEqualTo(true);
             }
 
+            @DisplayName("당첨인원이 2명인 상품에 대하여 설문 인원이 2명이면 당첨 확률은 100%다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void mustGetGiveaway() {
+                // given
+                setAuthority();
+                saveAccountYJ("duswo0624@naver.com");
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.INSTANT_WIN)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway1 = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Giveaway giveaway2 = Giveaway.builder()
+                        .giveawayType(GiveawayType.CHICKEN)
+                        .name("치킨")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(2, 5, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway1 = SurveyGiveaway.builder()
+                        .giveaway(giveaway1)
+                        .count(2)
+                        .survey(survey)
+                        .build();
+                SurveyGiveaway surveyGiveaway2 = SurveyGiveaway.builder()
+                        .giveaway(giveaway2)
+                        .count(2)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway1, surveyGiveaway2));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway1)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway1);
+                giveawayRepository.save(giveaway2);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, true);
+
+                double oneHundredPercent = 1.0;
+                assertThat(surveyResultService.getSurveyResult(survey.getId()).getProbability()).isEqualTo(oneHundredPercent);
+            }
 
         }
     }
@@ -668,6 +723,50 @@ class SurveyResultServiceTest extends IntegrationTestSupport {
                 SurveyResult surveyResult = getSurveyResult(survey, 1, true);
 
                 assertThat(surveyResultService.patchSurveyResult(survey.getId()).isWin()).isEqualTo(true);
+            }
+
+            @DisplayName("당첨이 되지 않은 결과인 경우 isWin 은 false다.")
+            @WithMockUser(username = "duswo0624@naver.com")
+            @Test
+            void isWinFalse() {
+                // given
+                setAuthority();
+                saveAccountYJ("duswo0624@naver.com");
+
+                SurveyCategory surveyCategory = SurveyCategory.builder()
+                        .type(SurveyCategoryType.NORMAL)
+                        .build();
+
+                // 상품 생성
+                Giveaway giveaway = Giveaway.builder()
+                        .giveawayType(GiveawayType.COFFEE)
+                        .name("커피")
+                        .price(10000)
+                        .build();
+                Survey survey = getSurvey(2, 2, surveyCategory);
+                survey.toClose();
+
+                SurveyGiveaway surveyGiveaway = SurveyGiveaway.builder()
+                        .giveaway(giveaway)
+                        .count(1)
+                        .survey(survey)
+                        .build();
+
+                survey.addSurveyGiveaways(List.of(surveyGiveaway));
+
+                TargetNumber targetNumber = TargetNumber.builder()
+                        .number(1)
+                        .survey(survey)
+                        .giveaway(giveaway)
+                        .build();
+                survey.addTargetNumbers(List.of(targetNumber));
+
+                giveawayRepository.save(giveaway);
+                //설문 당첨 상품
+                surveyRepository.save(survey);
+                SurveyResult surveyResult = getSurveyResult(survey, 1, false);
+
+                assertThat(surveyResultService.patchSurveyResult(survey.getId()).isWin()).isEqualTo(false);
             }
         }
     }
